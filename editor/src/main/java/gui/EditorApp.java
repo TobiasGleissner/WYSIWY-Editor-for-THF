@@ -9,7 +9,7 @@ public class EditorApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("editor.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../editor.fxml"));
         loader.setControllerFactory(t->new EditorController(new EditorModel()));
         stage.setScene(new Scene(loader.load()));
         stage.show();
