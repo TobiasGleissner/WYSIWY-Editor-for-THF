@@ -1,21 +1,9 @@
 package gui;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import static javafx.application.Application.launch;
 
-public class EditorApp extends Application {
-    @Override
-    public void start(Stage stage) throws Exception {
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../editor.fxml"));
-        loader.setControllerFactory(t->new EditorController(new EditorModel()));
-        stage.setScene(new Scene(loader.load()));
-        stage.show();
-    }
-
+public class EditorApp {
     public static void main(String[] args) {
-        launch(args);
+        launch(EditorView.class,args);
     }
 }
