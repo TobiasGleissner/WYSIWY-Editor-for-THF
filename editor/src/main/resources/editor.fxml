@@ -74,10 +74,10 @@
                 </TabPane>
 
                 <!-- thf editor -->
-                <CodeArea prefHeight="200.0" prefWidth="200.0" />
+                <CodeArea prefHeight="200.0" prefWidth="200.0" fx:id="thfArea" />
 
                 <!-- wysiwyg editor -->
-                <CodeArea prefHeight="200.0" prefWidth="200.0" />
+                <CodeArea prefHeight="200.0" prefWidth="200.0" fx:id="wysArea" />
 
                 <!-- tabs right -->
                 <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
