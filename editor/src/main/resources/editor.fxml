@@ -14,6 +14,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import org.fxmisc.richtext.CodeArea?>
+
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
@@ -72,10 +74,10 @@
                 </TabPane>
 
                 <!-- thf editor -->
-                <TextArea prefHeight="200.0" prefWidth="143.0" />
+                <CodeArea prefHeight="200.0" prefWidth="200.0" />
 
                 <!-- wysiwyg editor -->
-                <TextArea prefHeight="200.0" prefWidth="200.0" />
+                <CodeArea prefHeight="200.0" prefWidth="200.0" />
 
                 <!-- tabs right -->
                 <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
