@@ -14,107 +14,92 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import org.fxmisc.richtext.CodeArea?>
+
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
 
-   <top>
-      <VBox BorderPane.alignment="CENTER">
-         <children>
-            <MenuBar>
-              <menus>
-                <Menu text="File">
-                  <items>
-                      <MenuItem onAction="#onFileNew" text="New" />
-                      <MenuItem onAction="#onFileSave" text="Save" />
-                      <MenuItem onAction="#onFileExit" text="Exit" />
-                  </items>
-                </Menu>
-                <Menu text="Edit">
-                  <items>
-                    <MenuItem text="Replace" />
-                  </items>
-                </Menu>
-                <Menu text="Help">
-                  <items>
-                    <MenuItem text="About" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
-            <ToolBar prefHeight="40.0" prefWidth="200.0">
-              <items>
-                <Button text="Button" />
-              </items>
-            </ToolBar>
-         </children>
-      </VBox>
-   </top>
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <MenuBar>
+                    <menus>
+                        <Menu text="File">
+                            <items>
+                                <MenuItem onAction="#onFileNew" text="New" />
+                                <MenuItem onAction="#onFileSave" text="Save" />
+                                <MenuItem onAction="#onFileExit" text="Exit" />
+                            </items>
+                        </Menu>
+                        <Menu text="Edit">
+                            <items>
+                                <MenuItem text="Replace" />
+                            </items>
+                        </Menu>
+                        <Menu text="Help">
+                            <items>
+                                <MenuItem text="About" />
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+                <ToolBar prefHeight="40.0" prefWidth="200.0">
+                    <items>
+                        <Button text="Button" />
+                    </items>
+                </ToolBar>
+            </children>
+        </VBox>
+    </top>
 
 
-   <center>
-      <SplitPane dividerPositions="0.15551839464882944, 0.49331103678929766, 0.5" prefHeight="-Infinity" BorderPane.alignment="CENTER">
-        <items>
-
-            <!-- tabs left -->
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-               <children>
-                  <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+    <center>
+        <SplitPane dividerPositions="0.15551839464882944, 0.49331103678929766, 0.5" prefHeight="-Infinity" BorderPane.alignment="CENTER">
+            <items>
+                <!-- tabs left -->
+                <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
-                      <Tab text="Untitled Tab 1">
-                        <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                      </Tab>
-                      <Tab text="Untitled Tab 2">
-                        <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                      </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 2">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                            </content>
+                        </Tab>
                     </tabs>
-                  </TabPane>
-               </children>
-            </AnchorPane>
+                </TabPane>
 
-            <!-- thf editor -->
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-               <children>
-                  <TextArea prefHeight="200.0" prefWidth="143.0" />
-               </children>
-            </AnchorPane>
+                <!-- thf editor -->
+                <CodeArea prefHeight="200.0" prefWidth="200.0" fx:id="thfArea" />
 
-            <!-- wysiwyg editor -->
-            <AnchorPane prefHeight="200.0" prefWidth="200.0">
-               <children>
-                  <TextArea prefHeight="200.0" prefWidth="200.0" />
-               </children>
-            </AnchorPane>
+                <!-- wysiwyg editor -->
+                <CodeArea prefHeight="200.0" prefWidth="200.0" fx:id="wysArea" />
 
-            <!-- tabs right -->
-            <AnchorPane prefHeight="98.0" prefWidth="203.0">
-               <children>
-                  <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                <!-- tabs right -->
+                <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
-                      <Tab text="Untitled Tab 1">
-                        <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                      </Tab>
-                      <Tab text="Untitled Tab 2">
-                        <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                      </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 2">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                            </content>
+                        </Tab>
                     </tabs>
-                  </TabPane>
-               </children>
-            </AnchorPane>
-        </items>
-      </SplitPane>
-   </center>
+                </TabPane>
+            </items>
+        </SplitPane>
+    </center>
 
 
-   <bottom>
-      <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </bottom>
+    <bottom>
+        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+    </bottom>
 </BorderPane>
