@@ -44,7 +44,8 @@
                                     <mainClass>gui.EditorView</mainClass>
                                 </transformer>
                             </transformers>
-                            <minimizeJar>true</minimizeJar>
+                            <!-- NOTE: removes classes referenced in editor.fxml -->
+                            <minimizeJar>false</minimizeJar>
                         </configuration>
                     </execution>
                 </executions>
