@@ -15,6 +15,11 @@ public class Node {
     private Node parent = null;
     private List<Node> children;
 
+    public int charPositionInLine;
+    public int line;
+    public int startIndex;
+    public int stopIndex;
+
     public Node() {
         rule = "";
         label = "";
@@ -718,5 +723,13 @@ public class Node {
         return String.join("", output).trim();
     }
 
-
+    public String toStringWithPositionOutput(){
+        String ret = "";
+        for (Node n : this.children){
+            ret += "\n" + n.rule + " \"" + n.label + "\" " + n.line + " " + n.charPositionInLine + " " +
+                    n.startIndex + " " + n.stopIndex;
+            ret += n.toStringWithPositionOutput();
+        }
+        return ret;
+    }
 }

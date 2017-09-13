@@ -64,6 +64,10 @@ public class DefaultTreeListener implements ParseTreeListener {
     @Override
     public void visitTerminal(TerminalNode terminalNode) {
         Node n = new Node(nodeptr, "terminal", terminalNode.getText());
+        n.charPositionInLine = terminalNode.getSymbol().getCharPositionInLine();
+        n.line = terminalNode.getSymbol().getLine();
+        n.startIndex = terminalNode.getSymbol().getStartIndex();
+        n.stopIndex = terminalNode.getSymbol().getStopIndex();
         nodeptr.addChild(n);
     }
 
@@ -77,6 +81,10 @@ public class DefaultTreeListener implements ParseTreeListener {
         String rule = this.getRuleByKey(ctx.getRuleIndex());
         if (this.filter.test(rule)) {
             Node n = new Node(nodeptr, rule/*, ctx.getText()*/);
+            n.charPositionInLine = ctx.getStart().getCharPositionInLine();
+            n.line = ctx.getStart().getLine();
+            n.startIndex = ctx.getStart().getStartIndex();
+            n.stopIndex = ctx.getStart().getStopIndex();
             nodeptr.addChild(n);
             nodeptr = n;
         }
