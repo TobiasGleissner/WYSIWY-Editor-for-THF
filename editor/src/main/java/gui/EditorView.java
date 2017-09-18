@@ -10,7 +10,7 @@ public class EditorView extends Application {
     public void start(Stage stage) throws Exception {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/editor.fxml"));
-        loader.setControllerFactory(t->new EditorController(new EditorModel()));
+        loader.setControllerFactory(t->new EditorController(new EditorModel(), stage));
         stage.setScene(new Scene(loader.load()));
         stage.show();
     }

@@ -2,6 +2,11 @@ package gui;
 
 import java.net.URL;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
+
 import java.util.Collection;
 import java.util.ResourceBundle;
 
@@ -14,20 +19,25 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.control.TextArea;
 
+import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.RichTextChange;
 import org.fxmisc.richtext.model.StyledText;
 
 public class EditorController implements Initializable {
     private EditorModel model;
+    private Stage mainStage;
 
     @FXML
     private CodeArea thfArea;
     @FXML
     private CodeArea wysArea;
 
-    public EditorController(EditorModel model){
+    public EditorController(EditorModel model, Stage mainStage) {
         this.model = model;
+        this.mainStage = mainStage;
     }
 
     @Override
@@ -38,17 +48,36 @@ public class EditorController implements Initializable {
 
 
     @FXML
-    private void onFileNew(ActionEvent e){
+    private void onFileNew(ActionEvent e) {
         System.out.println("newfile");
     }
 
     @FXML
-    private void onFileSave(ActionEvent e){
+    private void onFileOpen(ActionEvent e) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open thf file");
+        File selectedFile = fileChooser.showOpenDialog(mainStage);
+
+        try
+        {
+            Path path = selectedFile.toPath();
+            byte[] content = Files.readAllBytes(path);
+            System.out.println("" + thfArea);
+            thfArea.replaceText(0, thfArea.getLength(), new String(content, StandardCharsets.UTF_8));
+        }
+        catch(java.io.IOException t)
+        {
+            model.addErrorMessage(t);
+        }
+    }
+
+    @FXML
+    private void onFileSave(ActionEvent e) {
         System.out.println("savefile");
     }
 
     @FXML
-    private void onFileExit(ActionEvent e){
+    private void onFileExit(ActionEvent e) {
         System.exit(0);
     }
 
