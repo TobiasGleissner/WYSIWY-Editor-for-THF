@@ -20,6 +20,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.TextArea;
 
 import javafx.stage.Stage;
+import parser.ParseContext;
 import javafx.stage.FileChooser;
 
 import org.fxmisc.richtext.CodeArea;
@@ -84,6 +85,8 @@ public class EditorController implements Initializable {
     @FXML
     private void onTHFTextChange(RichTextChange<Collection<String>,StyledText<Collection<String>>,Collection<String>> change)
     {
+    	ParseContext parseContext = model.parse(thfArea, "tptp_input");
+    	//System.out.println(parseContext.toString());
         System.out.println("thf change");
     }
 
