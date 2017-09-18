@@ -84,7 +84,10 @@ public class EditorModel
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<Collection<String>>();
         for(int i = 0; i < text.length(); ++i)
         {
-            spansBuilder.add(Collections.singleton("c" + (i%8+1)), 1);
+            if(text.charAt(i) == '\n')
+                spansBuilder.add(Collections.emptyList(), 1);
+            else
+                spansBuilder.add(Collections.singleton("c" + (i%8+1)), 1);
         }
 
         StyleSpans<Collection<String>> spans = spansBuilder.create();
