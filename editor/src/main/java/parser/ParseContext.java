@@ -5,20 +5,14 @@ import util.tree.Node;
 
 
 public class ParseContext {
-    private String name;
     private String parseError;
     private Node root;
     private ParserRuleContext parserRuleContext;
 
     public ParseContext() {
-        name = null;
         parseError = null;
         root = null;
         parserRuleContext = null;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setParseError(String parseError) {
@@ -35,10 +29,6 @@ public class ParseContext {
 
     public boolean hasParseError(){
         return parseError != null;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getParseError() {
