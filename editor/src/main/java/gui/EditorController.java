@@ -40,6 +40,9 @@ public class EditorController implements Initializable {
         thfArea.setParagraphGraphicFactory(LineNumberFactory.get(thfArea));
         wysArea.setParagraphGraphicFactory(LineNumberFactory.get(wysArea));
 
+        thfArea.setWrapText(true);
+        wysArea.setWrapText(true);
+
         thfArea.richChanges().subscribe(this::onTHFTextChange);
         wysArea.richChanges().subscribe(this::onWYSTextChange);
 
