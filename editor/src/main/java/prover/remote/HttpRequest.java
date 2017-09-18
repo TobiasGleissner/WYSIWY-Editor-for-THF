@@ -1,6 +1,6 @@
 package prover.remote;
 
-import settings.Terminology;
+import gui.Config;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -12,7 +12,7 @@ import java.util.Map;
 public class HttpRequest {
 
 
-    private static final String USER_AGENT = Terminology.SOFTWARE_NAME;
+    private static final String USER_AGENT = Config.name;
     private String url;
     private String response;
     Map<String,Object> URLParameters;

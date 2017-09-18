@@ -1,13 +1,9 @@
 package prover.remote;
 
 import prover.ProverAbstract;
-import prover.remote.getopt.Getopt;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.Hashtable;
 
 public class HttpProver extends ProverAbstract {
