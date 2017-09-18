@@ -18,8 +18,7 @@ public class AstGen {
      * @return ast
      * @throws ParseException if there is no such rule
      */
-    public static ParseContext parse(ANTLRInputStream inputStream, String rule, String name) throws ParseException {
-
+    public static ParseContext parse(CharStream inputStream, String rule) throws ParseException {
         parser.TptpLexer lexer = new parser.TptpLexer(inputStream);
         lexer.removeErrorListeners(); // only for production
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -61,19 +60,7 @@ public class AstGen {
         // create and return ParseContext
         parseContext.setParserRuleContext(parserRuleContext);
         parseContext.setRoot(treeListener.getRootNode());
-        parseContext.setName(name);
         return parseContext;
-    }
-
-    /**
-     * parse String containing thf and return ast
-     * @param inputString String object
-     * @param rule start parsing at this rule
-     * @return ast
-     * @throws ParseException if there is no such rule
-     */
-    public static ParseContext parse(String inputString, String rule, String name) throws ParseException {
-         return AstGen.parse(new ANTLRInputStream(inputString), rule, name);
     }
 
 }
