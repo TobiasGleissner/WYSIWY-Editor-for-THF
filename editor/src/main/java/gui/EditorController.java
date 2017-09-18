@@ -47,17 +47,7 @@ public class EditorController implements Initializable {
         thfArea.richChanges().subscribe(this::onTHFTextChange);
         wysArea.richChanges().subscribe(this::onWYSTextChange);
 
-        updateStyle();
-    }
-
-    private void updateStyle()
-    {
-        StringBuilder style = new StringBuilder()
-            .append("-fx-font-family: " + Config.getFont() + ";\n")
-            .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
-
-        thfArea.setStyle(style.toString());
-        wysArea.setStyle(style.toString());
+        model.updateStyle();
     }
 
     @FXML
@@ -95,7 +85,7 @@ public class EditorController implements Initializable {
         else
             Config.setFont("monospace");
 
-        updateStyle();
+        model.updateStyle();
     }
 
     @FXML

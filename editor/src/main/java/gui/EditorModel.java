@@ -58,4 +58,14 @@ public class EditorModel
             addErrorMessage(t);
         }
     }
+
+    public void updateStyle()
+    {
+        StringBuilder style = new StringBuilder()
+            .append("-fx-font-family: " + Config.getFont() + ";\n")
+            .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
+
+        thfArea.setStyle(style.toString());
+        wysArea.setStyle(style.toString());
+    }
 }
