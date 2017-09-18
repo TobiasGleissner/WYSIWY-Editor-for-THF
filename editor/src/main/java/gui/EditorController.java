@@ -81,7 +81,7 @@ public class EditorController implements Initializable {
     @FXML
     private void onTestPref(ActionEvent e)
     {
-        if(Config.getFont() == "monospace")
+        if(Config.getFont().equals("monospace"))
             Config.setFont("xos4 Terminus");
         else
             Config.setFont("monospace");
