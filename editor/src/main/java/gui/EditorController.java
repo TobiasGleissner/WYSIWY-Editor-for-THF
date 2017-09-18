@@ -17,6 +17,7 @@ import parser.ParseContext;
 import javafx.stage.FileChooser;
 
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.RichTextChange;
 import org.fxmisc.richtext.model.StyledText;
 
@@ -36,6 +37,9 @@ public class EditorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        thfArea.setParagraphGraphicFactory(LineNumberFactory.get(thfArea));
+        wysArea.setParagraphGraphicFactory(LineNumberFactory.get(wysArea));
+
         thfArea.richChanges().subscribe(this::onTHFTextChange);
         wysArea.richChanges().subscribe(this::onWYSTextChange);
 
@@ -86,12 +90,12 @@ public class EditorController implements Initializable {
     @FXML
     private void onTHFTextChange(RichTextChange<Collection<String>,StyledText<Collection<String>>,Collection<String>> change)
     {
-    	ParseContext parseContext = model.parse(thfArea, "tptp_input");
-    	System.out.println(parseContext.toString());
-        System.out.println("thf change");
-
         if(change.getInserted().equals(change.getRemoved()))
             return;
+
+        ParseContext parseContext = model.parse(thfArea, "tptp_input");
+        System.out.println(parseContext.toString());
+        System.out.println("thf change");
 
         model.updateRainbows();
     }
