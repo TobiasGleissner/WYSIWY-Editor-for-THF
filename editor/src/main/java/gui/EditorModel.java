@@ -5,6 +5,9 @@ import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import java.lang.Throwable;
 
 import parser.AstGen;
@@ -15,6 +18,8 @@ import org.antlr.v4.runtime.CharStreams;
 import exceptions.ParseException;
 
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 public class EditorModel
 {
@@ -67,5 +72,22 @@ public class EditorModel
 
         thfArea.setStyle(style.toString());
         wysArea.setStyle(style.toString());
+    }
+
+    public void updateRainbows()
+    {
+        String text = thfArea.getText();
+
+        if(text.length() == 0)
+            return;
+
+        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<Collection<String>>();
+        for(int i = 0; i < text.length(); ++i)
+        {
+            spansBuilder.add(Collections.singleton("c" + (i%8+1)), 1);
+        }
+
+        StyleSpans<Collection<String>> spans = spansBuilder.create();
+        thfArea.setStyleSpans(0, spans);
     }
 }

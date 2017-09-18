@@ -37,8 +37,6 @@ public class EditorController implements Initializable {
 
     public EditorController(EditorModel model, Stage mainStage) {
         this.model = model;
-        this.model.thfArea = thfArea;
-        this.model.wysArea = wysArea;
         this.mainStage = mainStage;
     }
 
@@ -46,6 +44,9 @@ public class EditorController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         thfArea.richChanges().subscribe(this::onTHFTextChange);
         wysArea.richChanges().subscribe(this::onWYSTextChange);
+
+        this.model.thfArea = thfArea;
+        this.model.wysArea = wysArea;
 
         model.updateStyle();
     }
@@ -94,6 +95,11 @@ public class EditorController implements Initializable {
     	ParseContext parseContext = model.parse(thfArea, "tptp_input");
     	System.out.println(parseContext.toString());
         System.out.println("thf change");
+
+        if(change.getInserted().equals(change.getRemoved()))
+            return;
+
+        model.updateRainbows();
     }
 
     @FXML
