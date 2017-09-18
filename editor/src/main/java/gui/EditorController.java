@@ -1,7 +1,5 @@
 package gui;
 
-import gui.Config;
-
 import java.net.URL;
 
 import java.io.File;
@@ -12,11 +10,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-
 import javafx.event.ActionEvent;
-import javafx.scene.control.TextArea;
 
 import javafx.stage.Stage;
 import parser.ParseContext;
