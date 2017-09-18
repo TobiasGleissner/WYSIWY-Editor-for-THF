@@ -58,6 +58,9 @@ public class EditorController implements Initializable {
         fileChooser.setTitle("Open thf file");
         File selectedFile = fileChooser.showOpenDialog(mainStage);
 
+        if(selectedFile == null)
+            return;
+
         try
         {
             Path path = selectedFile.toPath();
