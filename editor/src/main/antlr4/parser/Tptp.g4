@@ -5,11 +5,8 @@
  *  Date: Dec 2016
  *  Last updated: Feb 2017
  */
-grammar tptp;
+grammar Tptp;
 
-@header {
-package leo.modules.parsers.antlr;
-} 
 
 // %----v6.4.0.0 (TPTP version.internal development number)
 // %----v6.4.0.1 Noted that <number>s may not be used in CNF or FOF.
