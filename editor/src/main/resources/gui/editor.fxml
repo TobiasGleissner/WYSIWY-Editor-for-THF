@@ -47,7 +47,7 @@
                 </MenuBar>
                 <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
-                        <Button text="Button" />
+                        <Button text="Button Testing Prefernces" onAction="#onTestPref" />
                     </items>
                 </ToolBar>
             </children>
