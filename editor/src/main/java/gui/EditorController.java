@@ -63,7 +63,7 @@ public class EditorController implements Initializable {
             Path path = selectedFile.toPath();
             byte[] content = Files.readAllBytes(path);
             System.out.println("" + thfArea);
-            thfArea.replaceText(0, thfArea.getLength(), new String(content, StandardCharsets.UTF_8));
+            thfArea.replaceText(new String(content, StandardCharsets.UTF_8));
         }
         catch(java.io.IOException t)
         {
