@@ -7,59 +7,139 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
 <?import org.fxmisc.richtext.CodeArea?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
-
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
         <VBox BorderPane.alignment="CENTER">
             <children>
                 <MenuBar>
                     <menus>
+                        <Menu text="***">
+                            <items>
+                                <MenuItem text="Hide">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <MenuItem text="Preferences">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <MenuItem text="Exit">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                            </items>
+                        </Menu>
                         <Menu text="File">
                             <items>
-                                <MenuItem onAction="#onFileNew" text="New" />
-                                <MenuItem onAction="#onFileOpen" text="Open" />
-                                <MenuItem onAction="#onFileSave" text="Save" />
-                                <MenuItem onAction="#onFileExit" text="Exit" />
+                                <MenuItem onAction="#onFileNew" text="New File">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="N" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <MenuItem onAction="#onFileOpen" text="Open...">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <MenuItem onAction="#onFileSave" text="Save">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <MenuItem text="Save as...">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="DOWN" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <MenuItem text="Close">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
                             </items>
                         </Menu>
-                        <Menu text="Edit">
+                            <Menu text="Edit">
+                                <items>
+                                    <MenuItem text="Undo">
+                                        <accelerator>
+                                            <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                        </accelerator>
+                                    </MenuItem>
+                                    <MenuItem text="Redo">
+                                        <accelerator>
+                                            <KeyCodeCombination alt="UP" code="Y" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                        </accelerator>
+                                    </MenuItem>
+                                    <MenuItem text="Cut">
+                                        <accelerator>
+                                            <KeyCodeCombination alt="UP" code="X" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                        </accelerator>
+                                    </MenuItem>
+                                    <MenuItem text="Copy">
+                                        <accelerator>
+                                            <KeyCodeCombination alt="UP" code="C" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                        </accelerator>
+                                    </MenuItem>
+                                    <MenuItem text="Paste">
+                                        <accelerator>
+                                            <KeyCodeCombination alt="UP" code="V" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                        </accelerator>
+                                    </MenuItem>
+                                    <MenuItem text="Select all">
+                                        <accelerator>
+                                            <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                        </accelerator>
+                                    </MenuItem>
+                                    <MenuItem text="Find/Replace">
+                                        <accelerator>
+                                            <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                        </accelerator>
+                                    </MenuItem>
+                            </items>
+                        </Menu>
+                        <Menu text="Prover">
                             <items>
-                                <MenuItem text="Replace" />
+                                <MenuItem text="Run" />
                             </items>
                         </Menu>
-                        <Menu text="Help">
-                            <items>
-                                <MenuItem text="About" />
-                            </items>
-                        </Menu>
+                  <Menu text="Help">
+                     <items>
+                        <MenuItem text="*** Help" />
+                        <MenuItem text="About ***" />
+                     </items>
+                  </Menu>
                     </menus>
                 </MenuBar>
                 <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
-                        <Button text="Button Testing Prefernces" onAction="#onTestPref" />
+                        <Button onAction="#onTestPref" text="Button Testing Preferences" />
                     </items>
                 </ToolBar>
             </children>
         </VBox>
     </top>
 
+    <bottom>
+        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+    </bottom>
 
-    <center>
-        <SplitPane dividerPositions="0.15551839464882944, 0.49331103678929766, 0.5" prefHeight="-Infinity" BorderPane.alignment="CENTER">
+   <center>
+        <SplitPane dividerPositions="0.39464882943143814, 0.5133779264214047, 0.5903010033444817" prefHeight="-Infinity" BorderPane.alignment="CENTER">
             <items>
                 <!-- tabs left -->
-                <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab text="Untitled Tab 1">
                             <content>
@@ -75,13 +155,13 @@
                 </TabPane>
 
                 <!-- thf editor -->
-                <CodeArea prefHeight="200.0" prefWidth="200.0" fx:id="thfArea" />
+                <CodeArea fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
 
                 <!-- wysiwyg editor -->
-                <CodeArea prefHeight="200.0" prefWidth="200.0" fx:id="wysArea" />
+                <CodeArea fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />
 
                 <!-- tabs right -->
-                <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                <TabPane prefHeight="200.0" prefWidth="200.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab text="Untitled Tab 1">
                             <content>
@@ -97,10 +177,6 @@
                 </TabPane>
             </items>
         </SplitPane>
-    </center>
+   </center>
 
-
-    <bottom>
-        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-    </bottom>
 </BorderPane>
