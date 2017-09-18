@@ -89,7 +89,7 @@ public class EditorController implements Initializable {
     private void onTHFTextChange(RichTextChange<Collection<String>,StyledText<Collection<String>>,Collection<String>> change)
     {
     	ParseContext parseContext = model.parse(thfArea, "tptp_input");
-    	//System.out.println(parseContext.toString());
+    	System.out.println(parseContext.toString());
         System.out.println("thf change");
     }
 
