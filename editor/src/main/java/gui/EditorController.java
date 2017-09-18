@@ -5,9 +5,6 @@ import gui.Config;
 import java.net.URL;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Files;
-import java.nio.charset.StandardCharsets;
 
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -40,6 +37,8 @@ public class EditorController implements Initializable {
 
     public EditorController(EditorModel model, Stage mainStage) {
         this.model = model;
+        this.model.thfArea = thfArea;
+        this.model.wysArea = wysArea;
         this.mainStage = mainStage;
     }
 
@@ -75,17 +74,7 @@ public class EditorController implements Initializable {
         if(selectedFile == null)
             return;
 
-        try
-        {
-            Path path = selectedFile.toPath();
-            byte[] content = Files.readAllBytes(path);
-            System.out.println("" + thfArea);
-            thfArea.replaceText(new String(content, StandardCharsets.UTF_8));
-        }
-        catch(java.io.IOException t)
-        {
-            model.addErrorMessage(t);
-        }
+        model.openFile(selectedFile);
     }
 
     @FXML
