@@ -1,5 +1,7 @@
 package gui;
 
+import gui.Config;
+
 import java.net.URL;
 
 import java.io.File;
@@ -45,8 +47,19 @@ public class EditorController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         thfArea.richChanges().subscribe(this::onTHFTextChange);
         wysArea.richChanges().subscribe(this::onWYSTextChange);
+
+        updateStyle();
     }
 
+    private void updateStyle()
+    {
+        StringBuilder style = new StringBuilder()
+            .append("-fx-font-family: " + Config.getFont() + ";\n")
+            .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
+
+        thfArea.setStyle(style.toString());
+        wysArea.setStyle(style.toString());
+    }
 
     @FXML
     private void onFileNew(ActionEvent e) {
@@ -83,6 +96,17 @@ public class EditorController implements Initializable {
     @FXML
     private void onFileExit(ActionEvent e) {
         System.exit(0);
+    }
+
+    @FXML
+    private void onTestPref(ActionEvent e)
+    {
+        if(Config.getFont() == "monospace")
+            Config.setFont("xos4 Terminus");
+        else
+            Config.setFont("monospace");
+
+        updateStyle();
     }
 
     @FXML
