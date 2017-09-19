@@ -1,7 +1,8 @@
 package prover;
 
+import exceptions.ProverNotAvailableException;
+import exceptions.ProverResultNotInterpretableException;
+
 public interface Prover {
-    public SZSOntology.SZSStatus getSZSStatus();
-    public String getProver();
-    public double getElapsedTime();
+    ProveResult prove(String problem, String source, String prover, int timelimit) throws ProverNotAvailableException, ProverResultNotInterpretableException;
 }
