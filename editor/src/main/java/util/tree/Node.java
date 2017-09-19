@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 
 public class Node {
-
     private String rule = null;
     private String label = null;
     private Node parent = null;

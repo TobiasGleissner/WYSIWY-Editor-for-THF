@@ -1,34 +1,51 @@
 package gui;
 
 import java.io.File;
+import java.io.StringReader;
+import java.io.PushbackReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import java.lang.Throwable;
 
-import parser.AstGen;
-import parser.ParseContext;
-
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
-
-import exceptions.ParseException;
 
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+
+import parser.AstGen;
+import parser.ParseContext;
+
+import exceptions.ParseException;
+
+import util.tree.Node;
 
 public class EditorModel
 {
     public CodeArea thfArea;
     public CodeArea wysArea;
 
+    public LinkedList<Node> tptpInputNodes;
+
+    public EditorModel()
+    {
+        tptpInputNodes = new LinkedList();
+    }
+
     public void addErrorMessage(String string)
     {
-        /* TODO */
+        /* TODO: Add to the output on the bottom of the screen. */
         System.err.println("Error: " + string);
     }
 
@@ -38,16 +55,16 @@ public class EditorModel
     }
 
     public ParseContext parse (CodeArea codeArea, String rule) {
-    	ParseContext parseContext = null;
-    	
-    	try {
-    		parseContext = AstGen.parse(CharStreams.fromString(codeArea.getText()), rule);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-    	return parseContext;
+        ParseContext parseContext = null;
+
+        try {
+            parseContext = AstGen.parse(CharStreams.fromString(codeArea.getText()), rule);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return parseContext;
     }
 
     public void openFile(File file)
@@ -74,20 +91,194 @@ public class EditorModel
         wysArea.setStyle(style.toString());
     }
 
+    public void printTPTPTrees()
+    {
+        System.out.println("------------------------");
+        for(Node node : tptpInputNodes)
+        {
+            Node dummy = new Node("dummy");
+            dummy.addChild(node);
+
+            System.out.println("node = " + dummy.toStringWithPositionOutput());
+        }
+        System.out.println("------------------------");
+    }
+
+    public void reparse()
+    {
+        tptpInputNodes = new LinkedList();
+        reparseArea(0, thfArea.getLength()-1, tptpInputNodes.listIterator());
+    }
+
+    private void reparseArea(int start, int end, ListIterator<Node> position)
+    {
+        System.out.println("reparseArea: (" + start + "," + end + ")");
+
+        String text = thfArea.getText(start, end);
+
+        /* NOTE: We hardcode knowledge of the grammar here. This is ugly and may fail at any point. I'm sorry. :/ */
+        Pattern pattern = Pattern.compile("(\\A|\\s|\\.)(thf|tff|fof|cnf)\\(");
+        Matcher matcher = pattern.matcher(text);
+
+        if(!matcher.find())
+            return;
+
+        boolean last = false;
+        while(!last)
+        {
+            int off_start = matcher.start();
+
+            /* TODO: More ugly code hardcoding details of the other ugly code. :( */
+            if(text.codePointAt(off_start) != 't' && text.codePointAt(off_start) != 'c')
+                off_start++;
+
+            int off_end;
+            if(matcher.find())
+            {
+                off_end = matcher.start();
+            }
+            else
+            {
+                last = true;
+                off_end = text.length();
+            }
+
+            String part = text.substring(off_start, off_end);
+            System.out.println("part = '" + part + "'");
+
+            StringReader textReader = new StringReader(text.substring(off_start, off_end));
+            CharStream stream;
+            try
+            {
+                stream = CharStreams.fromReader(textReader, "THF Window");
+            }
+            catch(IOException e)
+            {
+                addErrorMessage(e);
+                continue;
+            }
+
+            ParseContext parseContext;
+            try
+            {
+                parseContext = AstGen.parse(stream, "tptp_input");
+            }
+            catch(ParseException e)
+            {
+                addErrorMessage(e);
+                continue;
+            }
+
+            if(parseContext.hasParseError())
+            {
+                addErrorMessage("unable to parse: " + parseContext.getParseError());
+                continue;
+            }
+
+            Node node = parseContext.getRoot().getFirstChild();
+
+            node.startIndex += off_start + start;
+            node.stopIndex += off_start + start;
+
+            position.add(node);
+        }
+    }
+
+    public void updateTHFTree(int start, int insEnd, int delEnd)
+    {
+        int offset = insEnd - delEnd;
+
+        int parseStart = -1;
+        int parseEnd = -1;
+
+        ListIterator<Node> nodeIt = tptpInputNodes.listIterator();
+
+        /* First we skip all nodes that don't reach the changed area yet.
+         * TODO: This could be optimized with trees. */
+        Node prev = null;
+        while(nodeIt.hasNext())
+        {
+            Node next = nodeIt.next();
+
+            int nextIndex = next.stopIndex+1;
+            System.out.println("startIndex = " + next.startIndex + ", nextIndex = " + nextIndex + ", start = " + start);
+
+            if(nextIndex >= start)
+            {
+                System.out.println("delete[0]");
+                nodeIt.remove();
+                break;
+            }
+
+            prev = next;
+        }
+
+        if(prev != null)
+            parseStart = prev.stopIndex+1;
+
+        /* Now we delete all nodes that reach the changed area. */
+        while(nodeIt.hasNext())
+        {
+            Node next = nodeIt.next();
+
+            if(next.startIndex <= delEnd)
+            {
+                System.out.println("delete[1]");
+                nodeIt.remove();
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        if(nodeIt.hasNext())
+        {
+            Node next = nodeIt.next();
+            if(parseEnd == -1)
+                parseEnd = next.startIndex;
+
+            nodeIt.previous();
+        }
+
+        /* If we didn't find any preceeding or following completely parsed
+         * chunks we have to bite the bullet and need to restart the parser
+         * with the maxial constraints. */
+        if(parseStart == -1)
+            parseStart = 0;
+        if(parseEnd == -1)
+            parseEnd = thfArea.getLength();
+
+        /* Reparse the changed area we identified. */
+        reparseArea(parseStart, parseEnd, nodeIt);
+
+        /* Now we update all nodes following the changed area. */
+        while(nodeIt.hasNext())
+        {
+            Node next = nodeIt.next();
+
+            next.startIndex += offset;
+            next.stopIndex += offset;
+
+            if(parseEnd == -1)
+                parseEnd = next.startIndex;
+        }
+    }
+
     public void updateRainbows()
     {
         String text = thfArea.getText();
 
-        if(text.length() == 0)
+        if(text.length() < 4)
             return;
 
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<Collection<String>>();
-        for(int i = 0; i < text.length(); ++i)
+        for(int i = 0; i < text.length()/4; ++i)
         {
             if(text.charAt(i) == '\n')
                 spansBuilder.add(Collections.emptyList(), 1);
             else
-                spansBuilder.add(Collections.singleton("c" + (i%8+1)), 1);
+                spansBuilder.add(Collections.singleton("c" + (i%8+1)), 4);
         }
 
         StyleSpans<Collection<String>> spans = spansBuilder.create();

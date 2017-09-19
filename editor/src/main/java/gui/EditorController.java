@@ -20,6 +20,10 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.RichTextChange;
 import org.fxmisc.richtext.model.StyledText;
+import org.fxmisc.richtext.model.StyledDocument;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpan;
+import org.fxmisc.richtext.model.Paragraph;
 
 public class EditorController implements Initializable {
     private EditorModel model;
@@ -30,9 +34,13 @@ public class EditorController implements Initializable {
     @FXML
     private CodeArea wysArea;
 
+    private int num_updates;
+
     public EditorController(EditorModel model, Stage mainStage) {
         this.model = model;
         this.mainStage = mainStage;
+
+        num_updates = 0;
     }
 
     @Override
@@ -91,16 +99,27 @@ public class EditorController implements Initializable {
     }
 
     @FXML
+    private void onReparse(ActionEvent e)
+    {
+        model.reparse();
+    }
+
+    @FXML
+    private void onPrintTree(ActionEvent e)
+    {
+        model.printTPTPTrees();
+    }
+
+    @FXML
     private void onTHFTextChange(RichTextChange<Collection<String>,StyledText<Collection<String>>,Collection<String>> change)
     {
         if(change.getInserted().equals(change.getRemoved()))
             return;
 
-        ParseContext parseContext = model.parse(thfArea, "tptp_input");
-        System.out.println(parseContext.toString());
-        System.out.println("thf change");
+        System.out.println("inserted = " + change.getInserted().getText());
+        System.out.println("removed  = " + change.getRemoved().getText());
 
-        model.updateRainbows();
+        model.updateTHFTree(change.getPosition(), change.getInsertionEnd(), change.getRemovalEnd());
     }
 
     @FXML
