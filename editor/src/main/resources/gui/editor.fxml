@@ -18,14 +18,17 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.fxmisc.richtext.CodeArea?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
+
         <VBox BorderPane.alignment="CENTER">
             <children>
                 <MenuBar>
                     <menus>
-                        <Menu text="***">
+
+                        <!-- menuitem NAME -->
+                        <Menu text="NAME">
                             <items>
                                 <MenuItem text="Hide">
                                     <accelerator>
@@ -44,6 +47,8 @@
                                 </MenuItem>
                             </items>
                         </Menu>
+
+                        <!-- menuitem file -->
                         <Menu text="File">
                             <items>
                                 <MenuItem onAction="#onFileNew" text="New File">
@@ -76,48 +81,52 @@
                                 </MenuItem>
                             </items>
                         </Menu>
-                            <Menu text="Edit">
-                                <items>
-                                    <MenuItem text="Undo">
-                                        <accelerator>
-                                            <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                        </accelerator>
-                                    </MenuItem>
-                                    <MenuItem text="Redo">
-                                        <accelerator>
-                                            <KeyCodeCombination alt="UP" code="Y" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                        </accelerator>
-                                    </MenuItem>
-                                    <SeparatorMenuItem mnemonicParsing="false" />
-                                    <MenuItem text="Cut">
-                                        <accelerator>
-                                            <KeyCodeCombination alt="UP" code="X" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                        </accelerator>
-                                    </MenuItem>
-                                    <MenuItem text="Copy">
-                                        <accelerator>
-                                            <KeyCodeCombination alt="UP" code="C" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                        </accelerator>
-                                    </MenuItem>
-                                    <MenuItem text="Paste">
-                                        <accelerator>
-                                            <KeyCodeCombination alt="UP" code="V" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                        </accelerator>
-                                    </MenuItem>
-                                    <SeparatorMenuItem mnemonicParsing="false" />
-                                    <MenuItem text="Select all">
-                                        <accelerator>
-                                            <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                        </accelerator>
-                                    </MenuItem>
-                                    <SeparatorMenuItem mnemonicParsing="false" />
-                                    <MenuItem text="Find/Replace">
-                                        <accelerator>
-                                            <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                        </accelerator>
-                                    </MenuItem>
+
+                        <!-- menuitem edit -->
+                        <Menu text="Edit">
+                            <items>
+                                <MenuItem text="Undo">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <MenuItem text="Redo">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="Y" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem text="Cut">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="X" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <MenuItem text="Copy">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="C" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <MenuItem text="Paste">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="V" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem text="Select all">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem text="Find/Replace">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
                             </items>
                         </Menu>
+
+                        <!-- menuitem prover -->
                         <Menu text="Prover">
                             <items>
                                 <MenuItem text="Run">
@@ -135,30 +144,36 @@
                                 <RadioMenuItem mnemonicParsing="false" text="Vampire" toggleGroup="$SelectedProver" />
                             </items>
                         </Menu>
-                  <Menu text="Help">
-                     <items>
-                        <MenuItem text="*** Help" />
-                        <MenuItem text="About ***" />
-                     </items>
-                  </Menu>
+
+                        <!-- menuitem help -->
+                        <Menu text="Help">
+                            <items>
+                                <MenuItem text="NAME Help" />
+                                <MenuItem text="About NAME" />
+                            </items>
+                        </Menu>
+
                     </menus>
                 </MenuBar>
+
+                <!-- toolbar -->
                 <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
                         <Button onAction="#onTestPref" text="Button Testing Preferences" />
                     </items>
                 </ToolBar>
+
             </children>
         </VBox>
+
     </top>
 
-    <bottom>
-        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-    </bottom>
+    <center>
 
-   <center>
+        <!-- main content -->
         <SplitPane dividerPositions="0.39464882943143814, 0.5133779264214047, 0.5903010033444817" prefHeight="-Infinity" BorderPane.alignment="CENTER">
             <items>
+
                 <!-- tabs left -->
                 <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
@@ -206,8 +221,17 @@
                         </Tab>
                     </tabs>
                 </TabPane>
+
             </items>
         </SplitPane>
-   </center>
+
+    </center>
+
+    <bottom>
+
+        <!-- prover output -->
+        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+
+    </bottom>
 
 </BorderPane>
