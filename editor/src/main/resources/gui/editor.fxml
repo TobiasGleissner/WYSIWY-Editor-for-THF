@@ -16,12 +16,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
 <?import org.fxmisc.richtext.CodeArea?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
-
         <VBox BorderPane.alignment="CENTER">
             <children>
                 <MenuBar>
@@ -165,73 +165,78 @@
 
             </children>
         </VBox>
-
     </top>
 
     <center>
 
-        <!-- main content -->
-        <SplitPane dividerPositions="0.39464882943143814, 0.5133779264214047, 0.5903010033444817" prefHeight="-Infinity" BorderPane.alignment="CENTER">
+        <SplitPane id="SplitPane" dividerPositions="0.8" orientation="VERTICAL">
             <items>
 
-                <!-- tabs left -->
-                <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
-                    <tabs>
-                        <Tab text="File Browser">
-                            <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                            </content>
-                        </Tab>
-                        <Tab text="List of Axioms">
-                            <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                            </content>
-                        </Tab>
-                        <Tab text="List of Types">
-                            <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                            </content>
-                        </Tab>
-                        <Tab text="List of Constants">
-                            <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                            </content>
-                        </Tab>
-                    </tabs>
-                </TabPane>
+                <!-- main content -->
+                <SplitPane dividerPositions="0.2, 0.5, 0.8" prefHeight="-Infinity" BorderPane.alignment="CENTER">
+                    <items>
 
-                <!-- thf editor -->
-                <CodeArea fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
+                        <!-- tabs left -->
+                        <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
+                            <tabs>
+                                <Tab text="File Browser">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                    </content>
+                                </Tab>
+                                <Tab text="List of Axioms">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                    </content>
+                                </Tab>
+                                <Tab text="List of Types">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                    </content>
+                                </Tab>
+                                <Tab text="List of Constants">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                    </content>
+                                </Tab>
+                            </tabs>
+                        </TabPane>
 
-                <!-- wysiwyg editor -->
-                <CodeArea fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />
+                        <!-- thf editor -->
+                        <CodeArea fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
 
-                <!-- tabs right -->
-                <TabPane prefHeight="200.0" prefWidth="200.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
-                    <tabs>
-                        <Tab text="Untitled Tab 1">
-                            <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                            </content>
-                        </Tab>
-                        <Tab text="Untitled Tab 2">
-                            <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                            </content>
-                        </Tab>
-                    </tabs>
-                </TabPane>
+                        <!-- wysiwyg editor -->
+                        <CodeArea fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />
+
+                        <!-- tabs right -->
+                        <TabPane prefHeight="200.0" prefWidth="200.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
+                            <tabs>
+                                <Tab text="Untitled Tab 1">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                    </content>
+                                </Tab>
+                                <Tab text="Untitled Tab 2">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                    </content>
+                                </Tab>
+                            </tabs>
+                        </TabPane>
+
+                    </items>
+                </SplitPane>
+
+                <!-- prover output -->
+                <TextFlow>
+                    <children>
+                        <HBox prefHeight="55.0" />
+                    </children>
+                </TextFlow>
 
             </items>
         </SplitPane>
 
     </center>
-
-    <bottom>
-
-        <!-- prover output -->
-        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-
-    </bottom>
 
 </BorderPane>
