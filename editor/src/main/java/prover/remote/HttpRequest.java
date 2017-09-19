@@ -4,13 +4,14 @@ import gui.Config;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
 public class HttpRequest {
-
 
     private static final String USER_AGENT = Config.name;
     private String url;
@@ -22,49 +23,14 @@ public class HttpRequest {
         this.url = url;
     }
 
-    private void sendGet() throws Exception {
-
-        String url = "http://www.google.com/search?q=mkyong";
-
+    public void sendPost() throws IOException {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-        // optional default is GET
-        con.setRequestMethod("GET");
-
-        //add request header
-        con.setRequestProperty("User-Agent", USER_AGENT);
-
-        int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'GET' request to URL : " + url);
-        System.out.println("Response Code : " + responseCode);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-
-        //print result
-        System.out.println(response.toString());
-
-    }
-
-    public void sendPost() throws Exception {
-
-        URL obj = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-        //add reuqest header
+        //  header
         con.setRequestMethod("POST");
-        con.setRequestProperty("User-Agent", HttpRequest.USER_AGENT);
-        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
-        String urlParameters = this.createParameters(); //"sn=C02G8416DRJM&cn=&locale=&caller=&num=12345";
+        con.setRequestProperty(Config.USER_AGENT, HttpRequest.USER_AGENT);
+        String urlParameters = this.createParameters();
 
         // Send post request
         con.setDoOutput(true);
@@ -73,19 +39,11 @@ public class HttpRequest {
         wr.flush();
         wr.close();
 
-        int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'POST' request to URL : " + url);
-        System.out.println("Post parameters : " + urlParameters);
-        System.out.println("Response Code : " + responseCode);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
+        // read response
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
+        while ((inputLine = in.readLine()) != null) response.append(inputLine);
         in.close();
 
         this.response = response.toString();
