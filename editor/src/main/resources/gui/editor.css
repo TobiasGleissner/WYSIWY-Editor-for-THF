@@ -2,7 +2,17 @@
 /* ==== main color palette from which the rest of the colors are derived === */
 
 .root {
-
+    -fx-base: #ececec;
+    -fx-color: -fx-base;
+    -fx-background-light-grey: derive(-fx-color,26.4%);
+    -fx-background: -fx-background-light-grey;
+    -fx-body-color: derive(-fx-color,-5%);
+    -fx-hover-base: ladder(
+        -fx-base,
+        derive(-fx-base,20%) 20%,
+        derive(-fx-base,30%) 35%,
+        derive(-fx-base,40%) 50%
+     );
 }
 
 .root.popup {
@@ -11,33 +21,44 @@
 
 /* === split panes === */
 
-.split-pane *.split-pane-divider {
+.split-pane {
+    -fx-padding: 0 0 0 0;
+}
+
+.split-pane-divider {
     -fx-padding: 0 1 0 1;
 }
 
 
 /* === tab panes === */
 
-.tab{
-    -fx-background-radius: 0;
+.tab-pane > .tab-header-area {
     -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background: -fx-body-color;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-padding: 0 10 0 10;
     -fx-border-width:0px;
 }
 
-.tab:hover{
-
+.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-font-size: 10px;
 }
 
-.tab:selected{
-
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background: derive(-fx-color,26.4%);
 }
 
-.tab-label {
-    -fx-font-size: 12px;
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: -fx-body-color;
 }
+
 
 /* === syntax highlighting === */
 

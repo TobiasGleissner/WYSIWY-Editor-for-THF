@@ -161,12 +161,6 @@
                     <items>
                         <Button onAction="#onTestPref" text="Button Testing Preferences" />
                     </items>
-                    <items>
-                        <Button onAction="#onReparse" text="Parse again" />
-                    </items>
-                    <items>
-                        <Button onAction="#onPrintTree" text="Print the THF tree" />
-                    </items>
                 </ToolBar>
 
             </children>
