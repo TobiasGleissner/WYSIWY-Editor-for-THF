@@ -1,13 +1,8 @@
 package gui;
 
-import gui.Config;
-
 import java.net.URL;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Files;
-import java.nio.charset.StandardCharsets;
 
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -15,17 +10,14 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-
 import javafx.event.ActionEvent;
-import javafx.scene.control.TextArea;
 
 import javafx.stage.Stage;
 import parser.ParseContext;
 import javafx.stage.FileChooser;
 
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.RichTextChange;
 import org.fxmisc.richtext.model.StyledText;
 
@@ -45,20 +37,19 @@ public class EditorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        thfArea.setParagraphGraphicFactory(LineNumberFactory.get(thfArea));
+        wysArea.setParagraphGraphicFactory(LineNumberFactory.get(wysArea));
+
+        thfArea.setWrapText(true);
+        wysArea.setWrapText(true);
+
         thfArea.richChanges().subscribe(this::onTHFTextChange);
         wysArea.richChanges().subscribe(this::onWYSTextChange);
 
-        updateStyle();
-    }
+        this.model.thfArea = thfArea;
+        this.model.wysArea = wysArea;
 
-    private void updateStyle()
-    {
-        StringBuilder style = new StringBuilder()
-            .append("-fx-font-family: " + Config.getFont() + ";\n")
-            .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
-
-        thfArea.setStyle(style.toString());
-        wysArea.setStyle(style.toString());
+        model.updateStyle();
     }
 
     @FXML
@@ -75,17 +66,7 @@ public class EditorController implements Initializable {
         if(selectedFile == null)
             return;
 
-        try
-        {
-            Path path = selectedFile.toPath();
-            byte[] content = Files.readAllBytes(path);
-            System.out.println("" + thfArea);
-            thfArea.replaceText(new String(content, StandardCharsets.UTF_8));
-        }
-        catch(java.io.IOException t)
-        {
-            model.addErrorMessage(t);
-        }
+        model.openFile(selectedFile);
     }
 
     @FXML
@@ -101,20 +82,25 @@ public class EditorController implements Initializable {
     @FXML
     private void onTestPref(ActionEvent e)
     {
-        if(Config.getFont() == "monospace")
+        if(Config.getFont().equals("monospace"))
             Config.setFont("xos4 Terminus");
         else
             Config.setFont("monospace");
 
-        updateStyle();
+        model.updateStyle();
     }
 
     @FXML
     private void onTHFTextChange(RichTextChange<Collection<String>,StyledText<Collection<String>>,Collection<String>> change)
     {
-    	ParseContext parseContext = model.parse(thfArea, "tptp_input");
-    	System.out.println(parseContext.toString());
+        if(change.getInserted().equals(change.getRemoved()))
+            return;
+
+        ParseContext parseContext = model.parse(thfArea, "tptp_input");
+        System.out.println(parseContext.toString());
         System.out.println("thf change");
+
+        model.updateRainbows();
     }
 
     @FXML

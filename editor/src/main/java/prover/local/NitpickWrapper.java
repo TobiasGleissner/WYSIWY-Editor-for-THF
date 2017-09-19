@@ -1,4 +1,4 @@
-package prover;
+package prover.local;
 
 
 import java.io.BufferedReader;
