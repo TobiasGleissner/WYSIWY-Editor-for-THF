@@ -21,9 +21,6 @@ import java.lang.Throwable;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import parser.AstGen;
 import parser.ParseContext;
@@ -35,7 +32,7 @@ import util.tree.Node;
 public class EditorModel
 {
     public StyledTextArea thfArea;
-    public CodeArea wysArea;
+    // TODO public CodeArea wysArea;
 
     public LinkedList<Node> tptpInputNodes;
     private HashMap<String, String> rule2CssColor;
@@ -60,6 +57,7 @@ public class EditorModel
         addErrorMessage(e.getLocalizedMessage());
     }
 
+    /* TODO
     public ParseContext parse (CodeArea codeArea, String rule) {
         ParseContext parseContext = null;
 
@@ -71,7 +69,7 @@ public class EditorModel
         }
 
         return parseContext;
-    }
+    }*/
 
     public void openFile(File file)
     {
@@ -94,7 +92,7 @@ public class EditorModel
             .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
 
         thfArea.setStyle(style.toString());
-        wysArea.setStyle(style.toString());
+        // TODO wysArea.setStyle(style.toString());
     }
 
     public void printTPTPTrees()

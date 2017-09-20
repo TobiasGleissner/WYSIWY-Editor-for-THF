@@ -16,15 +16,6 @@ import javafx.stage.Stage;
 import parser.ParseContext;
 import javafx.stage.FileChooser;
 
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.model.RichTextChange;
-import org.fxmisc.richtext.model.PlainTextChange;
-import org.fxmisc.richtext.model.StyledText;
-import org.fxmisc.richtext.model.StyledDocument;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpan;
-import org.fxmisc.richtext.model.Paragraph;
 
 import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
 
@@ -34,8 +25,8 @@ public class EditorController implements Initializable {
 
     @FXML
     private StyledTextArea thfArea;
-    @FXML
-    private CodeArea wysArea;
+    //@FXML
+    //private CodeArea wysArea;
 
     private int num_updates;
 
@@ -48,19 +39,20 @@ public class EditorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // TODO ALL
         //thfArea.setParagraphGraphicFactory(LineNumberFactory.get(thfArea));
-        wysArea.setParagraphGraphicFactory(LineNumberFactory.get(wysArea));
+        //wysArea.setParagraphGraphicFactory(LineNumberFactory.get(wysArea));
         
         
 
         //thfArea.setWrapText(true);
-        wysArea.setWrapText(true);
+        //wysArea.setWrapText(true);
 
         //thfArea.plainTextChanges().subscribe(this::onTHFTextChange);
-        wysArea.richChanges().subscribe(this::onWYSTextChange);
+        //wysArea.richChanges().subscribe(this::onWYSTextChange);
 
         this.model.thfArea = thfArea;
-        this.model.wysArea = wysArea;
+        // TODO this.model.wysArea = wysArea;
 
         model.updateStyle();
     }
@@ -115,6 +107,7 @@ public class EditorController implements Initializable {
         model.printTPTPTrees();
     }
 
+    /* TODO
     @FXML
     private void onTHFTextChange(PlainTextChange change)
     {
@@ -131,5 +124,5 @@ public class EditorController implements Initializable {
     private void onWYSTextChange(RichTextChange<Collection<String>,StyledText<Collection<String>>,Collection<String>> change)
     {
         System.out.println("wysiwyg change");
-    }
+    }*/
 }
