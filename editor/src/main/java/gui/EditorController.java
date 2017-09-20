@@ -54,7 +54,9 @@ public class EditorController implements Initializable {
         this.model.thfArea = thfArea;
         // TODO this.model.wysArea = wysArea;
 
-        model.updateStyle();
+        // model.updateStyle();
+
+        thfArea.setLineRulerVisible(true);
     }
 
     @FXML
