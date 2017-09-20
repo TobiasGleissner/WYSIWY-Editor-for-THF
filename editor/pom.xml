@@ -63,12 +63,21 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.antlr:*</include>
-                                    <include>org.fxmisc.*</include>
-                                    <include>org.reactfx:*</include>
                                     <include>de.jensd:fontawesomefx:jar:</include>
                                     <include>org.jsoup:jsoup:jar:</include>
+                                    <include>at.bestsolution.*</include>
                                 </includes>
                             </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
