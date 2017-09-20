@@ -205,7 +205,7 @@ public class EditorModel
             ParseContext parseContext;
             try
             {
-                parseContext = AstGen.parse(stream, "tptp_input");
+                parseContext = AstGen.parse(stream, "tptp_input_or_empty");
             }
             catch(ParseException e)
             {
