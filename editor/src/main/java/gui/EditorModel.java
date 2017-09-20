@@ -153,19 +153,26 @@ public class EditorModel
         String text = thfArea.getText(start, end);
 
         /* NOTE: We hardcode knowledge of the grammar here. This is ugly and may fail at any point. I'm sorry. :/ */
-        Pattern pattern = Pattern.compile("(\\A|\\s|\\.)(thf|tff|fof|cnf)\\(");
+        Pattern pattern = Pattern.compile("(\\A|\\s|\\.)(thf|tff|fof|cnf|include)\\(");
         Matcher matcher = pattern.matcher(text);
 
-        if(!matcher.find())
-            return;
-
         boolean last = false;
+        boolean first = true;
         while(!last)
         {
-            int off_start = matcher.start();
+            int off_start;
+            if(first)
+            {
+                off_start = 0;
+                first = false;
+            }
+            else
+            {
+                off_start = matcher.start();
+            }
 
-            /* TODO: More ugly code hardcoding details of the other ugly code. :( */
-            if(text.codePointAt(off_start) != 't' && text.codePointAt(off_start) != 'c')
+            /* This should only be true if \A matched. */
+            if(off_start != 0)
                 off_start++;
 
             int off_end;
@@ -179,8 +186,9 @@ public class EditorModel
                 off_end = text.length();
             }
 
+            // System.out.println("off_start = " + off_start + ", off_end = " + off_end);
             String part = text.substring(off_start, off_end);
-            //System.out.println("part = '" + part + "'");
+            // System.out.println("part = '" + part + "'");
 
             StringReader textReader = new StringReader(text.substring(off_start, off_end));
             CharStream stream;
@@ -238,11 +246,11 @@ public class EditorModel
             Node next = nodeIt.next();
 
             int nextIndex = next.stopIndex+1;
-            System.out.println("startIndex = " + next.startIndex + ", nextIndex = " + nextIndex + ", start = " + start);
+            // System.out.println("startIndex = " + next.startIndex + ", nextIndex = " + nextIndex + ", start = " + start);
 
             if(nextIndex >= start)
             {
-                System.out.println("delete[0]");
+                // System.out.println("delete[0]");
                 nodeIt.remove();
                 break;
             }
@@ -260,7 +268,7 @@ public class EditorModel
 
             if(next.startIndex <= delEnd)
             {
-                System.out.println("delete[1]");
+                // System.out.println("delete[1]");
                 nodeIt.remove();
             }
             else
