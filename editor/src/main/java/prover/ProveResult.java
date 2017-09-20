@@ -4,11 +4,11 @@ public class ProveResult {
     String problem;
     String source;
     String prover;
-    SZSOntology.SZSDeductiveStatus status;
+    TPTPDefinitions.SZSDeductiveStatus status;
     double elapsedTime;
     double timelimit;
 
-    public ProveResult(String problem, String source, String prover, SZSOntology.SZSDeductiveStatus status, double elapsedTime, double timelimit) {
+    public ProveResult(String problem, String source, String prover, TPTPDefinitions.SZSDeductiveStatus status, double elapsedTime, double timelimit) {
         this.problem = problem;
         this.source = source;
         this.prover = prover;
@@ -30,8 +30,8 @@ public class ProveResult {
         sb.append(elapsedTime);
         sb.append("\nTime limit:");
         sb.append(timelimit);
-        sb.append("\nProblem:");
-        sb.append(problem);
+        //sb.append("\nProblem:");
+        //sb.append(problem);
         return sb.toString();
     }
 }
