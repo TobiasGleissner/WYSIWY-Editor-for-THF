@@ -2,6 +2,7 @@
 
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -188,12 +189,16 @@
                         <HBox prefWidth="20" />
                     </items>
                     <items>
-                        <Button>
+                        <MenuButton mnemonicParsing="false">
                             <graphic>
                                <FontAwesomeIconView glyphName="PLAY" styleClass="menu-icon" />
                             </graphic>
                             <tooltip><Tooltip text="Run Prover" /></tooltip>
-                         </Button>
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Action 1" />
+                                <MenuItem mnemonicParsing="false" text="Action 2" />
+                            </items>
+                        </MenuButton>
                     </items>
                 </ToolBar>
 
