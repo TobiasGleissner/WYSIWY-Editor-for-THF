@@ -71,15 +71,30 @@
     -fx-background-color: -fx-body-color;
 }
 
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button:hover {
+    -fx-shape: "M 0 0";
+}
+
 .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button {
     -fx-background-color: -fx-body-color;
+    -fx-padding: 5 4 9 9;
+}
+
+.tab-pane:right > .tab-header-area > .control-buttons-tab > .container > .tab-down-button {
+    -fx-padding: 9 9 12 9;
 }
 
 .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button > .arrow {
-    -fx-pref-height: 1px;
+    -fx-background-color: -fx-body-color, ladder(
+        -fx-color,
+        white 30%,
+        derive(-fx-color,-63%) 31%
+    );
+    -fx-pref-height: 2px;
     -fx-pref-width: 10px;
-    -fx-shape: "M-2,64a3,3 0 1,0 6,0a3,3 0 1,0 -6,0 M8,64a2,2 0 1,0 4,0a2,2 0 1,0 -4,0 M15,64a2,2 0 1,0 4,0a2,2 0 1,0 -4,0";
+    -fx-shape: "M-2,64a3,3 0 1,0 6,0a3,3 0 1,0 -6,0 M8,64a3,3 0 1,0 6,0a3,3 0 1,0 -6,0 M18,64a3,3 0 1,0 6,0a3,3 0 1,0 -6,0";
 }
+
 
 /* === syntax highlighting === */
 
