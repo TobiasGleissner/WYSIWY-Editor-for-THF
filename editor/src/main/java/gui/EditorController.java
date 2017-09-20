@@ -19,6 +19,7 @@ import javafx.stage.FileChooser;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.RichTextChange;
+import org.fxmisc.richtext.model.PlainTextChange;
 import org.fxmisc.richtext.model.StyledText;
 import org.fxmisc.richtext.model.StyledDocument;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -51,7 +52,7 @@ public class EditorController implements Initializable {
         thfArea.setWrapText(true);
         wysArea.setWrapText(true);
 
-        thfArea.richChanges().subscribe(this::onTHFTextChange);
+        thfArea.plainTextChanges().subscribe(this::onTHFTextChange);
         wysArea.richChanges().subscribe(this::onWYSTextChange);
 
         this.model.thfArea = thfArea;
@@ -111,13 +112,13 @@ public class EditorController implements Initializable {
     }
 
     @FXML
-    private void onTHFTextChange(RichTextChange<Collection<String>,StyledText<Collection<String>>,Collection<String>> change)
+    private void onTHFTextChange(PlainTextChange change)
     {
         if(change.getInserted().equals(change.getRemoved()))
             return;
 
-        System.out.println("inserted = " + change.getInserted().getText());
-        System.out.println("removed  = " + change.getRemoved().getText());
+        //System.out.println("inserted = " + change.getInserted().getText());
+        //System.out.println("removed  = " + change.getRemoved().getText());
 
         model.updateTHFTree(change.getPosition(), change.getInsertionEnd(), change.getRemovalEnd());
     }

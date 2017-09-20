@@ -2,3 +2,6 @@
 editor/target
 richtextplayground/target
 *.iml
+*.classpath
+*.project
+workspace/

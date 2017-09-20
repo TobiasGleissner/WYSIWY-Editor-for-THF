@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.regex.Matcher;
@@ -37,10 +38,15 @@ public class EditorModel
     public CodeArea wysArea;
 
     public LinkedList<Node> tptpInputNodes;
+    private HashMap<String, String> rule2CssColor;
 
     public EditorModel()
     {
-        tptpInputNodes = new LinkedList();
+        tptpInputNodes = new LinkedList<Node>();
+        
+        rule2CssColor = new HashMap<String, String>();
+        rule2CssColor.put("functor", "c0");
+        rule2CssColor.put("defined_functor", "c1");
     }
 
     public void addErrorMessage(String string)
@@ -106,13 +112,45 @@ public class EditorModel
 
     public void reparse()
     {
-        tptpInputNodes = new LinkedList();
+        tptpInputNodes = new LinkedList<Node>();
         reparseArea(0, thfArea.getLength()-1, tptpInputNodes.listIterator());
+        if (tptpInputNodes.size() > 0) {
+            addSyntaxHighlighting(0, tptpInputNodes.size() - 1);
+        }
+    }
+
+    private void addSyntaxHighlighting(int start, int end) {
+        ListIterator<Node> itr = tptpInputNodes.listIterator(start);
+        
+        while (itr.hasNext() && itr.nextIndex() <= end) {
+            Node next = itr.next();
+            addHighlightingToTptpInput(next);
+        }
+    }
+
+    private void addHighlightingToTptpInput(Node node) {
+        int baseStartIndex = node.startIndex;
+        
+        for (Node child : node.getChildren()) {
+            addHighlighting(child, baseStartIndex);
+        }
+    }
+
+    private void addHighlighting(Node node, int baseStartIndex) {
+        String style = rule2CssColor.get(node.getRule());
+        
+        if (style != null) {
+            thfArea.setStyle(baseStartIndex + node.startIndex, baseStartIndex + node.stopIndex + 1, Collections.singleton(style));
+        }
+        
+        for (Node child : node.getChildren()) {
+            addHighlighting(child, baseStartIndex);
+        }
     }
 
     private void reparseArea(int start, int end, ListIterator<Node> position)
     {
-        System.out.println("reparseArea: (" + start + "," + end + ")");
+        //System.out.println("reparseArea: (" + start + "," + end + ")");
 
         String text = thfArea.getText(start, end);
 
@@ -144,7 +182,7 @@ public class EditorModel
             }
 
             String part = text.substring(off_start, off_end);
-            System.out.println("part = '" + part + "'");
+            //System.out.println("part = '" + part + "'");
 
             StringReader textReader = new StringReader(text.substring(off_start, off_end));
             CharStream stream;
@@ -181,6 +219,7 @@ public class EditorModel
             node.stopIndex += off_start + start;
 
             position.add(node);
+            addHighlightingToTptpInput(node);
         }
     }
 
