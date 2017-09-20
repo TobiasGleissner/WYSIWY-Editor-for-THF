@@ -163,7 +163,7 @@
                     <items>
                         <Button onAction="#onTestPref">
                             <graphic>
-                                <FontAwesomeIconView glyphName="BEER" />
+                                <FontAwesomeIconView glyphName="BEER" styleClass="menu-icon" />
                             </graphic>
                             <tooltip><Tooltip text="Button Testing Preferences" /></tooltip>
                         </Button>
@@ -171,7 +171,7 @@
                     <items>
                         <Button onAction="#onReparse">
                            <graphic>
-                              <FontAwesomeIconView glyphName="BED" />
+                              <FontAwesomeIconView glyphName="BED" styleClass="menu-icon" />
                            </graphic>
                            <tooltip><Tooltip text="Parse again" /></tooltip>
                         </Button>
@@ -190,7 +190,7 @@
                     <items>
                         <Button>
                             <graphic>
-                               <FontAwesomeIconView glyphName="PLAY" />
+                               <FontAwesomeIconView glyphName="PLAY" styleClass="menu-icon" />
                             </graphic>
                             <tooltip><Tooltip text="Run Prover" /></tooltip>
                          </Button>
