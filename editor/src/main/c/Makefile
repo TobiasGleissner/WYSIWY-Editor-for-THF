@@ -5,4 +5,4 @@ CC=gcc
 default: TreeLimitedRun
 
 TreeLimitedRun: TreeLimitedRun.c
-		$(CC) TreeLimitedRun.c -o ../../../target/TreeLimitedRun
+		$(CC) TreeLimitedRun.c -o ../../../target/scripts/TreeLimitedRun

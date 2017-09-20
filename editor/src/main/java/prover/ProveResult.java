@@ -4,14 +4,16 @@ public class ProveResult {
     String problem;
     String source;
     String prover;
+    String proverOutput;
     TPTPDefinitions.SZSDeductiveStatus status;
     double elapsedTime;
     double timelimit;
 
-    public ProveResult(String problem, String source, String prover, TPTPDefinitions.SZSDeductiveStatus status, double elapsedTime, double timelimit) {
+    public ProveResult(String problem, String source, String prover, String proverOutput, TPTPDefinitions.SZSDeductiveStatus status, double elapsedTime, double timelimit) {
         this.problem = problem;
         this.source = source;
         this.prover = prover;
+        this.proverOutput = proverOutput;
         this.status = status;
         this.elapsedTime = elapsedTime;
         this.timelimit = timelimit;
