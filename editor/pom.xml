@@ -60,6 +60,15 @@
                             </transformers>
                             <!-- NOTE: removes classes referenced in editor.fxml -->
                             <minimizeJar>false</minimizeJar>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.antlr:*</include>
+                                    <include>org.fxmisc.*</include>
+                                    <include>org.reactfx:*</include>
+                                    <include>de.jensd:fontawesomefx:jar:</include>
+                                    <include>org.jsoup:jsoup:jar:</include>
+                                </includes>
+                            </artifactSet>
                         </configuration>
                     </execution>
                 </executions>
