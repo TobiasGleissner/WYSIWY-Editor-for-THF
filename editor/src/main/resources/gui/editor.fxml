@@ -23,7 +23,7 @@
 <?import javafx.scene.text.TextFlow?>
 <?import org.fxmisc.richtext.CodeArea?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@../../../Volumes/Tragedy/FU%20UNIVERSITAET/11/ETHFP/WYSIWY-Editor-for-THF/editor/src/main/resources/gui/editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
         <VBox BorderPane.alignment="CENTER">
@@ -165,7 +165,7 @@
                     <items>
                         <Button onAction="#onTestPref">
                             <graphic>
-                                <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                <ImageView fitHeight="1.0" fitWidth="11.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
                                         <Image url="https://image.flaticon.com/icons/png/512/76/76592.png" />
                                     </image>
@@ -190,6 +190,14 @@
                             <tooltip><Tooltip text="Print the THF tree" /></tooltip>
                          </Button>
                     </items>
+                    <items>
+                        <Button>
+                            <graphic>
+                               <FontAwesomeIconView glyphName="PLAY" />
+                            </graphic>
+                            <tooltip><Tooltip text="Run Prover" /></tooltip>
+                         </Button>
+                    </items>
                 </ToolBar>
 
             </children>
@@ -198,7 +206,7 @@
 
     <center>
 
-        <SplitPane id="SplitPane" dividerPositions="0.487758945386064" orientation="VERTICAL">
+        <SplitPane id="SplitPane" dividerPositions="0.8" orientation="VERTICAL">
             <items>
 
                 <!-- main content -->
