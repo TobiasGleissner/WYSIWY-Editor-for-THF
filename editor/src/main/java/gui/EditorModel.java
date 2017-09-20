@@ -20,7 +20,7 @@ import java.lang.Throwable;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
-
+import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -34,7 +34,7 @@ import util.tree.Node;
 
 public class EditorModel
 {
-    public CodeArea thfArea;
+    public StyledTextArea thfArea;
     public CodeArea wysArea;
 
     public LinkedList<Node> tptpInputNodes;
@@ -79,7 +79,7 @@ public class EditorModel
         {
             Path path = file.toPath();
             byte[] content = Files.readAllBytes(path);
-            thfArea.replaceText(new String(content, StandardCharsets.UTF_8));
+            //thfArea.replaceText(new String(content, StandardCharsets.UTF_8));
         }
         catch(java.io.IOException t)
         {
@@ -113,7 +113,7 @@ public class EditorModel
     public void reparse()
     {
         tptpInputNodes = new LinkedList<Node>();
-        reparseArea(0, thfArea.getLength()-1, tptpInputNodes.listIterator());
+        //reparseArea(0, thfArea.getLength()-1, tptpInputNodes.listIterator());
         if (tptpInputNodes.size() > 0) {
             addSyntaxHighlighting(0, tptpInputNodes.size() - 1);
         }
@@ -140,7 +140,7 @@ public class EditorModel
         String style = rule2CssColor.get(node.getRule());
         
         if (style != null) {
-            thfArea.setStyle(baseStartIndex + node.startIndex, baseStartIndex + node.stopIndex + 1, Collections.singleton(style));
+            //thfArea.setStyle(baseStartIndex + node.startIndex, baseStartIndex + node.stopIndex + 1, Collections.singleton(style));
         }
         
         for (Node child : node.getChildren()) {
@@ -219,7 +219,7 @@ public class EditorModel
             node.stopIndex += off_start + start;
 
             position.add(node);
-            addHighlightingToTptpInput(node);
+            //addHighlightingToTptpInput(node);
         }
     }
 
@@ -286,7 +286,7 @@ public class EditorModel
         if(parseStart == -1)
             parseStart = 0;
         if(parseEnd == -1)
-            parseEnd = thfArea.getLength();
+            //parseEnd = thfArea.getLength();
 
         /* Reparse the changed area we identified. */
         reparseArea(parseStart, parseEnd, nodeIt);
@@ -304,7 +304,7 @@ public class EditorModel
         }
     }
 
-    public void updateRainbows()
+    /*public void updateRainbows()
     {
         String text = thfArea.getText();
 
@@ -322,5 +322,5 @@ public class EditorModel
 
         StyleSpans<Collection<String>> spans = spansBuilder.create();
         thfArea.setStyleSpans(0, spans);
-    }
+    }*/
 }

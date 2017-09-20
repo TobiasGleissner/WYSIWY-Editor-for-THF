@@ -26,12 +26,14 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.Paragraph;
 
+import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
+
 public class EditorController implements Initializable {
     private EditorModel model;
     private Stage mainStage;
 
     @FXML
-    private CodeArea thfArea;
+    private StyledTextArea thfArea;
     @FXML
     private CodeArea wysArea;
 
@@ -46,13 +48,15 @@ public class EditorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        thfArea.setParagraphGraphicFactory(LineNumberFactory.get(thfArea));
+        //thfArea.setParagraphGraphicFactory(LineNumberFactory.get(thfArea));
         wysArea.setParagraphGraphicFactory(LineNumberFactory.get(wysArea));
+        
+        
 
-        thfArea.setWrapText(true);
+        //thfArea.setWrapText(true);
         wysArea.setWrapText(true);
 
-        thfArea.plainTextChanges().subscribe(this::onTHFTextChange);
+        //thfArea.plainTextChanges().subscribe(this::onTHFTextChange);
         wysArea.richChanges().subscribe(this::onWYSTextChange);
 
         this.model.thfArea = thfArea;

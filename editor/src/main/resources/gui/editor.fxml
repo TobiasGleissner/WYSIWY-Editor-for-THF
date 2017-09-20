@@ -18,6 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 <?import org.fxmisc.richtext.CodeArea?>
+<?import org.eclipse.fx.ui.controls.styledtext.StyledTextArea?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController" stylesheets="@editor.css">
 
@@ -209,7 +210,7 @@
                         </TabPane>
 
                         <!-- thf editor -->
-                        <CodeArea fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
+                        <StyledTextArea fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
 
                         <!-- wysiwyg editor -->
                         <CodeArea fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />
