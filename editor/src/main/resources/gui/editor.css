@@ -6,6 +6,7 @@
     -fx-color: -fx-base;
     -fx-dark-grey: derive(-fx-base,-20%);
     -fx-icon-dark-grey: derive(-fx-base,-70%);
+    -fx-icon-hover: derive(-fx-icon-dark-grey,50%);
     -fx-background-light-grey: derive(-fx-color,26.4%);
     -fx-background-lighter-grey: derive(-fx-color,40%);
     -fx-background: -fx-background-light-grey;
@@ -16,6 +17,7 @@
         derive(-fx-base,30%) 35%,
         derive(-fx-base,40%) 50%
      );
+     -fx-cell-hover-color: black;
      -fx-default-button: transparent;
 }
 
@@ -31,7 +33,7 @@
 }
 
 .menu-icon:hover{
-    -fx-fill: derive(-fx-icon-dark-grey,50%);
+    -fx-fill: -fx-icon-hover;
 }
 
 /* === buttons === */
@@ -51,7 +53,15 @@
     -fx-background-insets: 0;
     -fx-border-width: 0;
     -fx-border-width: 0px 0px 2px 0px;
-    -fx-border-color: transparent transparent derive(-fx-color,2%); transparent;
+    -fx-border-color: transparent transparent derive(-fx-color,2%) transparent;
+}
+
+.menu-bar > .container > .menu-button:hover {
+    -fx-background-color: derive(-fx-background-lighter-grey,-5%);
+}
+
+.menu-bar > .container > .menu-button:hover > .label {
+     -fx-text-fill: -fx-icon-dark-grey;
 }
 
 
