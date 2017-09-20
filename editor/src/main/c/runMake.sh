@@ -1,2 +1,3 @@
+mkdir ../../../target/scripts
 make
-chmod +x ../../../target/TreeLimitedRun
+chmod +x ../../../target/scripts/TreeLimitedRun
