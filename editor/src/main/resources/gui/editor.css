@@ -7,6 +7,7 @@
     -fx-dark-grey: derive(-fx-base,-20%);
     -fx-icon-dark-grey: derive(-fx-base,-70%);
     -fx-background-light-grey: derive(-fx-color,26.4%);
+    -fx-background-lighter-grey: derive(-fx-color,40%);
     -fx-background: -fx-background-light-grey;
     -fx-body-color: derive(-fx-color,-5%);
     -fx-hover-base: ladder(
@@ -29,6 +30,10 @@
     -fx-fill: -fx-icon-dark-grey;
 }
 
+.menu-icon:hover{
+    -fx-fill: derive(-fx-icon-dark-grey,50%);
+}
+
 /* === buttons === */
 
 .button {
@@ -42,18 +47,23 @@
 /* === menubar === */
 
 .menu-bar {
+    -fx-background-color: -fx-background-lighter-grey;
+    -fx-background-insets: 0;
     -fx-border-width: 0;
+    -fx-border-width: 0px 0px 2px 0px;
+    -fx-border-color: transparent transparent derive(-fx-color,2%); transparent;
 }
 
 
 /* === toolbar === */
 
 .tool-bar:horizontal {
-    -fx-pref-height: 18;
-    -fx-padding: 7 -30 0 10;
+    -fx-background-color: -fx-background-lighter-grey;
+    -fx-pref-height: 32;
+    -fx-padding: 0 0 -7 11;
     -fx-spacing: 0;
     -fx-background-insets: 0;
-    -fx-border-width: 1.5px;
+    -fx-border-width: 0px 0px 1.5px 0px;
     -fx-border-color: transparent transparent -fx-dark-grey transparent;
 }
 
