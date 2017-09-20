@@ -161,6 +161,12 @@
                     <items>
                         <Button onAction="#onTestPref" text="Button Testing Preferences" />
                     </items>
+                    <items>
+                        <Button onAction="#onReparse" text="Parse again" />
+                    </items>
+                    <items>
+                        <Button onAction="#onPrintTree" text="Print the THF tree" />
+                    </items>
                 </ToolBar>
 
             </children>
@@ -211,12 +217,17 @@
                         <!-- tabs right -->
                         <TabPane prefHeight="200.0" prefWidth="200.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
-                                <Tab text="Untitled Tab 1">
+                                <Tab text="1">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                     </content>
                                 </Tab>
-                                <Tab text="Untitled Tab 2">
+                                <Tab text="2">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                    </content>
+                                </Tab>
+                                <Tab text="3">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                     </content>

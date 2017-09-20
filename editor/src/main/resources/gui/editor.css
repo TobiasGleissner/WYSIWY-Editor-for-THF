@@ -37,6 +37,10 @@
     -fx-padding: 0;
 }
 
+.tab-pane:right > .tab {
+    -fx-background-insets: 8, 8 8 8 8, 8;
+}
+
 .tab-pane > .tab-header-area > .headers-region > .tab {
     -fx-background: -fx-body-color;
     -fx-background-insets: 0;
@@ -45,6 +49,14 @@
     -fx-faint-focus-color: transparent;
     -fx-padding: 0 10 0 10;
     -fx-border-width:0px;
+}
+
+.tab-pane:right > .tab-header-area > .headers-region > .tab:right {
+    -fx-background-color: -fx-body-color;
+}
+
+.tab-pane:right > .tab-header-area > .headers-region > .tab:selected:right {
+    -fx-background-color: derive(-fx-color,26.4%);
 }
 
 .tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
@@ -59,6 +71,15 @@
     -fx-background-color: -fx-body-color;
 }
 
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button {
+    -fx-background-color: -fx-body-color;
+}
+
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button > .arrow {
+    -fx-pref-height: 1px;
+    -fx-pref-width: 10px;
+    -fx-shape: "M-2,64a3,3 0 1,0 6,0a3,3 0 1,0 -6,0 M8,64a2,2 0 1,0 4,0a2,2 0 1,0 -4,0 M15,64a2,2 0 1,0 4,0a2,2 0 1,0 -4,0";
+}
 
 /* === syntax highlighting === */
 
