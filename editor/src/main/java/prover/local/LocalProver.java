@@ -20,6 +20,7 @@ public class LocalProver implements Prover {
 
     }
 
+    /*
     public static void main(String[] args) throws Exception {
         LocalProver p = LocalProver.getInstance();
         //p.getAvailableProvers().stream().forEach(System.out::println);
@@ -28,6 +29,7 @@ public class LocalProver implements Prover {
         String prover = "satallax";
         System.out.println(LocalProver.getInstance().prove(myproblem, "asd",prover,5).toString());
     }
+    */
 
     public List<String> getAvailableProvers(TPTPDefinitions.TPTPDialect dialect){
         return availableProvers;
