@@ -13,8 +13,6 @@
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -165,11 +163,7 @@
                     <items>
                         <Button onAction="#onTestPref">
                             <graphic>
-                                <ImageView fitHeight="1.0" fitWidth="11.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="https://image.flaticon.com/icons/png/512/76/76592.png" />
-                                    </image>
-                                </ImageView>
+                                <FontAwesomeIconView glyphName="BEER" />
                             </graphic>
                             <tooltip><Tooltip text="Button Testing Preferences" /></tooltip>
                         </Button>
@@ -177,7 +171,7 @@
                     <items>
                         <Button onAction="#onReparse">
                            <graphic>
-                              <FontAwesomeIconView glyphName="BEER" />
+                              <FontAwesomeIconView glyphName="BED" />
                            </graphic>
                            <tooltip><Tooltip text="Parse again" /></tooltip>
                         </Button>
@@ -185,10 +179,13 @@
                     <items>
                         <Button onAction="#onPrintTree">
                             <graphic>
-                               <FontAwesomeIconView glyphName="HEART" />
+                               <FontAwesomeIconView glyphName="HEART" styleClass="menu-icon" />
                             </graphic>
                             <tooltip><Tooltip text="Print the THF tree" /></tooltip>
                          </Button>
+                    </items>
+                    <items>
+                        <HBox prefWidth="20" />
                     </items>
                     <items>
                         <Button>
