@@ -17,7 +17,9 @@ import java.lang.Throwable;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
+
 import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
+import org.eclipse.fx.ui.controls.styledtext.StyledTextContent;
 
 import parser.AstGen;
 import parser.ParseContext;
@@ -37,7 +39,7 @@ public class EditorModel
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
-        
+
         rule2CssColor = new HashMap<String, String>();
         rule2CssColor.put("functor", "c0");
         rule2CssColor.put("defined_functor", "c1");
@@ -98,8 +100,9 @@ public class EditorModel
 
     public void reparse()
     {
+        StyledTextContent content = thfArea.getContent();
         tptpInputNodes = new LinkedList<Node>();
-        reparseArea(0, thfArea.getContent().getCharCount()-1, tptpInputNodes.listIterator());
+        reparseArea(0, content.getCharCount(), tptpInputNodes.listIterator(), content);
 
         if (tptpInputNodes.size() > 0) {
             addSyntaxHighlighting(0, tptpInputNodes.size() - 1);
@@ -117,7 +120,7 @@ public class EditorModel
 
     private void addHighlightingToTptpInput(Node node) {
         int baseStartIndex = node.startIndex;
-        
+
         for (Node child : node.getChildren()) {
             addHighlighting(child, baseStartIndex);
         }
@@ -125,20 +128,20 @@ public class EditorModel
 
     private void addHighlighting(Node node, int baseStartIndex) {
         String style = rule2CssColor.get(node.getRule());
-        
+
         if (style != null) {
             //thfArea.setStyle(baseStartIndex + node.startIndex, baseStartIndex + node.stopIndex + 1, Collections.singleton(style));
         }
-        
+
         for (Node child : node.getChildren()) {
             addHighlighting(child, baseStartIndex);
         }
     }
 
-    private void reparseArea(int start, int end, ListIterator<Node> position)
+    private void reparseArea(int start, int end, ListIterator<Node> position, StyledTextContent content)
     {
-        //System.out.println("reparseArea: (" + start + "," + end + ")");
-        String text = thfArea.getText(start, end);
+        System.out.println("reparseArea: (" + start + "," + end + ")");
+        String text = content.getTextRange(start, end-start);
 
         /* NOTE: We hardcode knowledge of the grammar here. This is ugly and may fail at any point. I'm sorry. :/ */
         Pattern pattern = Pattern.compile("(\\A|\\s|\\.)(thf|tff|fof|cnf|include)\\(");
@@ -209,6 +212,10 @@ public class EditorModel
 
             Node node = parseContext.getRoot().getFirstChild();
 
+            /* Empty nodes don't need to be inserted. */
+            if(node.stopIndex <= node.startIndex)
+                continue;
+
             node.startIndex += off_start + start;
             node.stopIndex += off_start + start;
 
@@ -217,8 +224,10 @@ public class EditorModel
         }
     }
 
-    public void updateTHFTree(int start, int insEnd, int delEnd)
+    public void updateTHFTree(int start, int insEnd, int delEnd, StyledTextContent content)
     {
+        System.out.println("start = " + start + ", insEnd = " + insEnd + ", delEnd = " + delEnd);
+
         int offset = insEnd - delEnd;
 
         int parseStart = -1;
@@ -280,10 +289,10 @@ public class EditorModel
         if(parseStart == -1)
             parseStart = 0;
         if(parseEnd == -1)
-            //parseEnd = thfArea.getLength();
+            parseEnd = content.getCharCount();
 
         /* Reparse the changed area we identified. */
-        reparseArea(parseStart, parseEnd, nodeIt);
+        reparseArea(parseStart, parseEnd, nodeIt, content);
 
         /* Now we update all nodes following the changed area. */
         while(nodeIt.hasNext())
