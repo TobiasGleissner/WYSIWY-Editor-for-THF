@@ -53,68 +53,34 @@ public class EditorController implements Initializable {
 
     // DEBUG
     @FXML
-    public void debugALG0157(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/ALG015^7.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
+    public void debugALG0157()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/ALG015^7.p"));
     }
     @FXML
-    public void debugCOM1601(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/COM160^1.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
+    public void debugCOM1601()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/COM160^1.p"));
     }
     @FXML
-    public void debugLCL6331(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/LCL633^1.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
+    public void debugLCL6331()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/LCL633^1.p"));
     }
     @FXML
-    public void debugLCL6341(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/LCL634^1.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
+    public void debugLCL6341()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/LCL634^1.p"));
     }
     @FXML
-    public void debugSYN0001(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/SYN000^1.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
+    public void debugSYN0001()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/SYN000^1.p"));
     }
     @FXML
-    public void debugSYN0002(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/SYN000^2.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
-    }
-    private void debugLoad(Path filename){
-        //File f = new File(filename);
-        model.openFile(filename.toFile());
+    public void debugSYN0002()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/SYN000^2.p"));
     }
     // DEBUG END
 
