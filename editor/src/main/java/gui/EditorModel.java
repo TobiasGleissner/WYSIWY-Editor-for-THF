@@ -71,6 +71,10 @@ public class EditorModel
         }
     }
 
+    public void openDirectory(File directory){
+        System.out.println("OPEN DIRECTORY");
+    }
+
     public void updateStyle()
     {
         StringBuilder style = new StringBuilder()
