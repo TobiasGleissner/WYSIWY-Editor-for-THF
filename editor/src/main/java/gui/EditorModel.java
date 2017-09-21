@@ -17,6 +17,7 @@ import java.lang.Throwable;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
+import org.eclipse.fx.ui.controls.styledtext.StyleRange;
 import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
 
 import parser.AstGen;
@@ -60,6 +61,12 @@ public class EditorModel
         {
             Path path = file.toPath();
             byte[] content = Files.readAllBytes(path);
+            int length = thfArea.getCharCount();
+            if (length != 0) {
+                StyleRange[] ranges = new StyleRange[1];
+                ranges[0] = new StyleRange("c0", 0, 0,  null, null);
+                thfArea.replaceStyleRanges(0, length, ranges);
+            }
             thfArea.getContent().setText("");
             thfArea.getContent().setText(new String(content, StandardCharsets.UTF_8));
         }
@@ -101,9 +108,9 @@ public class EditorModel
         tptpInputNodes = new LinkedList<Node>();
         reparseArea(0, thfArea.getContent().getCharCount()-1, tptpInputNodes.listIterator());
 
-        if (tptpInputNodes.size() > 0) {
+        /*if (tptpInputNodes.size() > 0) {
             addSyntaxHighlighting(0, tptpInputNodes.size() - 1);
-        }
+        }*/
     }
 
     private void addSyntaxHighlighting(int start, int end) {
@@ -127,7 +134,8 @@ public class EditorModel
         String style = rule2CssColor.get(node.getRule());
         
         if (style != null) {
-            //thfArea.setStyle(baseStartIndex + node.startIndex, baseStartIndex + node.stopIndex + 1, Collections.singleton(style));
+            StyleRange sr = new StyleRange(style, baseStartIndex + node.startIndex, baseStartIndex + node.stopIndex + 1 - (baseStartIndex + node.startIndex), null, null);
+            thfArea.setStyleRange(sr);
         }
         
         for (Node child : node.getChildren()) {
@@ -213,7 +221,7 @@ public class EditorModel
             node.stopIndex += off_start + start;
 
             position.add(node);
-            //addHighlightingToTptpInput(node);
+            addHighlightingToTptpInput(node);
         }
     }
 
