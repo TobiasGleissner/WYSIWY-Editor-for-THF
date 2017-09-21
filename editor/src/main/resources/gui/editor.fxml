@@ -23,6 +23,7 @@
 <?import org.fxmisc.richtext.CodeArea?>
 
 <?import javafx.scene.control.TreeView?>
+<?import gui.fileBrowser.FileTreeView?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
@@ -237,7 +238,7 @@
                                 <Tab text="File Browser">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                        <TreeView fx:id="fileBrowser"/>
+                                        <FileTreeView fx:id="fileBrowser"/>
                                     </content>
                                 </Tab>
                                 <Tab text="List of Axioms">
