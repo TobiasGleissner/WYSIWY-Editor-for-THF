@@ -205,6 +205,7 @@
 
 .lineno {
     -fx-background-color: -fx-lighter-base;
+    -fx-padding: 0 6 0 6;
 }
 
 .lineno .text {
