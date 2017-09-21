@@ -66,6 +66,10 @@ public class EditorModel
     {
         try
         {
+            int length = thfArea.getCharCount();
+            StyleRange[] ranges = new StyleRange[1];
+            ranges[0] = new StyleRange(null, 0, 0, null, null);
+            thfArea.replaceStyleRanges(0, length, ranges);
             byte[] content = IOUtils.toByteArray(stream);
             thfArea.getContent().setText(new String(content, StandardCharsets.UTF_8));
         }
