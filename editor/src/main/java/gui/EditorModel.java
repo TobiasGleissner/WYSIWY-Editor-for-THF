@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
 
+import org.eclipse.fx.ui.controls.styledtext.StyledTextContent;
 import parser.AstGen;
 import parser.ParseContext;
 
@@ -63,6 +64,7 @@ public class EditorModel
         {
             Path path = file.toPath();
             byte[] content = Files.readAllBytes(path);
+            thfArea.getContent().setText("");
             thfArea.getContent().setText(new String(content, StandardCharsets.UTF_8));
         }
         catch(java.io.IOException t)
