@@ -1,5 +1,6 @@
 package gui;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import java.io.File;
@@ -45,38 +46,67 @@ public class EditorController implements Initializable {
     // DEBUG
     @FXML
     public void debugALG0157(){
-        String file = ClassLoader.getSystemResource("test/ALG015^7.p").getPath();
+        Path file = null;
+        try {
+            file = Paths.get(ClassLoader.getSystemResource("test/ALG015^7.p").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         debugLoad(file);
     }
     @FXML
     public void debugCOM1601(){
-        String file = ClassLoader.getSystemResource("test/COM160^1.p").getPath();
+        Path file = null;
+        try {
+            file = Paths.get(ClassLoader.getSystemResource("test/COM160^1.p").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         debugLoad(file);
     }
     @FXML
     public void debugLCL6331(){
-        String file = ClassLoader.getSystemResource("test/LCL633^1.p").getPath();
+        Path file = null;
+        try {
+            file = Paths.get(ClassLoader.getSystemResource("test/LCL633^1.p").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         debugLoad(file);
     }
     @FXML
     public void debugLCL6341(){
-        String file = ClassLoader.getSystemResource("test/LCL634^1.p").getPath();
+        Path file = null;
+        try {
+            file = Paths.get(ClassLoader.getSystemResource("test/LCL634^1.p").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         debugLoad(file);
     }
     @FXML
     public void debugSYN0001(){
-        String file = ClassLoader.getSystemResource("test/SYN000^1.p").getPath();
+        Path file = null;
+        try {
+            file = Paths.get(ClassLoader.getSystemResource("test/SYN000^1.p").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         debugLoad(file);
     }
     @FXML
     public void debugSYN0002(){
-        String file = ClassLoader.getSystemResource("test/SYN000^2.p").getPath();
+        Path file = null;
+        try {
+            file = Paths.get(ClassLoader.getSystemResource("test/SYN000^2.p").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         debugLoad(file);
     }
-    private void debugLoad(String filename){
-        filename = filename.replace("%","^").replace("5e","");
-        File f = new File(filename);
-        model.openFile(f);
+    private void debugLoad(Path filename){
+        //File f = new File(filename);
+        model.openFile(filename.toFile());
     }
     // DEBUG END
 

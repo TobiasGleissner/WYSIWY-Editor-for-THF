@@ -2,14 +2,11 @@ package gui;
 
 import java.io.File;
 import java.io.StringReader;
-import java.io.PushbackReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -22,7 +19,6 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
 
-import org.eclipse.fx.ui.controls.styledtext.StyledTextContent;
 import parser.AstGen;
 import parser.ParseContext;
 
