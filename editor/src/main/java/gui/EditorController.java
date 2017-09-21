@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 
 import java.net.URISyntaxException;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.List;
