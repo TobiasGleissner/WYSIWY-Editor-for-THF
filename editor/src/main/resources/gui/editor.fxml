@@ -61,6 +61,12 @@
                                     </accelerator>
                                 </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem onAction="#onFileOpen" text="Open file">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
+                                <SeparatorMenuItem mnemonicParsing="false" />
                                 <MenuItem onAction="#onDirectoryOpen" text="Open directory">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />

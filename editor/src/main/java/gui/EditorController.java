@@ -82,6 +82,8 @@ public class EditorController implements Initializable {
     }
     private void debugLoad(String filename){
         filename = filename.replace("%","^").replace("5e","");
+        File f = new File(filename);
+        model.openFile(f);
     }
     // DEBUG END
 
@@ -129,7 +131,6 @@ public class EditorController implements Initializable {
         model.openDirectory(dir);
     }
 
-    /*
     @FXML
     private void onFileOpen(ActionEvent e) {
 
@@ -141,7 +142,7 @@ public class EditorController implements Initializable {
             return;
 
         model.openFile(selectedFile);
-    }*/
+    }
 
     @FXML
     private void onFileSave(ActionEvent e) {

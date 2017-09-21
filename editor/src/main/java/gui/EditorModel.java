@@ -25,6 +25,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
+import org.eclipse.fx.ui.controls.styledtext.StyledTextContent;
 import parser.AstGen;
 import parser.ParseContext;
 
