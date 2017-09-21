@@ -22,6 +22,7 @@
 <?import javafx.scene.text.TextFlow?>
 <?import org.fxmisc.richtext.CodeArea?>
 
+<?import javafx.scene.control.TreeView?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
@@ -60,7 +61,7 @@
                                     </accelerator>
                                 </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false" />
-                                <MenuItem onAction="#onFileOpen" text="Open...">
+                                <MenuItem onAction="#onDirectoryOpen" text="Open directory">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
@@ -200,6 +201,15 @@
                             </items>
                         </MenuButton>
                     </items>
+                    <!-- debug buttons -->
+                    <items>
+                        <Button onAction="#debugALG0157" text="ALG0157" />
+                        <Button onAction="#debugCOM1601" text="COM1601" />
+                        <Button onAction="#debugLCL6331" text="LCL6331" />
+                        <Button onAction="#debugLCL6341" text="LCL6341" />
+                        <Button onAction="#debugSYN0001" text="SYN0001" />
+                        <Button onAction="#debugSYN0002" text="SYN0002" />
+                    </items>
                 </ToolBar>
 
             </children>
@@ -221,6 +231,7 @@
                                 <Tab text="File Browser">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                        <TreeView fx:id="fileBrowser"/>
                                     </content>
                                 </Tab>
                                 <Tab text="List of Axioms">

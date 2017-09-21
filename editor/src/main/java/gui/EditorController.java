@@ -4,15 +4,26 @@ import java.net.URL;
 
 import java.io.File;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
 import javafx.event.ActionEvent;
 
+import javafx.scene.control.TreeView;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import org.eclipse.fx.ui.controls.filesystem.DirItem;
+import org.eclipse.fx.ui.controls.filesystem.DirectoryTreeView;
+import org.eclipse.fx.ui.controls.filesystem.ResourceItem;
+import org.eclipse.fx.ui.controls.filesystem.RootDirItem;
+import org.eclipse.fx.ui.controls.filesystem.DirectoryView;
 import parser.ParseContext;
 import javafx.stage.FileChooser;
 
@@ -34,6 +45,45 @@ public class EditorController implements Initializable {
     private CodeArea thfArea;
     @FXML
     private CodeArea wysArea;
+
+    @FXML
+    private TreeView fileBrowser;
+
+    // DEBUG
+    @FXML
+    public void debugALG0157(){
+        String file = ClassLoader.getSystemResource("test/ALG015^7.p").getPath();
+        debugLoad(file);
+    }
+    @FXML
+    public void debugCOM1601(){
+        String file = ClassLoader.getSystemResource("test/COM160^1.p").getPath();
+        debugLoad(file);
+    }
+    @FXML
+    public void debugLCL6331(){
+        String file = ClassLoader.getSystemResource("test/LCL633^1.p").getPath();
+        debugLoad(file);
+    }
+    @FXML
+    public void debugLCL6341(){
+        String file = ClassLoader.getSystemResource("test/LCL634^1.p").getPath();
+        debugLoad(file);
+    }
+    @FXML
+    public void debugSYN0001(){
+        String file = ClassLoader.getSystemResource("test/SYN000^1.p").getPath();
+        debugLoad(file);
+    }
+    @FXML
+    public void debugSYN0002(){
+        String file = ClassLoader.getSystemResource("test/SYN000^2.p").getPath();
+        debugLoad(file);
+    }
+    private void debugLoad(String filename){
+        filename = filename.replace("%","^").replace("5e","");
+    }
+    // DEBUG END
 
     private int num_updates;
 
@@ -66,8 +116,23 @@ public class EditorController implements Initializable {
         System.out.println("newfile");
     }
 
+
+    @FXML
+    private void onDirectoryOpen(ActionEvent e) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Open directory");
+        File dir = directoryChooser.showDialog(mainStage);
+        if(dir == null)
+            return;
+        RootDirItem rootDirItem = ResourceItem.createObservedPath(dir.toPath());
+        //fileBrowser.setRootDirectories(FXCollections.observableArrayList(rootDirItem));
+        model.openDirectory(dir);
+    }
+
+    /*
     @FXML
     private void onFileOpen(ActionEvent e) {
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open thf file");
         File selectedFile = fileChooser.showOpenDialog(mainStage);
@@ -76,7 +141,7 @@ public class EditorController implements Initializable {
             return;
 
         model.openFile(selectedFile);
-    }
+    }*/
 
     @FXML
     private void onFileSave(ActionEvent e) {
