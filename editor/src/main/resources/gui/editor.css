@@ -19,6 +19,8 @@
     -fx-background: -fx-light-base;
     -fx-body-color: -fx-slightly-darker-base;
     -fx-default-button: transparent;
+    -fx-selection-bar: derive(-fx-lighter-base,-5%);
+
 }
 
 .root.popup {
@@ -45,6 +47,7 @@
     -fx-padding: 0em 0.3em 0.5em 0.5em;
 }
 
+
 /* === menubar === */
 
 .menu-bar {
@@ -56,11 +59,16 @@
 }
 
 .menu-bar > .container > .menu-button:hover {
-    -fx-background-color: derive(-fx-lighter-base,-5%);
+    -fx-background-color: -fx-selection-bar;
 }
 
 .menu-bar > .container > .menu-button:hover > .label {
      -fx-text-fill: -fx-darker-base;
+}
+
+.context-menu {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
 }
 
 
