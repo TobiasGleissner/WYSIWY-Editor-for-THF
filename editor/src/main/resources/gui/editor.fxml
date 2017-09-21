@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -20,7 +22,7 @@
 
 <?import org.eclipse.fx.ui.controls.styledtext.StyledTextArea?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController" stylesheets="@editor.css">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
         <VBox BorderPane.alignment="CENTER">
@@ -160,13 +162,39 @@
                 <!-- toolbar -->
                 <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
-                        <Button onAction="#onTestPref" text="Button Testing Preferences" />
+                        <Button onAction="#onTestPref">
+                            <graphic>
+                                <FontAwesomeIconView glyphName="BEER" />
+                            </graphic>
+                            <tooltip><Tooltip text="Button Testing Preferences" /></tooltip>
+                        </Button>
                     </items>
                     <items>
-                        <Button onAction="#onReparse" text="Parse again" />
+                        <Button onAction="#onReparse">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="BED" />
+                           </graphic>
+                           <tooltip><Tooltip text="Parse again" /></tooltip>
+                        </Button>
                     </items>
                     <items>
-                        <Button onAction="#onPrintTree" text="Print the THF tree" />
+                        <Button onAction="#onPrintTree">
+                            <graphic>
+                               <FontAwesomeIconView glyphName="HEART" styleClass="menu-icon" />
+                            </graphic>
+                            <tooltip><Tooltip text="Print the THF tree" /></tooltip>
+                         </Button>
+                    </items>
+                    <items>
+                        <HBox prefWidth="20" />
+                    </items>
+                    <items>
+                        <Button>
+                            <graphic>
+                               <FontAwesomeIconView glyphName="PLAY" />
+                            </graphic>
+                            <tooltip><Tooltip text="Run Prover" /></tooltip>
+                         </Button>
                     </items>
                 </ToolBar>
 
@@ -240,7 +268,7 @@
                 </SplitPane>
 
                 <!-- prover output -->
-                <TextFlow>
+                <TextFlow prefHeight="296.0" prefWidth="1000.0">
                     <children>
                         <HBox prefHeight="55.0" />
                     </children>

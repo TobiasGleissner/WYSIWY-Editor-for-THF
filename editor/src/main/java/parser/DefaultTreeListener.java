@@ -83,8 +83,8 @@ public class DefaultTreeListener implements ParseTreeListener {
             Node n = new Node(nodeptr, rule/*, ctx.getText()*/);
             n.charPositionInLine = ctx.getStart().getCharPositionInLine();
             n.line = ctx.getStart().getLine();
-            n.startIndex = ctx.getStart().getStartIndex();
-            n.stopIndex = ctx.getStop().getStopIndex();
+            n.startIndex = ctx.getStart() == null ? 0 : ctx.getStart().getStartIndex();
+            n.stopIndex = ctx.getStop() == null ? 0 : ctx.getStop().getStopIndex();
             nodeptr.addChild(n);
             nodeptr = n;
         }

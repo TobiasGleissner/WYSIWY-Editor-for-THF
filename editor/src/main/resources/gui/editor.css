@@ -4,6 +4,7 @@
 .root {
     -fx-base: #ececec;
     -fx-color: -fx-base;
+    -fx-dark-grey: derive(-fx-base,-20%);
     -fx-background-light-grey: derive(-fx-color,26.4%);
     -fx-background: -fx-background-light-grey;
     -fx-body-color: derive(-fx-color,-5%);
@@ -13,16 +14,54 @@
         derive(-fx-base,30%) 35%,
         derive(-fx-base,40%) 50%
      );
+     -fx-default-button: transparent;
 }
 
 .root.popup {
 
 }
 
+
+/* === icons === */
+
+.menu-icon {
+    -icons-color: -fx-dark-grey;
+}
+
+
+/* === buttons === */
+
+.button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0em 0.3em 0.5em 0.5em;
+}
+
+
+/* === menubar === */
+
+.menu-bar {
+    -fx-border-width: 0;
+}
+
+
+/* === toolbar === */
+
+.tool-bar:horizontal {
+    -fx-pref-height: 18;
+    -fx-padding: 5 -30 0 10;
+    -fx-spacing: 0;
+    -fx-background-insets: 0;
+    -fx-border-width: 1.5px;
+    -fx-border-color: transparent transparent -fx-dark-grey transparent;
+}
+
+
 /* === split panes === */
 
 .split-pane {
-    -fx-padding: 0 0 0 0;
+    -fx-padding: 0;
 }
 
 .split-pane-divider {

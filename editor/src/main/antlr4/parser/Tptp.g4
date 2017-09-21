@@ -168,6 +168,7 @@ Block_comment : '/*' .*? '*/' -> skip;
 // <TPTP_input>           ::= <annotated_formula> | <include>
 tptp_file           : tptp_input* EOF;
 tptp_input          : annotated_formula | include;
+tptp_input_or_empty : (tptp_input|) EOF;
 
 // %----Include directives
 // <include>              ::= include(<file_name><formula_selection>).

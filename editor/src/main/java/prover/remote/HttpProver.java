@@ -97,7 +97,7 @@ public class HttpProver implements Prover {
             nextWhitespace = cpuString.indexOf(" ");
             cpuString = cpuString.substring(0,nextWhitespace);
             double elapsedTime = Double.parseDouble(cpuString);
-            return new ProveResult(problem, source, prover, status, elapsedTime, timeLimit);
+            return new ProveResult(problem, source, prover, r, status, elapsedTime, timeLimit);
         }
         catch (Exception e){
             throw new ProverResultNotInterpretableException(e.toString());

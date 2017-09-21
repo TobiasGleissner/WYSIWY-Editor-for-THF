@@ -1,7 +1,6 @@
 package gui; /* TODO: Change the package hierarchy, put this one above gui. */
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
