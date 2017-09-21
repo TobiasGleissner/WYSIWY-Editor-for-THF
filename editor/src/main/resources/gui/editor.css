@@ -3,22 +3,22 @@
 
 .root {
     -fx-base: #ececec;
-    -fx-color: -fx-base;
-    -fx-dark-grey: derive(-fx-base,-20%);
-    -fx-icon-dark-grey: derive(-fx-base,-70%);
-    -fx-icon-hover: derive(-fx-icon-dark-grey,50%);
-    -fx-background-light-grey: derive(-fx-color,26.4%);
-    -fx-background-lighter-grey: derive(-fx-color,40%);
-    -fx-background: -fx-background-light-grey;
-    -fx-body-color: derive(-fx-color,-5%);
+    -fx-light-base: derive(-fx-color,26.4%);
+    -fx-lighter-base: derive(-fx-color,40%);
+    -fx-medium-base: derive(-fx-darker-base,50%);
+    -fx-slightly-darker-base: derive(-fx-color,-5%);
+    -fx-dark-base: derive(-fx-base,-20%);
+    -fx-darker-base: derive(-fx-base,-70%);
     -fx-hover-base: ladder(
         -fx-base,
         derive(-fx-base,20%) 20%,
         derive(-fx-base,30%) 35%,
         derive(-fx-base,40%) 50%
      );
-     -fx-cell-hover-color: black;
-     -fx-default-button: transparent;
+    -fx-color: -fx-base;
+    -fx-background: -fx-light-base;
+    -fx-body-color: -fx-slightly-darker-base;
+    -fx-default-button: transparent;
 }
 
 .root.popup {
@@ -29,11 +29,11 @@
 /* === icons === */
 
 .menu-icon{
-    -fx-fill: -fx-icon-dark-grey;
+    -fx-fill: -fx-darker-base;
 }
 
 .menu-icon:hover{
-    -fx-fill: -fx-icon-hover;
+    -fx-fill: -fx-medium-base;
 }
 
 /* === buttons === */
@@ -48,32 +48,32 @@
 /* === menubar === */
 
 .menu-bar {
-    -fx-background-color: -fx-background-lighter-grey;
-    -fx-background-insets: 0;
+    -fx-background-color: -fx-lighter-base;
+    -fx-background-insets: 0px 80px 0px 0px;
     -fx-border-width: 0;
-    -fx-border-width: 2px 2px 2px 2px;
+    -fx-border-width: 0px 0px 2px 0px;
     -fx-border-color: transparent transparent derive(-fx-color,2%) transparent;
 }
 
 .menu-bar > .container > .menu-button:hover {
-    -fx-background-color: derive(-fx-background-lighter-grey,-5%);
+    -fx-background-color: derive(-fx-lighter-base,-5%);
 }
 
 .menu-bar > .container > .menu-button:hover > .label {
-     -fx-text-fill: -fx-icon-dark-grey;
+     -fx-text-fill: -fx-darker-base;
 }
 
 
 /* === toolbar === */
 
 .tool-bar:horizontal {
-    -fx-background-color: -fx-background-lighter-grey;
+    -fx-background-color: -fx-lighter-base;
     -fx-pref-height: 32;
     -fx-padding: 0 0 -7 11;
     -fx-spacing: 0;
     -fx-background-insets: 0;
     -fx-border-width: 0px 0px 1.5px 0px;
-    -fx-border-color: transparent transparent -fx-dark-grey transparent;
+    -fx-border-color: transparent transparent -fx-dark-base transparent;
 }
 
 .tool-bar:horizontal > .container > .menu-button {
@@ -98,7 +98,7 @@
 }
 
 .tool-bar:horizontal > .container > .menu-button > .arrow-button > .arrow:hover {
-    -fx-background-color: -fx-body-color, -fx-icon-hover;
+    -fx-background-color: -fx-body-color, -fx-medium-base;
 }
 
 
@@ -194,3 +194,13 @@
 .c6 { -fx-fill: #0000FF; }
 .c7 { -fx-fill: #4B0082; }
 .c8 { -fx-fill: #8B00FF; }
+
+.lineno {
+    -fx-background-color: -fx-lighter-base;
+}
+
+.lineno .text {
+    -fx-font-style: normal;
+    -fx-font-size: smaller;
+    -fx-font-family: monospace;
+}
