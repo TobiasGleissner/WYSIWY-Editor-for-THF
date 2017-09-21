@@ -57,20 +57,6 @@ public class EditorModel
         addErrorMessage(e.getLocalizedMessage());
     }
 
-    /* TODO
-    public ParseContext parse (CodeArea codeArea, String rule) {
-        ParseContext parseContext = null;
-
-        try {
-            parseContext = AstGen.parse(CharStreams.fromString(codeArea.getText()), rule);
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return parseContext;
-    }*/
-
     public void openFile(File file)
     {
         try
@@ -111,7 +97,8 @@ public class EditorModel
     public void reparse()
     {
         tptpInputNodes = new LinkedList<Node>();
-        //reparseArea(0, thfArea.getLength()-1, tptpInputNodes.listIterator());
+        reparseArea(0, thfArea.getContent().getCharCount()-1, tptpInputNodes.listIterator());
+
         if (tptpInputNodes.size() > 0) {
             addSyntaxHighlighting(0, tptpInputNodes.size() - 1);
         }
@@ -119,7 +106,7 @@ public class EditorModel
 
     private void addSyntaxHighlighting(int start, int end) {
         ListIterator<Node> itr = tptpInputNodes.listIterator(start);
-        
+
         while (itr.hasNext() && itr.nextIndex() <= end) {
             Node next = itr.next();
             addHighlightingToTptpInput(next);
@@ -149,7 +136,6 @@ public class EditorModel
     private void reparseArea(int start, int end, ListIterator<Node> position)
     {
         //System.out.println("reparseArea: (" + start + "," + end + ")");
-
         String text = thfArea.getText(start, end);
 
         /* NOTE: We hardcode knowledge of the grammar here. This is ugly and may fail at any point. I'm sorry. :/ */

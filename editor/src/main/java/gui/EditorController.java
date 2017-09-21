@@ -42,8 +42,6 @@ public class EditorController implements Initializable {
         // TODO ALL
         //thfArea.setParagraphGraphicFactory(LineNumberFactory.get(thfArea));
         //wysArea.setParagraphGraphicFactory(LineNumberFactory.get(wysArea));
-        
-        
 
         //thfArea.setWrapText(true);
         //wysArea.setWrapText(true);
@@ -54,7 +52,9 @@ public class EditorController implements Initializable {
         this.model.thfArea = thfArea;
         // TODO this.model.wysArea = wysArea;
 
-        model.updateStyle();
+        // model.updateStyle();
+
+        thfArea.setLineRulerVisible(true);
     }
 
     @FXML
