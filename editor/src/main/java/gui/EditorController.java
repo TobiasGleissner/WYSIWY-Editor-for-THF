@@ -110,12 +110,7 @@ public class EditorController implements Initializable {
                 @Override
                 public void textSet(TextChangedEvent event)
                 {
-                    model.updateTHFTree(
-                        event.offset,
-                        event.offset + event.replaceCharCount + event.newCharCount,
-                        event.offset + event.replaceCharCount,
-                        event.source
-                    );
+                    model.reparse();
                 }
 
                 @Override
