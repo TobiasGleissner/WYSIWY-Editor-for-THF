@@ -3,6 +3,8 @@ package gui;
 import java.io.File;
 import java.io.StringReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
@@ -17,8 +19,13 @@ import java.lang.Throwable;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
+
 import org.eclipse.fx.ui.controls.styledtext.StyleRange;
+
 import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
+import org.eclipse.fx.ui.controls.styledtext.StyledTextContent;
+
+import org.apache.commons.io.IOUtils;
 
 import parser.AstGen;
 import parser.ParseContext;
@@ -38,7 +45,7 @@ public class EditorModel
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
-        
+
         rule2CssColor = new HashMap<String, String>();
         rule2CssColor.put("functor", "c0");
         rule2CssColor.put("defined_functor", "c1");
@@ -55,20 +62,25 @@ public class EditorModel
         addErrorMessage(e.getLocalizedMessage());
     }
 
+    public void openStream(InputStream stream)
+    {
+        try
+        {
+            byte[] content = IOUtils.toByteArray(stream);
+            thfArea.getContent().setText(new String(content, StandardCharsets.UTF_8));
+        }
+        catch(IOException e)
+        {
+            addErrorMessage(e);
+        }
+    }
+
     public void openFile(File file)
     {
         try
         {
-            Path path = file.toPath();
-            byte[] content = Files.readAllBytes(path);
-            int length = thfArea.getCharCount();
-            if (length != 0) {
-                StyleRange[] ranges = new StyleRange[1];
-                ranges[0] = new StyleRange("c0", 0, 0,  null, null);
-                thfArea.replaceStyleRanges(0, length, ranges);
-            }
-            thfArea.getContent().setText("");
-            thfArea.getContent().setText(new String(content, StandardCharsets.UTF_8));
+            InputStream stream = new FileInputStream(file);
+            openStream(stream);
         }
         catch(java.io.IOException t)
         {
@@ -105,8 +117,9 @@ public class EditorModel
 
     public void reparse()
     {
+        StyledTextContent content = thfArea.getContent();
         tptpInputNodes = new LinkedList<Node>();
-        reparseArea(0, thfArea.getContent().getCharCount()-1, tptpInputNodes.listIterator());
+        reparseArea(0, content.getCharCount(), tptpInputNodes.listIterator(), content);
 
         /*if (tptpInputNodes.size() > 0) {
             addSyntaxHighlighting(0, tptpInputNodes.size() - 1);
@@ -124,7 +137,7 @@ public class EditorModel
 
     private void addHighlightingToTptpInput(Node node) {
         int baseStartIndex = node.startIndex;
-        
+
         for (Node child : node.getChildren()) {
             addHighlighting(child, baseStartIndex);
         }
@@ -132,21 +145,21 @@ public class EditorModel
 
     private void addHighlighting(Node node, int baseStartIndex) {
         String style = rule2CssColor.get(node.getRule());
-        
+
         if (style != null) {
             StyleRange sr = new StyleRange(style, baseStartIndex + node.startIndex, baseStartIndex + node.stopIndex + 1 - (baseStartIndex + node.startIndex), null, null);
             thfArea.setStyleRange(sr);
         }
-        
+
         for (Node child : node.getChildren()) {
             addHighlighting(child, baseStartIndex);
         }
     }
 
-    private void reparseArea(int start, int end, ListIterator<Node> position)
+    private void reparseArea(int start, int end, ListIterator<Node> position, StyledTextContent content)
     {
-        //System.out.println("reparseArea: (" + start + "," + end + ")");
-        String text = thfArea.getText(start, end);
+        System.out.println("reparseArea: (" + start + "," + end + ")");
+        String text = content.getTextRange(start, end-start);
 
         /* NOTE: We hardcode knowledge of the grammar here. This is ugly and may fail at any point. I'm sorry. :/ */
         Pattern pattern = Pattern.compile("(\\A|\\s|\\.)(thf|tff|fof|cnf|include)\\(");
@@ -217,6 +230,10 @@ public class EditorModel
 
             Node node = parseContext.getRoot().getFirstChild();
 
+            /* Empty nodes don't need to be inserted. */
+            if(node.stopIndex <= node.startIndex)
+                continue;
+
             node.startIndex += off_start + start;
             node.stopIndex += off_start + start;
 
@@ -225,8 +242,10 @@ public class EditorModel
         }
     }
 
-    public void updateTHFTree(int start, int insEnd, int delEnd)
+    public void updateTHFTree(int start, int insEnd, int delEnd, StyledTextContent content)
     {
+        System.out.println("start = " + start + ", insEnd = " + insEnd + ", delEnd = " + delEnd);
+
         int offset = insEnd - delEnd;
 
         int parseStart = -1;
@@ -288,10 +307,10 @@ public class EditorModel
         if(parseStart == -1)
             parseStart = 0;
         if(parseEnd == -1)
-            //parseEnd = thfArea.getLength();
+            parseEnd = content.getCharCount();
 
         /* Reparse the changed area we identified. */
-        reparseArea(parseStart, parseEnd, nodeIt);
+        reparseArea(parseStart, parseEnd, nodeIt, content);
 
         /* Now we update all nodes following the changed area. */
         while(nodeIt.hasNext())

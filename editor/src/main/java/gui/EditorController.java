@@ -10,8 +10,12 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
@@ -19,17 +23,21 @@ import javafx.event.ActionEvent;
 
 import javafx.scene.control.TreeView;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import org.eclipse.fx.ui.controls.filesystem.DirItem;
 import org.eclipse.fx.ui.controls.filesystem.DirectoryTreeView;
 import org.eclipse.fx.ui.controls.filesystem.ResourceItem;
 import org.eclipse.fx.ui.controls.filesystem.RootDirItem;
 import org.eclipse.fx.ui.controls.filesystem.DirectoryView;
-import parser.ParseContext;
-import javafx.stage.FileChooser;
-
 
 import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
+import org.eclipse.fx.ui.controls.styledtext.StyledTextContent;
+import org.eclipse.fx.ui.controls.styledtext.TextChangedEvent;
+import org.eclipse.fx.ui.controls.styledtext.TextChangingEvent;
+
+import parser.ParseContext;
 
 public class EditorController implements Initializable {
     private EditorModel model;
@@ -45,82 +53,98 @@ public class EditorController implements Initializable {
 
     // DEBUG
     @FXML
-    public void debugALG0157(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/ALG015^7.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
+    public void debugALG0157()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/ALG015^7.p"));
     }
     @FXML
-    public void debugCOM1601(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/COM160^1.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
+    public void debugCOM1601()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/COM160^1.p"));
     }
     @FXML
-    public void debugLCL6331(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/LCL633^1.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
+    public void debugLCL6331()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/LCL633^1.p"));
     }
     @FXML
-    public void debugLCL6341(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/LCL634^1.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
+    public void debugLCL6341()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/LCL634^1.p"));
     }
     @FXML
-    public void debugSYN0001(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/SYN000^1.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
+    public void debugSYN0001()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/SYN000^1.p"));
     }
     @FXML
-    public void debugSYN0002(){
-        Path file = null;
-        try {
-            file = Paths.get(ClassLoader.getSystemResource("test/SYN000^2.p").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        debugLoad(file);
-    }
-    private void debugLoad(Path filename){
-        //File f = new File(filename);
-        model.openFile(filename.toFile());
+    public void debugSYN0002()
+    {
+        model.openStream(getClass().getResourceAsStream("/test/SYN000^2.p"));
     }
     // DEBUG END
 
     private int num_updates;
 
+    private StyledTextContent.TextChangeListener thfListener;
+    private StyledTextContent document;
+
     public EditorController(EditorModel model, Stage mainStage) {
         this.model = model;
         this.mainStage = mainStage;
 
-        num_updates = 0;
+        this.thfListener = new StyledTextContent.TextChangeListener()
+            {
+                @Override
+                public void textChanged(TextChangedEvent event)
+                {
+                    model.updateTHFTree(
+                        event.offset,
+                        event.offset + event.replaceCharCount + event.newCharCount,
+                        event.offset + event.replaceCharCount,
+                        event.source
+                    );
+
+                }
+
+                @Override
+                public void textSet(TextChangedEvent event)
+                {
+                    model.updateTHFTree(
+                        event.offset,
+                        event.offset + event.replaceCharCount + event.newCharCount,
+                        event.offset + event.replaceCharCount,
+                        event.source
+                    );
+                }
+
+                @Override
+                public void textChanging(TextChangingEvent event)
+                {} /* STUB */
+            };
+
+        this.num_updates = 0;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        this.document = thfArea.getContent();
+        this.document.addTextChangeListener(this.thfListener);
+
+        thfArea.contentProperty().addListener
+        (
+            new ChangeListener<StyledTextContent>()
+            {
+                @Override
+                public void changed(ObservableValue<? extends StyledTextContent> observable, StyledTextContent oldValue, StyledTextContent newValue)
+                {
+                    document.removeTextChangeListener(thfListener);
+                    document = newValue;
+                    document.addTextChangeListener(thfListener);
+                }
+            }
+        );
+
         // TODO ALL
         //thfArea.setParagraphGraphicFactory(LineNumberFactory.get(thfArea));
         //wysArea.setParagraphGraphicFactory(LineNumberFactory.get(wysArea));
