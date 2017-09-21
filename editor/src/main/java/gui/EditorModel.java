@@ -177,12 +177,8 @@ public class EditorModel
             }
             else
             {
-                off_start = matcher.start();
+                off_start = matcher.start() + matcher.group(1).length();
             }
-
-            /* This should only be true if \A matched. */
-            if(off_start != 0)
-                off_start++;
 
             int off_end;
             if(matcher.find())
