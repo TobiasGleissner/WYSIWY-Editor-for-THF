@@ -95,16 +95,6 @@ thf(if_then_else_thf,axiom,
       , ! [X: $i] : (q @ X @ X)
       , ( q @ Z @ $ite_f(! [X: $i] : ( p @ X), ( f @ a), ( f@ Z))) ) ).
 
-%----Let binders
-thf(let_binders_thf,axiom,(
-    ! [X: $i] :
-      $let_ff(
-        ! [Y1: $i,Y2: $i] :
-          ( ( p @ Y1 @ Y2)
-        <=> ( q @ Y1) )
-      , $let_tf(
-          ! [X1: $i,X2: $i] : ( ( g @ X1 @ X2) = (h @ X1 @ X1 @ X1) )
-        , ( p @ ( g @ a @ b) ) ) ) )).
 
 %----Connective terms
 thf(equal_equal_equal,axiom,(
