@@ -45,7 +45,7 @@
                                         <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
-                                <MenuItem text="Exit">
+                                <MenuItem onAction="#onNAMEExit" text="Exit">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
@@ -138,21 +138,14 @@
                         </Menu>
 
                         <!-- menuitem prover -->
-                        <Menu text="Prover">
+                        <Menu fx:id="menubarRunProver" text="Prover">
                             <items>
-                                <MenuItem text="Run">
+                                <MenuItem text="Run selected Prover">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="R" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false" />
-                                <RadioMenuItem mnemonicParsing="false" selected="true" text="LEO-III">
-                                   <toggleGroup>
-                                      <ToggleGroup fx:id="SelectedProver" />
-                                   </toggleGroup>
-                                </RadioMenuItem>
-                                <RadioMenuItem mnemonicParsing="false" text="Satallax" toggleGroup="$SelectedProver" />
-                                <RadioMenuItem mnemonicParsing="false" text="Vampire" toggleGroup="$SelectedProver" />
                             </items>
                         </Menu>
 
@@ -197,15 +190,14 @@
                         <HBox prefWidth="20" />
                     </items>
                     <items>
-                        <MenuButton mnemonicParsing="false">
+                        <Button mnemonicParsing="false">
                             <graphic>
                                <FontAwesomeIconView glyphName="PLAY" styleClass="menu-icon" />
                             </graphic>
-                            <tooltip><Tooltip text="Run Prover" /></tooltip>
-                            <items>
-                                <MenuItem mnemonicParsing="false" text="Action 1" />
-                                <MenuItem mnemonicParsing="false" text="Action 2" />
-                            </items>
+                            <tooltip><Tooltip text="Run selected Prover" /></tooltip>
+                        </Button>
+                        <MenuButton fx:id="toolbarRunProver" mnemonicParsing="false">
+                            <tooltip><Tooltip text="Select and run Prover" /></tooltip>
                         </MenuButton>
                     </items>
                     <!-- debug buttons -->
