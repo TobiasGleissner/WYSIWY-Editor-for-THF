@@ -65,7 +65,6 @@ public class EditorModel
         try
         {
             byte[] content = IOUtils.toByteArray(stream);
-            thfArea.getContent().setText("");
             thfArea.getContent().setText(new String(content, StandardCharsets.UTF_8));
         }
         catch(IOException e)
