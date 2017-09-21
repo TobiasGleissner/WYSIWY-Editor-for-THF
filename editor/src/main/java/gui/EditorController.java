@@ -1,55 +1,41 @@
 package gui;
 
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import java.io.File;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.ResourceBundle;
 
+import gui.fileBrowser.FileTreeView;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
 import javafx.event.ActionEvent;
 
-import javafx.scene.control.TreeView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import org.eclipse.fx.ui.controls.filesystem.DirItem;
-import org.eclipse.fx.ui.controls.filesystem.DirectoryTreeView;
-import org.eclipse.fx.ui.controls.filesystem.ResourceItem;
-import org.eclipse.fx.ui.controls.filesystem.RootDirItem;
-import org.eclipse.fx.ui.controls.filesystem.DirectoryView;
 
 import org.eclipse.fx.ui.controls.styledtext.StyledTextArea;
 import org.eclipse.fx.ui.controls.styledtext.StyledTextContent;
 import org.eclipse.fx.ui.controls.styledtext.TextChangedEvent;
 import org.eclipse.fx.ui.controls.styledtext.TextChangingEvent;
 
-import parser.ParseContext;
-
 public class EditorController implements Initializable {
     private EditorModel model;
     private Stage mainStage;
+
+    @FXML
+    private FileTreeView fileBrowser;
 
     @FXML
     private StyledTextArea thfArea;
     //@FXML
     //private CodeArea wysArea;
 
-    @FXML
-    private TreeView fileBrowser;
 
     // DEBUG
     @FXML
@@ -171,9 +157,10 @@ public class EditorController implements Initializable {
         File dir = directoryChooser.showDialog(mainStage);
         if(dir == null)
             return;
-        RootDirItem rootDirItem = ResourceItem.createObservedPath(dir.toPath());
+        //RootDirItem rootDirItem = ResourceItem.createObservedPath(dir.toPath());
         //fileBrowser.setRootDirectories(FXCollections.observableArrayList(rootDirItem));
-        model.openDirectory(dir);
+        fileBrowser.openDirectory(dir);
+        //model.openDirectory(dir);
     }
 
     @FXML
