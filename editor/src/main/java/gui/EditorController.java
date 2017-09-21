@@ -23,6 +23,8 @@ import javafx.fxml.Initializable;
 
 import javafx.event.ActionEvent;
 
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
@@ -46,9 +48,9 @@ public class EditorController implements Initializable {
     private Stage mainStage;
 
     @FXML
-    private CodeArea thfArea;
+    private WebView thfArea;
     @FXML
-    private CodeArea wysArea;
+    private WebView wysArea;
     @FXML
     private FileTreeView fileBrowser;
 
@@ -96,6 +98,7 @@ public class EditorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        /*
         thfArea.setParagraphGraphicFactory(LineNumberFactory.get(thfArea));
         wysArea.setParagraphGraphicFactory(LineNumberFactory.get(wysArea));
 
@@ -104,9 +107,15 @@ public class EditorController implements Initializable {
 
         thfArea.plainTextChanges().subscribe(this::onTHFTextChange);
         wysArea.richChanges().subscribe(this::onWYSTextChange);
+        */
 
-        this.model.thfArea = thfArea;
-        this.model.wysArea = wysArea;
+
+        //this.model.thfArea = thfArea;
+        //this.model.wysArea = wysArea;
+
+        WebEngine engine = this.thfArea.getEngine();
+        engine.setJavaScriptEnabled(true);
+        engine.loadContent("<body contentEditable='true'><div id='content'>Initial Text</div><div id='first'>My first web view in fx</div></body><span id='second'>My first web view in fx</span><span id='second'>My first web view in fx</span><span id='second'>My first web view in fx</span><span id='second'>My first web view in fx</span><span id='second'>My first web view in fx</span><span id='second'>My first web view in fx</span><span id='second'>My first web view in fx</span><span id='second'>My first web view in fx</span><div id='first'>My first web view in fx</div></body></body>");
 
         model.updateStyle();
     }

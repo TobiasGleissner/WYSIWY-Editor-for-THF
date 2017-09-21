@@ -24,6 +24,7 @@
 
 <?import javafx.scene.control.TreeView?>
 <?import gui.fileBrowser.FileTreeView?>
+<?import javafx.scene.web.WebView?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
@@ -260,10 +261,10 @@
                         </TabPane>
 
                         <!-- thf editor -->
-                        <CodeArea fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
+                        <WebView fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
 
                         <!-- wysiwyg editor -->
-                        <CodeArea fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />
+                        <WebView fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />
 
                         <!-- tabs right -->
                         <TabPane prefHeight="200.0" prefWidth="200.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">

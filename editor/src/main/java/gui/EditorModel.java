@@ -99,8 +99,8 @@ public class EditorModel
             .append("-fx-font-family: " + Config.getFont() + ";\n")
             .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
 
-        thfArea.setStyle(style.toString());
-        wysArea.setStyle(style.toString());
+        //thfArea.setStyle(style.toString());
+        //wysArea.setStyle(style.toString());
     }
 
     public void printTPTPTrees()
