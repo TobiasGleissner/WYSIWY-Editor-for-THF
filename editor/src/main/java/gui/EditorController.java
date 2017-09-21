@@ -42,8 +42,6 @@ public class EditorController implements Initializable {
         // TODO ALL
         //thfArea.setParagraphGraphicFactory(LineNumberFactory.get(thfArea));
         //wysArea.setParagraphGraphicFactory(LineNumberFactory.get(wysArea));
-        
-        
 
         //thfArea.setWrapText(true);
         //wysArea.setWrapText(true);
