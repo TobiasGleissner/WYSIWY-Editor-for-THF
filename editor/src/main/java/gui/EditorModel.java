@@ -77,7 +77,7 @@ public class EditorModel
         {
             Path path = file.toPath();
             byte[] content = Files.readAllBytes(path);
-            //thfArea.replaceText(new String(content, StandardCharsets.UTF_8));
+            thfArea.getContent().setText(new String(content, StandardCharsets.UTF_8));
         }
         catch(java.io.IOException t)
         {
