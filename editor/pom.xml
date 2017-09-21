@@ -67,6 +67,7 @@
                                     <include>org.reactfx:*</include>
                                     <include>de.jensd:fontawesomefx:jar:</include>
                                     <include>org.jsoup:jsoup:jar:</include>
+                                    <include>commons-io:commons-io:jar:</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -132,6 +133,11 @@
             <groupId>org.fxmisc.richtext</groupId>
             <artifactId>richtextfx</artifactId>
             <version>0.7-M5</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>de.jensd</groupId>

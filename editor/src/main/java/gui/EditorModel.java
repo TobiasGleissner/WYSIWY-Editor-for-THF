@@ -3,6 +3,8 @@ package gui;
 import java.io.File;
 import java.io.StringReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +25,8 @@ import org.antlr.v4.runtime.CharStreams;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+
+import org.apache.commons.io.IOUtils;
 
 import parser.AstGen;
 import parser.ParseContext;
@@ -59,26 +63,25 @@ public class EditorModel
         addErrorMessage(e.getLocalizedMessage());
     }
 
-    public ParseContext parse (CodeArea codeArea, String rule) {
-        ParseContext parseContext = null;
-
-        try {
-            parseContext = AstGen.parse(CharStreams.fromString(codeArea.getText()), rule);
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    public void openStream(InputStream stream)
+    {
+        try
+        {
+            byte[] content = IOUtils.toByteArray(stream);
+            thfArea.replaceText(new String(content, StandardCharsets.UTF_8));
         }
-
-        return parseContext;
+        catch(IOException e)
+        {
+            addErrorMessage(e);
+        }
     }
 
     public void openFile(File file)
     {
         try
         {
-            Path path = file.toPath();
-            byte[] content = Files.readAllBytes(path);
-            thfArea.replaceText(new String(content, StandardCharsets.UTF_8));
+            InputStream stream = new FileInputStream(file);
+            openStream(stream);
         }
         catch(java.io.IOException t)
         {
