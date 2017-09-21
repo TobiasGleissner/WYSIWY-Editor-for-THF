@@ -3,11 +3,18 @@ package gui;
 import java.net.URL;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import java.net.URISyntaxException;
+
+import java.util.Collection;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -42,7 +49,7 @@ public class EditorController implements Initializable {
     private CodeArea thfArea;
     @FXML
     private CodeArea wysArea;
-
+    @FXML
     private FileTreeView fileBrowser;
 
     // DEBUG
