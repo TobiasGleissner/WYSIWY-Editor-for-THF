@@ -87,14 +87,6 @@ thf(p_type,type,(
 thf(q_type,type,(
     q: $i > $i > $o )).
 
-%----Conditional constructs
-thf(if_then_else_thf,axiom,
-    ! [Z: $i] :
-      $ite_f(
-        ? [X: $i] : ( p @ X)
-      , ! [X: $i] : (q @ X @ X)
-      , ( q @ Z @ $ite_f(! [X: $i] : ( p @ X), ( f @ a), ( f@ Z))) ) ).
-
 
 %----Connective terms
 thf(equal_equal_equal,axiom,(
