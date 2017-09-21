@@ -16,11 +16,17 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Stack;
 
 import java.lang.Throwable;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -40,16 +46,23 @@ public class EditorModel
     public CodeArea thfArea;
     public CodeArea wysArea;
 
+    public Document doc;
+
     public LinkedList<Node> tptpInputNodes;
     private HashMap<String, String> rule2CssColor;
+
+    private int parserNodeIdCur = 0;
+    private HashMap<Integer, Node> parserNodes;
 
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
-        
+
         rule2CssColor = new HashMap<String, String>();
         rule2CssColor.put("functor", "c0");
         rule2CssColor.put("defined_functor", "c1");
+
+        parserNodes = new HashMap();
     }
 
     public void addErrorMessage(String string)
@@ -119,10 +132,13 @@ public class EditorModel
     public void reparse()
     {
         tptpInputNodes = new LinkedList<Node>();
-        reparseArea(0, thfArea.getLength()-1, tptpInputNodes.listIterator());
+        reparseArea(-1, false, false);
+
+        /*
         if (tptpInputNodes.size() > 0) {
             addSyntaxHighlighting(0, tptpInputNodes.size() - 1);
         }
+        */
     }
 
     private void addSyntaxHighlighting(int start, int end) {
@@ -154,11 +170,117 @@ public class EditorModel
         }
     }
 
-    private void reparseArea(int start, int end, ListIterator<Node> position)
+    private void reparseArea(int oldNodeId, boolean removeLeft, boolean removeRight)
     {
+        parserNodes.remove(new Integer(oldNodeId));
+
         //System.out.println("reparseArea: (" + start + "," + end + ")");
 
-        String text = thfArea.getText(start, end);
+        /*
+         * TODO:
+         *  - Make a Reader class for this and feed it to antlr.
+         *  - Make this start with a node of the caller's choosing.
+         */
+
+        /* We have a node to replace. */
+        org.w3c.dom.Node sibling = null; /* null if we don't have a next sibling. */
+        org.w3c.dom.Node newRoot;
+        Element parseRoot;
+
+        if(oldNodeId >= 0)
+        {
+            parseRoot = doc.createElement("div");
+            parseRoot.setAttribute("id", "editor");
+            parseRoot.setAttribute("class", "editor");
+
+            String initialId = "hm_node_" + oldNodeId;
+            org.w3c.dom.Node oldNode = doc.getElementById(initialId);
+
+            newRoot = oldNode.getParentNode();
+
+            /* TODO: For incremental parsing we have to find the first node
+             * that is actually a parsing result, as errored nodes need to be
+             * reparsed again. */
+
+            org.w3c.dom.Node leftSibling = oldNode.getPreviousSibling();
+            if(removeLeft && leftSibling != null)
+            {
+                String idStr = ((Element) leftSibling).getAttribute("id").replaceFirst("^hm_node_", "");
+                Integer id = new Integer(idStr);
+                parserNodes.remove(id);
+
+                parseRoot.appendChild(leftSibling);
+                newRoot.removeChild(leftSibling);
+            }
+
+            parseRoot.appendChild(oldNode);
+
+            org.w3c.dom.Node rightSibling = oldNode.getNextSibling();
+            if(removeRight && rightSibling != null)
+            {
+                sibling = rightSibling.getNextSibling();
+
+                String idStr = ((Element) rightSibling).getAttribute("id").replaceFirst("^hm_node_", "");
+                Integer id = new Integer(idStr);
+                parserNodes.remove(id);
+
+                parseRoot.appendChild(rightSibling);
+                newRoot.removeChild(rightSibling);
+            }
+            else
+            {
+                sibling = rightSibling;
+            }
+
+            newRoot.removeChild(oldNode);
+        }
+        else /* We have to restart from the root. */
+        {
+            parseRoot = doc.getElementById("editor");
+
+            org.w3c.dom.Node parent = parseRoot.getParentNode();
+            parent.removeChild(parseRoot);
+
+            Element newRoot_ = doc.createElement("div");
+            newRoot_.setAttribute("id", "editor");
+            newRoot_.setAttribute("class", "editor");
+            newRoot_.setAttribute("contenteditable", "true");
+            newRoot = newRoot_;
+
+            parent.appendChild(newRoot);
+        }
+
+        StringBuilder content = new StringBuilder();
+        Stack<org.w3c.dom.Node> nodes = new Stack();
+        nodes.push(parseRoot);
+        while(!nodes.empty())
+        {
+            org.w3c.dom.Node n = nodes.pop();
+
+            if(n instanceof Text)
+            {
+                Text t = (Text)n;
+                content.append(t.getWholeText());
+            }
+
+            NodeList list = n.getChildNodes();
+            for(int i = list.getLength(); i > 0; --i)
+                nodes.push(list.item(i-1));
+
+            if(n instanceof Element)
+            {
+                Element el = (Element)n;
+                System.out.println("tag_name = '" + el.getTagName() + "'");
+                System.out.println("class = '" + el.getAttribute("class") + "'");
+
+                /* div without class: inserted by webkit at enter, br: inserted by us after parsing */
+                if( (el.getTagName().equals("DIV") && el.getAttribute("class") == null) ||
+                    (el.getTagName().equals("BR")) )
+                    content.append("\n");
+            }
+        }
+
+        String text = content.toString();
 
         /* NOTE: We hardcode knowledge of the grammar here. This is ugly and may fail at any point. I'm sorry. :/ */
         Pattern pattern = Pattern.compile("(\\A|\\s|\\.)(thf|tff|fof|cnf|include)\\(");
@@ -176,17 +298,13 @@ public class EditorModel
             }
             else
             {
-                off_start = matcher.start();
+                off_start = matcher.start() + matcher.group(1).length();
             }
-
-            /* This should only be true if \A matched. */
-            if(off_start != 0)
-                off_start++;
 
             int off_end;
             if(matcher.find())
             {
-                off_end = matcher.start();
+                off_end = matcher.start() + matcher.group(1).length();
             }
             else
             {
@@ -207,6 +325,30 @@ public class EditorModel
             catch(IOException e)
             {
                 addErrorMessage(e);
+
+                /* TODO: Code duplication. */
+                Node node = new Node("not_parsed");
+                parserNodes.put(new Integer(parserNodeIdCur), node);
+
+                Element newNode = doc.createElement("div");
+                newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
+                newNode.setAttribute("class", "not_parsed");
+                parserNodeIdCur++;
+
+                String[] lines = part.split("\n");
+                for(int i = 0; i < lines.length; ++i)
+                {
+                    if(i != 0)
+                    {
+                        Element br = doc.createElement("br");
+                        newNode.appendChild(br);
+                    }
+
+                    Text textNode = doc.createTextNode(lines[i]);
+                    newNode.appendChild(textNode);
+                }
+                newRoot.insertBefore(newNode, sibling);
+
                 continue;
             }
 
@@ -218,22 +360,94 @@ public class EditorModel
             catch(ParseException e)
             {
                 addErrorMessage(e);
+
+                /* TODO: Code duplication. */
+                Node node = new Node("not_parsed");
+                parserNodes.put(new Integer(parserNodeIdCur), node);
+
+                Element newNode = doc.createElement("div");
+                newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
+                newNode.setAttribute("class", "not_parsed");
+                parserNodeIdCur++;
+
+                String[] lines = part.split("\n");
+                for(int i = 0; i < lines.length; ++i)
+                {
+                    if(i != 0)
+                    {
+                        Element br = doc.createElement("br");
+                        newNode.appendChild(br);
+                    }
+
+                    Text textNode = doc.createTextNode(lines[i]);
+                    newNode.appendChild(textNode);
+                }
+                newRoot.insertBefore(newNode, sibling);
+
                 continue;
             }
 
             if(parseContext.hasParseError())
             {
                 addErrorMessage("unable to parse: " + parseContext.getParseError());
+
+                /* TODO: Code duplication. */
+                Node node = new Node("not_parsed");
+                parserNodes.put(new Integer(parserNodeIdCur), node);
+
+                Element newNode = doc.createElement("div");
+                newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
+                newNode.setAttribute("class", "not_parsed");
+                parserNodeIdCur++;
+
+                String[] lines = part.split("\n");
+                for(int i = 0; i < lines.length; ++i)
+                {
+                    if(i != 0)
+                    {
+                        Element br = doc.createElement("br");
+                        newNode.appendChild(br);
+                    }
+
+                    Text textNode = doc.createTextNode(lines[i]);
+                    newNode.appendChild(textNode);
+                }
+                newRoot.insertBefore(newNode, sibling);
+
                 continue;
             }
 
             Node node = parseContext.getRoot().getFirstChild();
 
-            node.startIndex += off_start + start;
-            node.stopIndex += off_start + start;
+            /* Empty nodes don't need to be inserted. */
+            if(node.stopIndex <= node.startIndex)
+                continue;
 
-            position.add(node);
-            addHighlightingToTptpInput(node);
+            node.startIndex += off_start;
+            node.stopIndex += off_start;
+
+            parserNodes.put(new Integer(parserNodeIdCur), node);
+
+            Element newNode = doc.createElement("div");
+            newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
+            newNode.setAttribute("class", "hm_node");
+
+            parserNodeIdCur++;
+
+            /* NOTE: Highlighting modifies this part! */
+            String[] lines = part.split("\n");
+            for(int i = 0; i < lines.length; ++i)
+            {
+                if(i != 0)
+                {
+                    Element br = doc.createElement("br");
+                    newNode.appendChild(br);
+                }
+
+                Text textNode = doc.createTextNode(lines[i]);
+                newNode.appendChild(textNode);
+            }
+            newRoot.insertBefore(newNode, sibling);
         }
     }
 
@@ -303,7 +517,7 @@ public class EditorModel
             parseEnd = thfArea.getLength();
 
         /* Reparse the changed area we identified. */
-        reparseArea(parseStart, parseEnd, nodeIt);
+        // reparseArea(parseStart, parseEnd, nodeIt);
 
         /* Now we update all nodes following the changed area. */
         while(nodeIt.hasNext())
