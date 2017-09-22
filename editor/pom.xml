@@ -38,7 +38,7 @@
                     <testSource>1.8</testSource>
                     <testTarget>1.8</testTarget>
                     <compilerArgs>
-                        <arg>-Xlint:deprecation,unchecked,-options,-path</arg>
+                        <arg>-Xlint:deprecation,unchecked</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
