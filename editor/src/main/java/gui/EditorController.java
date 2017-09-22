@@ -35,7 +35,6 @@ import javafx.scene.control.Label;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.RadioMenuItemBuilder;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleGroup;
@@ -156,13 +155,13 @@ public class EditorController implements Initializable {
         //fileBrowser.setRootDirectories(FXCollections.observableArrayList(rootDirItem));
         fileBrowser.openDirectory(dir);
         //model.openDirectory(dir);
-        
+
         // Open file on double click
         fileBrowser.setOnMouseClicked(new EventHandler<MouseEvent>()
         {
             @Override
             public void handle(MouseEvent mouseEvent)
-            {            
+            {
                 if(mouseEvent.getClickCount() == 2)
                 {
                     Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), true);
@@ -173,41 +172,41 @@ public class EditorController implements Initializable {
                 }
             }
         });
-        
+
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem copyPath = new MenuItem("Copy path to clipboard");
         MenuItem cut = new MenuItem("Cut");
         MenuItem paste = new MenuItem("Paste");
         contextMenu.getItems().addAll(copyPath, cut, paste);
-        
+
         final ContextMenu contextMenuFile = new ContextMenu();
         MenuItem copyPathFile = new MenuItem("Copy path to clipboard");
         MenuItem copyContent = new MenuItem("Copy file content to clipboard");
         MenuItem cutFile = new MenuItem("Cut");
         MenuItem pasteFile = new MenuItem("Paste");
         contextMenuFile.getItems().addAll(copyPathFile, copyContent, cutFile, pasteFile);
-        
+
         cut.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Cut...");
             }
         });
-        
+
         copyPath.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 copyFilePathToClipboard();
             }
         });
-        
+
         copyPathFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 copyFilePathToClipboard();
             }
         });
-        
+
         fileBrowser.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
             if (fileBrowser.getSelectionModel().getSelectedItem().isLeaf()) {
                 contextMenuFile.show(fileBrowser, event.getScreenX(), event.getScreenY());
@@ -222,7 +221,7 @@ public class EditorController implements Initializable {
             contextMenuFile.hide();
         });
     }
-    
+
     /**
      * This method returns the absolute path to the selected item in the file browser.
      * @param selectedItem: selected item in the file browser.
@@ -241,13 +240,13 @@ public class EditorController implements Initializable {
             if (selectedItem.getParent() != null)   // Necessary because the root directory is already in "root".
                 paths.add(selectedItem.getValue().toString());
         }
-        
+
         while (paths.size() > 0) {
             root = root.resolve(paths.pollLast());
         }
         return root;
     }
-    
+
     /**
      * Copy path of selected item in file browser to system clipboard.
      */
@@ -255,7 +254,7 @@ public class EditorController implements Initializable {
         Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false);
         copyStringToClipboard(path.toString());
     }
-    
+
     /**
      * Copy @param string to system clipboard.
      */
@@ -326,7 +325,8 @@ public class EditorController implements Initializable {
             // add list of provers to menubar
             ToggleGroup menubarProvers = new ToggleGroup();
             for (Iterator<String> i = availableProvers.iterator(); i.hasNext();) {
-                RadioMenuItem item = RadioMenuItemBuilder.create().toggleGroup(menubarProvers).text(i.next().replace("---"," ")).build();
+                RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
+                item.setToggleGroup(menubarProvers);
                 menubarRunProver.getItems().add(item);
             }
 
@@ -338,7 +338,8 @@ public class EditorController implements Initializable {
                         toolbarRunProver.getItems().clear();
                         ToggleGroup toolbarProvers = new ToggleGroup();
                         for (Iterator<String> i = availableProvers.iterator(); i.hasNext();) {
-                            RadioMenuItem item = RadioMenuItemBuilder.create().toggleGroup(toolbarProvers).text(i.next().replace("---"," ")).build();
+                            RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
+                            item.setToggleGroup(toolbarProvers);
                             toolbarRunProver.getItems().add(item);
                         }
                     }
