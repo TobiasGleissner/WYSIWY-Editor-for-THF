@@ -136,6 +136,26 @@
                             </items>
                         </Menu>
 
+                        <!-- menuitem view -->
+                        <Menu fx:id="menubarView" text="View">
+                            <items>
+                                <Menu text="Tool Windows">
+                                    <items>
+                                        <MenuItem text="Project" onAction="#onViewToolWindowProject">
+                                        </MenuItem>
+                                    </items>
+                                </Menu>
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem text="Increase Font Size" onAction="#onViewIncreaseFontSize">
+                                </MenuItem>
+                                <MenuItem text="Decrease Font Size" onAction="#onViewDecreaseFontSize">
+                                </MenuItem>
+                                <MenuItem text="Enter Presentation mode" onAction="#onViewEnterPresentationMode">
+                                </MenuItem>
+
+                            </items>
+                        </Menu>
+
                         <!-- menuitem prover -->
                         <Menu fx:id="menubarRunProver" text="Prover">
                             <items>

@@ -273,4 +273,21 @@ public class EditorController implements Initializable {
             // TODO: write log entry
         }
     }
+
+
+    @FXML
+    public void onViewToolWindowProject(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void onViewIncreaseFontSize(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void onViewDecreaseFontSize(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void onViewEnterPresentationMode(ActionEvent actionEvent) {
+    }
 }
