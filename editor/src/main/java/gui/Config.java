@@ -21,6 +21,17 @@ public class Config {
      * PREFERENCES
      **************/
 
+    // user actions
+    public static int maxRecentlyOpenedFiles = 20;
+    public static ArrayList<String> getRecentlyOpenedFiles(){
+        String files = prefs.get("recentlyOpenedFiles","");
+        List<String> list = Arrays.asList(files.split(","));
+        return new ArrayList<>(list.stream().map(n -> n.substring(6)).collect(Collectors.toList()));
+    }
+    public static void setRecentlyOpenedFiles(List<String> files){
+        prefs.put("localProverList",files.stream().map(p->"prover" + p).reduce(",",String::concat));
+    }
+
     // common
     public static void removePreference(String pref){prefs.remove(pref);}
 
