@@ -256,7 +256,6 @@
                                 <Tab text="Structure">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                        <StructureTreeView fx:id="structureView"/>
                                     </content>
                                 </Tab>
                             </tabs>

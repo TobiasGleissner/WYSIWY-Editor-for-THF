@@ -38,6 +38,9 @@
                     <testSource>1.8</testSource>
                     <testTarget>1.8</testTarget>
                     <compilerArgument>
+                        -Xlint:deprecation
+                    </compilerArgument>
+                    <compilerArgument>
                         -Xlint:unchecked
                     </compilerArgument>
                 </configuration>
