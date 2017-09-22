@@ -67,10 +67,13 @@
 }
 
 .context-menu {
-    -fx-background-insets: 0;
+    -fx-background-insets: -1 0 -1 0;
     -fx-padding: 0;
 }
 
+.context-menu .accelerator-text {
+    -fx-padding: 0 0 0 9;
+}
 
 /* === toolbar === */
 
