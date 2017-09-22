@@ -276,8 +276,7 @@ public class EditorModel
                 System.out.println("class = '" + el.getAttribute("class") + "'");
 
                 /* div without class: inserted by webkit at enter, br: inserted by us after parsing */
-                if( (el.getTagName().equals("DIV") && el.getAttribute("class") == null) ||
-                        (el.getTagName().equals("BR")) )
+                if(el.getTagName().equals("BR"))
                     content.append("\n");
             }
         }

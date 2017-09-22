@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            document.addEventListener("keypress",
+                function(e)
+                {
+                    if(e.charCode == 13)
+                    {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        selection = window.getSelection();
+
+                        range = selection.getRangeAt(0);
+                        range.deleteContents();
+                        br = document.createElement("br");
+                        range.insertNode(br);
+                        range.selectNode(br);
+
+                        /* Properly represent empty lines at the end of the input. */
+                        if(br.nextSibling == null ||
+                           (br.nextSibling.nodeType == 3 && (br.nextSibling.textContent.length == 0)))
+                        {
+                            br = document.createElement("br");
+                            range.insertNode(br);
+                            range.selectNode(br);
+                        }
+
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        selection.collapseToEnd();
+                    }
+                }
+            );
+        </script>
+    </head>
+
+    <body><div id="editor" contenteditable="true"></div></body>
+</head>

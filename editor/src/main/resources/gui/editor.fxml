@@ -261,7 +261,7 @@
                         </TabPane>
 
                         <!-- thf editor -->
-                        <WebView fx:id="thfArea" onKeyTyped="#onTHFKeyTyped" prefHeight="200.0" prefWidth="200.0" />
+                        <WebView fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
 
                         <!-- wysiwyg editor -->
                         <WebView fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />

@@ -4,6 +4,9 @@ import java.io.*;
 import java.net.URI;
 import java.net.URL;
 
+import java.io.File;
+import java.io.StringWriter;
+import java.io.IOException;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +36,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 
+import com.sun.javafx.webkit.WebConsoleListener;
+
 import netscape.javascript.JSObject;
 
 import javax.xml.transform.Transformer;
@@ -55,6 +60,8 @@ import org.fxmisc.richtext.model.StyledDocument;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.Paragraph;
+
+import org.apache.commons.io.IOUtils;
 
 import gui.fileBrowser.FileTreeView;
 
@@ -129,6 +136,12 @@ public class EditorController implements Initializable {
         wysArea.richChanges().subscribe(this::onWYSTextChange);
         */
 
+        WebConsoleListener.setDefaultListener(new WebConsoleListener(){
+            @Override
+            public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
+                System.out.println("Console: [" + sourceId + ":" + lineNumber + "] " + message);
+            }
+        });
 
         //this.model.thfArea = thfArea;
         //this.model.wysArea = wysArea;
@@ -167,13 +180,20 @@ public class EditorController implements Initializable {
                 }
         );
 
-        StringBuilder builder = new StringBuilder();
-        builder.append("<body>\n");
-        builder.append(    "<div id='editor' class='editor' contenteditable='true'>\n");
-        builder.append(    "</div>\n");
-        builder.append("</body>\n");
+        engine.setOnAlert(t -> System.out.println(t));
+        engine.setOnError(e -> System.out.println(e.getMessage()));
 
-        model.engine.loadContent(builder.toString());
+        try
+        {
+            engine.loadContent(
+                IOUtils.toString(getClass().getResourceAsStream("/gui/editor.html"), "UTF-8")
+            );
+        }
+        catch(IOException ex)
+        {
+            /* TODO */
+            ex.printStackTrace();
+        }
 
         // Element el = engine.getDocument().getElementById("content");
         // System.out.println("" + sel);
@@ -238,7 +258,7 @@ public class EditorController implements Initializable {
 
         StringBuilder content = new StringBuilder();
         Stack<Node> nodes = new Stack();
-        nodes.push(doc.getElementById("editor"));
+        nodes.push(doc.getFirstChild());
 
         while(!nodes.empty())
         {
@@ -300,26 +320,6 @@ public class EditorController implements Initializable {
     private void onPrintTree(ActionEvent e)
     {
         model.printTPTPTrees();
-    }
-
-    @FXML
-    private void onTHFKeyPressed(KeyEvent e)
-    {
-        e.consume();
-    }
-
-    @FXML
-    private void onTHFKeyConsumed(KeyEvent e)
-    {
-        e.consume();
-    }
-
-    @FXML
-    private void onTHFKeyTyped(KeyEvent e)
-    {
-        String c = e.getCharacter();
-        System.out.println("typed = '" + c + "'");
-        e.consume();
     }
 
     @FXML
