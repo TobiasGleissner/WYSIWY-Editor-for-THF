@@ -68,17 +68,19 @@ public class EditorModel
      * Does not add to recently opened files
      * @param stream
      */
-    public void openStream(InputStream stream)
+    public String openStream(InputStream stream)
     {
         try
         {
             byte[] content = IOUtils.toByteArray(stream);
-            thfArea.replaceText(new String(content, StandardCharsets.UTF_8));
+            return new String(content, StandardCharsets.UTF_8);
         }
         catch(IOException e)
         {
             addErrorMessage(e);
         }
+        
+        return null;
     }
 
     /**
@@ -92,7 +94,8 @@ public class EditorModel
         try
         {
             InputStream stream = new FileInputStream(file);
-            openStream(stream);
+            String content = openStream(stream);
+            thfArea.replaceText(content);
             updateRecentlyOpenedFiles(file);
         }
         catch(java.io.IOException t)

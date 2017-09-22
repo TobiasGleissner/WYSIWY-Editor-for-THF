@@ -3,10 +3,13 @@ package gui;
 import java.net.URL;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 
 import java.util.Collection;
@@ -77,32 +80,32 @@ public class EditorController implements Initializable {
     @FXML
     public void debugALG0157()
     {
-        model.openStream(getClass().getResourceAsStream("/test/ALG015^7.p"));
+        model.openFile(new File("./src/main/resources/test/ALG015^7.p"));
     }
     @FXML
     public void debugCOM1601()
     {
-        model.openStream(getClass().getResourceAsStream("/test/COM160^1.p"));
+        model.openFile(new File("./src/main/resources/test/COM160^1.p"));
     }
     @FXML
     public void debugLCL6331()
     {
-        model.openStream(getClass().getResourceAsStream("/test/LCL633^1.p"));
+        model.openFile(new File("./src/main/resources/test/LCL633^1.p"));
     }
     @FXML
     public void debugLCL6341()
     {
-        model.openStream(getClass().getResourceAsStream("/test/LCL634^1.p"));
+        model.openFile(new File("./src/main/resources/test/LCL634^1.p"));
     }
     @FXML
     public void debugSYN0001()
     {
-        model.openStream(getClass().getResourceAsStream("/test/SYN000^1.p"));
+        model.openFile(new File("./src/main/resources/test/SYN000^1.p"));
     }
     @FXML
     public void debugSYN0002()
     {
-        model.openStream(getClass().getResourceAsStream("/test/SYN000^2.p"));
+        model.openFile(new File("./src/main/resources/test/SYN000^2.p"));
     }
     // DEBUG END
 
@@ -191,6 +194,23 @@ public class EditorController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Cut...");
+            }
+        });
+        
+        // Copy file content to clipboard
+        copyContent.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                File file = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), true).toString());
+                InputStream stream = null;
+                try {
+                    stream = new FileInputStream(file);
+                } catch (FileNotFoundException e) {
+                    model.addErrorMessage(e);
+                }
+                if (stream != null) {
+                    copyStringToClipboard(model.openStream(stream));
+                }
             }
         });
         
