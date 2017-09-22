@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.List;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,13 +31,16 @@ import javafx.event.ActionEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
-
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.RadioMenuItemBuilder;
+import javafx.scene.control.Tab;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.TreeItem;
+import javafx.scene.input.MouseEvent;
 
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -49,6 +53,7 @@ import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.Paragraph;
 
 import gui.fileBrowser.FileTreeView;
+import gui.fileBrowser.FileWrapper;
 import parser.ParseContext;
 import prover.TPTPDefinitions;
 import prover.remote.HttpProver;
@@ -57,6 +62,7 @@ public class EditorController implements Initializable {
 
     private EditorModel model;
     private Stage mainStage;
+    private File dir;
 
     @FXML
     private Menu menubarRunProver;
@@ -145,13 +151,43 @@ public class EditorController implements Initializable {
     private void onDirectoryOpen(ActionEvent e) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Open directory");
-        File dir = directoryChooser.showDialog(mainStage);
+        dir = directoryChooser.showDialog(mainStage);
         if(dir == null)
             return;
         //RootDirItem rootDirItem = ResourceItem.createObservedPath(dir.toPath());
         //fileBrowser.setRootDirectories(FXCollections.observableArrayList(rootDirItem));
         fileBrowser.openDirectory(dir);
         //model.openDirectory(dir);
+        
+        // Open file on double click
+        fileBrowser.setOnMouseClicked(new EventHandler<MouseEvent>()
+        {
+            @Override
+            public void handle(MouseEvent mouseEvent)
+            {            
+                if(mouseEvent.getClickCount() == 2)
+                {
+                    TreeItem<FileWrapper> item = fileBrowser.getSelectionModel().getSelectedItem();
+                    if (!item.isLeaf()) {
+                        return;
+                    }
+                    Path root = dir.toPath();
+                    LinkedList<String> paths = new LinkedList<String>();
+                    paths.add(item.getValue().toString());
+                    while (item.getParent() != null) {
+                        item = item.getParent();
+                        if (item.getParent() != null)   // Necessary because the root directory is already in "root".
+                            paths.add(item.getValue().toString());
+                    }
+                    
+                    while (paths.size() > 0) {
+                        root = root.resolve(paths.pollLast());
+                    }
+                    
+                    model.openFile(new File(root.toString()));
+                }
+            }
+        });
     }
 
     @FXML
