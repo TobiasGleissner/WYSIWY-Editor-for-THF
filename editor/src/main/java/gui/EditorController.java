@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import gui.structure.StructureTreeView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -74,6 +75,8 @@ public class EditorController implements Initializable {
     private CodeArea wysArea;
     @FXML
     private FileTreeView fileBrowser;
+    @FXML
+    private StructureTreeView structureView;
 
     // DEBUG
     @FXML
