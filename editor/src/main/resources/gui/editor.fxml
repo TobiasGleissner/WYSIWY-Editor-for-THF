@@ -24,6 +24,7 @@
 
 <?import javafx.scene.control.TreeView?>
 <?import gui.fileBrowser.FileTreeView?>
+<?import gui.fileStructure.StructureTreeView?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
@@ -246,25 +247,16 @@
                         <!-- tabs left -->
                         <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
-                                <Tab text="File Browser">
+                                <Tab text="Project">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                         <FileTreeView fx:id="fileBrowser"/>
                                     </content>
                                 </Tab>
-                                <Tab text="List of Axioms">
+                                <Tab text="Structure">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                    </content>
-                                </Tab>
-                                <Tab text="List of Types">
-                                    <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                    </content>
-                                </Tab>
-                                <Tab text="List of Constants">
-                                    <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                        <StructureTreeView fx:id="structureView"/>
                                     </content>
                                 </Tab>
                             </tabs>
@@ -277,6 +269,7 @@
                         <CodeArea fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />
 
                         <!-- tabs right -->
+                        <!--
                         <TabPane prefHeight="200.0" prefWidth="200.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
                                 <Tab text="1">
@@ -296,6 +289,7 @@
                                 </Tab>
                             </tabs>
                         </TabPane>
+                        -->
 
                     </items>
                 </SplitPane>
