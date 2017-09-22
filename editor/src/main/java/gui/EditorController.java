@@ -148,8 +148,8 @@ public class EditorController implements Initializable {
 
         model.engine = this.thfArea.getEngine();
         model.engine.setJavaScriptEnabled(true);
-        URL cssURL = getClass().getResource("/gui/editorField.css");
-        model.engine.setUserStyleSheetLocation(cssURL.toString());
+        //URL cssURL = getClass().getResource("/gui/editorField.css");
+        //model.engine.setUserStyleSheetLocation(cssURL.toString());
         //InputStream cssInputStream = ClassLoader.getSystemResourceAsStream("gui/editorField.css");
         //String css = new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
 
@@ -165,6 +165,9 @@ public class EditorController implements Initializable {
                         {
                             doc = model.engine.getDocument();
                             model.doc = model.engine.getDocument();
+                            model.style = new WebKitStyle();
+                            model.style.setDoc(doc);
+                            model.style.updateCss();
 
                             System.out.println("doc = " + doc);
 

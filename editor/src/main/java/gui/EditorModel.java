@@ -49,6 +49,7 @@ public class EditorModel
 
     public WebEngine engine;
     public Document doc;
+    public WebKitStyle style;
 
     public LinkedList<Node> tptpInputNodes;
     private HashMap<String, String> rule2CssColor;
