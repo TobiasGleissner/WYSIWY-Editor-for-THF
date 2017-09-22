@@ -3,6 +3,9 @@ package gui;
 import java.net.URL;
 
 import java.io.IOException;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,6 +34,7 @@ import javafx.event.ActionEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -40,6 +44,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 
 import org.fxmisc.richtext.CodeArea;
@@ -167,27 +172,98 @@ public class EditorController implements Initializable {
             {            
                 if(mouseEvent.getClickCount() == 2)
                 {
-                    TreeItem<FileWrapper> item = fileBrowser.getSelectionModel().getSelectedItem();
-                    if (!item.isLeaf()) {
+                    Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), true);
+                    if (path == null) {
                         return;
                     }
-                    Path root = dir.toPath();
-                    LinkedList<String> paths = new LinkedList<String>();
-                    paths.add(item.getValue().toString());
-                    while (item.getParent() != null) {
-                        item = item.getParent();
-                        if (item.getParent() != null)   // Necessary because the root directory is already in "root".
-                            paths.add(item.getValue().toString());
-                    }
-                    
-                    while (paths.size() > 0) {
-                        root = root.resolve(paths.pollLast());
-                    }
-                    
-                    model.openFile(new File(root.toString()));
+                    model.openFile(new File(path.toString()));
                 }
             }
         });
+        
+        final ContextMenu contextMenu = new ContextMenu();
+        MenuItem copyPath = new MenuItem("Copy path to clipboard");
+        MenuItem cut = new MenuItem("Cut");
+        MenuItem paste = new MenuItem("Paste");
+        contextMenu.getItems().addAll(copyPath, cut, paste);
+        
+        final ContextMenu contextMenuFile = new ContextMenu();
+        MenuItem copyPathFile = new MenuItem("Copy path to clipboard");
+        MenuItem copyContent = new MenuItem("Copy file content to clipboard");
+        MenuItem cutFile = new MenuItem("Cut");
+        MenuItem pasteFile = new MenuItem("Paste");
+        contextMenuFile.getItems().addAll(copyPathFile, copyContent, cutFile, pasteFile);
+        
+        cut.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("Cut...");
+            }
+        });
+        
+        copyPath.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                copyFilePathToClipboard();
+            }
+        });
+        
+        copyPathFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                copyFilePathToClipboard();
+            }
+        });
+        
+        fileBrowser.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
+            if (fileBrowser.getSelectionModel().getSelectedItem().isLeaf()) {
+                contextMenuFile.show(fileBrowser, event.getScreenX(), event.getScreenY());
+            }
+            else {
+                contextMenu.show(fileBrowser, event.getScreenX(), event.getScreenY());
+            }
+            event.consume();
+        });
+        fileBrowser.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            contextMenu.hide();
+            contextMenuFile.hide();
+        });
+    }
+    
+    /**
+     * This method returns the absolute path to the selected item in the file browser.
+     * @param selectedItem: selected item in the file browser.
+     * @param onlyLeavesAllowed: if true, only the path of leaves is returned.
+     * @return the path of the selected item.
+     */
+    private Path getPathToSelectedItem(TreeItem<FileWrapper> selectedItem, Boolean onlyLeavesAllowed) {
+        if (onlyLeavesAllowed && !selectedItem.isLeaf()) {
+            return null;
+        }
+        Path root = dir.toPath();
+        LinkedList<String> paths = new LinkedList<String>();
+        paths.add(selectedItem.getValue().toString());
+        while (selectedItem.getParent() != null) {
+            selectedItem = selectedItem.getParent();
+            if (selectedItem.getParent() != null)   // Necessary because the root directory is already in "root".
+                paths.add(selectedItem.getValue().toString());
+        }
+        
+        while (paths.size() > 0) {
+            root = root.resolve(paths.pollLast());
+        }
+        return root;
+    }
+    
+    private void copyFilePathToClipboard() {
+        Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false);
+        copyStringToClipboard(path.toString());
+    }
+    
+    private void copyStringToClipboard(String string) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection selection = new StringSelection(string);
+        clipboard.setContents(selection, selection);
     }
 
     @FXML
