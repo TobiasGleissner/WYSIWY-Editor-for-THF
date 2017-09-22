@@ -5,9 +5,11 @@ import java.io.InputStream;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+
+import jiconfont.icons.FontAwesome;
+import jiconfont.javafx.IconNode;
 
 /**
  * @author Alexander Bolte - Bolte Consulting (2010 - 2014).
@@ -25,18 +27,11 @@ import javafx.scene.image.ImageView;
  */
 public class FileTreeItem extends TreeItem<FileWrapper> {
 
-    static Image imageFile;
-    static Image imageTPTP;
-    static Image imageDirectory;
-    static{
-        InputStream image = FileTreeItem.class.getResourceAsStream("/gui/images/fileBrowser/defaultFile.png");
-        imageFile = new Image(image, 10, 10, false, false);
-        image = FileTreeItem.class.getResourceAsStream("/gui/images/fileBrowser/TPTP.png");
-        imageTPTP = new Image(image, 10, 10, false, false);
-        image = FileTreeItem.class.getResourceAsStream("/gui/images/fileBrowser/folder.png");
-        imageDirectory = new Image(image, 10, 10, false, false);
-    }
+    static FontAwesome iconFile = FontAwesome.FILE_O;
+    static FontAwesome iconTPTP = FontAwesome.FILE_CODE_O;
+    static FontAwesome iconDirectory = FontAwesome.FOLDER_O;
     File file;
+
     /**
      * Calling the constructor of super class in oder to create a new
      * TreeItem<File>.
@@ -47,13 +42,8 @@ public class FileTreeItem extends TreeItem<FileWrapper> {
      */
     public FileTreeItem(FileWrapper f) {
         super(f);
-        //this.file = f;
     }
 
-    public FileTreeItem(FileWrapper f, ImageView i) {
-        super(f,i);
-        //this.file = f;
-    }
     /*
      * (non-Javadoc)
      *
@@ -64,20 +54,20 @@ public class FileTreeItem extends TreeItem<FileWrapper> {
         if (isFirstTimeChildren) {
             isFirstTimeChildren = false;
 
-			/*
-			 * First getChildren() call, so we actually go off and determine the
-			 * children of the File contained in this TreeItem.
-			 */
+            /*
+             * First getChildren() call, so we actually go off and determine the
+             * children of the File contained in this TreeItem.
+             */
             super.getChildren().setAll(buildChildren(this));
         }
         return super.getChildren();
     }
 
     /*
-	 * (non-Javadoc)
-	 *
-	 * @see javafx.scene.control.TreeItem#isLeaf()
-	 */
+     * (non-Javadoc)
+     *
+     * @see javafx.scene.control.TreeItem#isLeaf()
+     */
     @Override
     public boolean isLeaf() {
         if (isFirstTimeLeaf) {
@@ -107,7 +97,8 @@ public class FileTreeItem extends TreeItem<FileWrapper> {
             if (files != null) {
                 ObservableList<TreeItem<FileWrapper>> children = FXCollections.observableArrayList();
                 for (File childFile : files) {
-                    TreeItem a = new FileTreeItem(new FileWrapper(childFile),getImageViewByFile(childFile));
+                    TreeItem a = new FileTreeItem(new FileWrapper(childFile));
+                    a.setGraphic(getIconNodeByFile(childFile));
                     children.add(a);
                 }
                 return children;
@@ -116,21 +107,23 @@ public class FileTreeItem extends TreeItem<FileWrapper> {
         return FXCollections.emptyObservableList();
     }
 
-    private ImageView getImageViewByFile(File f){
-        ImageView imageView;
+    private IconNode getIconNodeByFile(File f){
+        IconNode iconNode;
         if (f.isDirectory()) {
-            imageView = new ImageView(imageDirectory);
+            iconNode = new IconNode(iconDirectory);
         } else if (f.isFile()) {
             if (f.getName().endsWith(".p")){
-                imageView = new ImageView(imageTPTP);
+                iconNode = new IconNode(iconTPTP);
             }
             else
-                imageView = new ImageView(imageFile);
+                iconNode = new IconNode(iconFile);
         } else {
-            imageView = new ImageView();
+            iconNode = new IconNode();
         }
-        return imageView;
+        iconNode.getStyleClass().add("filebrowser-icon");
+        return iconNode;
     }
+
     private boolean isFirstTimeChildren = true;
     private boolean isFirstTimeLeaf = true;
     private boolean isLeaf;

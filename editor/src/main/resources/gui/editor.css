@@ -30,13 +30,22 @@
 
 /* === icons === */
 
-.menu-icon{
+.menu-icon {
+    -fx-font-size: 90%;
     -fx-fill: -fx-darker-base;
 }
 
-.menu-icon:hover{
+.menu-icon:hover {
+    -fx-font-size: 90%;
     -fx-fill: -fx-medium-base;
 }
+
+.filebrowser-icon {
+    -fx-font-size: 85%;
+    -fx-fill: -fx-darker-base;
+
+}
+
 
 /* === buttons === */
 
@@ -74,6 +83,7 @@
 .context-menu .accelerator-text {
     -fx-padding: 0 0 0 9;
 }
+
 
 /* === toolbar === */
 
