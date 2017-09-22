@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
-
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.List;
@@ -167,7 +167,7 @@ public class EditorController implements Initializable {
             {
                 if(mouseEvent.getClickCount() == 2)
                 {
-                    Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), true);
+                    Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), true, false);
                     if (path == null) {
                         return;
                     }
@@ -177,17 +177,21 @@ public class EditorController implements Initializable {
         });
 
         final ContextMenu contextMenu = new ContextMenu();
+        MenuItem copyDirName = new MenuItem("Copy directory name");
         MenuItem copyPath = new MenuItem("Copy path to clipboard");
+        MenuItem copyRelPath = new MenuItem("Copy relative path to clipboard");
         MenuItem cut = new MenuItem("Cut");
         MenuItem paste = new MenuItem("Paste");
-        contextMenu.getItems().addAll(copyPath, cut, paste);
+        contextMenu.getItems().addAll(copyDirName, copyPath, copyRelPath, cut, paste);
 
         final ContextMenu contextMenuFile = new ContextMenu();
+        MenuItem copyFileName = new MenuItem("Copy file name");
         MenuItem copyPathFile = new MenuItem("Copy path to clipboard");
+        MenuItem copyRelPathFile = new MenuItem("Copy relative path to clipboard");
         MenuItem copyContent = new MenuItem("Copy file content to clipboard");
         MenuItem cutFile = new MenuItem("Cut");
         MenuItem pasteFile = new MenuItem("Paste");
-        contextMenuFile.getItems().addAll(copyPathFile, copyContent, cutFile, pasteFile);
+        contextMenuFile.getItems().addAll(copyFileName, copyPathFile, copyRelPathFile, copyContent, cutFile, pasteFile);
 
         cut.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -195,11 +199,24 @@ public class EditorController implements Initializable {
                 System.out.println("Cut...");
             }
         });
+        copyFileName.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                copyFileOrDirectoryName();
+            }
+        });
+        copyDirName.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                copyFileOrDirectoryName();
+            }
+        });
+        
         // Copy file content to clipboard
         copyContent.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                File file = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), true).toString());
+                File file = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), true, false).toString());
                 InputStream stream = null;
                 try {
                     stream = new FileInputStream(file);
@@ -215,14 +232,28 @@ public class EditorController implements Initializable {
         copyPath.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                copyFilePathToClipboard();
+                copyFilePathToClipboard(false);
             }
         });
 
         copyPathFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                copyFilePathToClipboard();
+                copyFilePathToClipboard(false);
+            }
+        });
+        
+        copyRelPathFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                copyFilePathToClipboard(true);
+            }
+        });
+        
+        copyRelPath.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                copyFilePathToClipboard(true);
             }
         });
 
@@ -242,16 +273,22 @@ public class EditorController implements Initializable {
     }
 
     /**
-     * This method returns the absolute path to the selected item in the file browser.
+     * This method returns the path to the selected item in the file browser.
      * @param selectedItem: selected item in the file browser.
      * @param onlyLeavesAllowed: if true, only the path of leaves is returned.
+     * @param relativePath: if true, the path of the selected item relative to the root of the file browser is returned.
      * @return the path of the selected item.
      */
-    private Path getPathToSelectedItem(TreeItem<FileWrapper> selectedItem, Boolean onlyLeavesAllowed) {
+    private Path getPathToSelectedItem(TreeItem<FileWrapper> selectedItem, Boolean onlyLeavesAllowed, Boolean relativePath) {
         if ( selectedItem == null || onlyLeavesAllowed && !selectedItem.isLeaf()) {
             return null;
         }
-        Path root = dir.toPath();
+        Path root;
+        if (relativePath) {
+            root = Paths.get("");
+        } else {
+            root = dir.toPath();            
+        }
         LinkedList<String> paths = new LinkedList<String>();
         paths.add(selectedItem.getValue().toString());
         while (selectedItem.getParent() != null) {
@@ -268,9 +305,10 @@ public class EditorController implements Initializable {
 
     /**
      * Copy path of selected item in file browser to system clipboard.
+     * @param relativePath: copy the path relative to the root of the file browser. Otherwise, the absolute path is copied.
      */
-    private void copyFilePathToClipboard() {
-        Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false);
+    private void copyFilePathToClipboard(Boolean relativePath) {
+        Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, relativePath);
         copyStringToClipboard(path.toString());
     }
 
@@ -281,6 +319,14 @@ public class EditorController implements Initializable {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         StringSelection selection = new StringSelection(string);
         clipboard.setContents(selection, selection);
+    }
+    
+    // Copy the name of the selected file or directory in the file browser to the clipboard.
+    private void copyFileOrDirectoryName() {
+        TreeItem<FileWrapper> item = fileBrowser.getSelectionModel().getSelectedItem();
+        if (item != null) {
+            copyStringToClipboard(item.getValue().toString());
+        }
     }
 
     @FXML
