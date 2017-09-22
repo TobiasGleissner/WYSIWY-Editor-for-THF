@@ -188,13 +188,11 @@ public class EditorModel
         /* We have a node to replace. */
         org.w3c.dom.Node sibling = null; /* null if we don't have a next sibling. */
         org.w3c.dom.Node newRoot;
-        Element parseRoot;
+        org.w3c.dom.Node parseRoot;
 
         if(oldNodeId >= 0)
         {
-            parseRoot = doc.createElement("div");
-            parseRoot.setAttribute("id", "editor");
-            parseRoot.setAttribute("class", "editor");
+            parseRoot = doc.createElement("body");
 
             String initialId = "hm_node_" + oldNodeId;
             org.w3c.dom.Node oldNode = doc.getElementById(initialId);
@@ -239,14 +237,12 @@ public class EditorModel
         }
         else /* We have to restart from the root. */
         {
-            parseRoot = doc.getElementById("editor");
+            parseRoot = doc.getElementsByTagName("body").item(0);
 
             org.w3c.dom.Node parent = parseRoot.getParentNode();
             parent.removeChild(parseRoot);
 
-            Element newRoot_ = doc.createElement("div");
-            newRoot_.setAttribute("id", "editor");
-            newRoot_.setAttribute("class", "editor");
+            Element newRoot_ = doc.createElement("body");
             newRoot_.setAttribute("contenteditable", "true");
             newRoot = newRoot_;
 
@@ -276,7 +272,6 @@ public class EditorModel
                 System.out.println("tag_name = '" + el.getTagName() + "'");
                 System.out.println("class = '" + el.getAttribute("class") + "'");
 
-                /* div without class: inserted by webkit at enter, br: inserted by us after parsing */
                 if(el.getTagName().equals("BR"))
                     content.append("\n");
             }
@@ -332,7 +327,7 @@ public class EditorModel
                 Node node = new Node("not_parsed");
                 parserNodes.put(new Integer(parserNodeIdCur), node);
 
-                Element newNode = doc.createElement("div");
+                Element newNode = doc.createElement("span");
                 newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
                 newNode.setAttribute("class", "not_parsed");
                 parserNodeIdCur++;
@@ -367,7 +362,7 @@ public class EditorModel
                 Node node = new Node("not_parsed");
                 parserNodes.put(new Integer(parserNodeIdCur), node);
 
-                Element newNode = doc.createElement("div");
+                Element newNode = doc.createElement("span");
                 newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
                 newNode.setAttribute("class", "not_parsed");
                 parserNodeIdCur++;
@@ -397,7 +392,7 @@ public class EditorModel
                 Node node = new Node("not_parsed");
                 parserNodes.put(new Integer(parserNodeIdCur), node);
 
-                Element newNode = doc.createElement("div");
+                Element newNode = doc.createElement("span");
                 newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
                 newNode.setAttribute("class", "not_parsed");
                 parserNodeIdCur++;
@@ -430,7 +425,7 @@ public class EditorModel
 
             parserNodes.put(new Integer(parserNodeIdCur), node);
 
-            Element newNode = doc.createElement("div");
+            Element newNode = doc.createElement("span");
             newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
             newNode.setAttribute("class", "hm_node");
 
