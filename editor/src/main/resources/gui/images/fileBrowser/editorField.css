@@ -1,0 +1,39 @@
+/* general */
+body {
+    -fx-font-style: normal;
+    -fx-font-family: monospace;
+    /*-fx-font-size: small;*/
+}
+
+/* THF styling */
+.formula_role {
+    -fx-font-color: #FF7C00;
+}
+.variable {
+    -fx-font-color: #04859D;
+}
+.thf_unitary_type .thf_apply_type .thf_unitary_type{
+    -fx-font-color: #FF0000;
+}
+.thf_binary_type {
+    -fx-font-color: #BF3030;
+}
+.functor {
+    -fx-font-color: #00CC00;
+}
+.defined_functor {
+    -fx-font-color: #269926;
+}
+.system_functor {
+    -fx-font-color: #008500;
+}
+
+/* line numbering */
+.lineno {
+    -fx-background-color: -fx-lighter-base;
+    -fx-padding: 0 6 0 6;
+}
+
+.lineno .text {
+    -fx-font-size: smaller;
+}
