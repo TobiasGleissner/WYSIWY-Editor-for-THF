@@ -1,9 +1,8 @@
 package gui;
 
+import java.io.*;
+import java.net.URI;
 import java.net.URL;
-
-import java.io.File;
-import java.io.StringWriter;
 
 
 import java.nio.file.Path;
@@ -11,10 +10,8 @@ import java.nio.file.Paths;
 
 import java.net.URISyntaxException;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.ResourceBundle;
-import java.util.Stack;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -136,32 +133,38 @@ public class EditorController implements Initializable {
         //this.model.thfArea = thfArea;
         //this.model.wysArea = wysArea;
 
-        WebEngine engine = this.thfArea.getEngine();
-        engine.setJavaScriptEnabled(true);
+        model.engine = this.thfArea.getEngine();
+        model.engine.setJavaScriptEnabled(true);
+        URL cssURL = getClass().getResource("/gui/editorField.css");
+        model.engine.setUserStyleSheetLocation(cssURL.toString());
+        //InputStream cssInputStream = ClassLoader.getSystemResourceAsStream("gui/editorField.css");
+        //String css = new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
 
-        engine.getLoadWorker().stateProperty().addListener(
-            new ChangeListener<Worker.State>()
-            {
-                @Override
-                public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState)
+
+
+        model.engine.getLoadWorker().stateProperty().addListener(
+                new ChangeListener<Worker.State>()
                 {
-                    if(newState == Worker.State.SUCCEEDED)
+                    @Override
+                    public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState)
                     {
-                        doc = engine.getDocument();
-                        model.doc = engine.getDocument();
+                        if(newState == Worker.State.SUCCEEDED)
+                        {
+                            doc = model.engine.getDocument();
+                            model.doc = model.engine.getDocument();
 
-                        System.out.println("doc = " + doc);
+                            System.out.println("doc = " + doc);
 
-                        if(doc == null)
-                            return;
+                            if(doc == null)
+                                return;
 
-                        jsDoc = (JSObject) doc;
+                            jsDoc = (JSObject) doc;
 
-                        Integer sel = (Integer) jsDoc.eval("getSelection().anchorOffset");
-                        System.out.println("selection = " + sel);
+                            Integer sel = (Integer) jsDoc.eval("getSelection().anchorOffset");
+                            System.out.println("selection = " + sel);
+                        }
                     }
                 }
-            }
         );
 
         StringBuilder builder = new StringBuilder();
@@ -170,7 +173,7 @@ public class EditorController implements Initializable {
         builder.append(    "</div>\n");
         builder.append("</body>\n");
 
-        engine.loadContent(builder.toString());
+        model.engine.loadContent(builder.toString());
 
         // Element el = engine.getDocument().getElementById("content");
         // System.out.println("" + sel);

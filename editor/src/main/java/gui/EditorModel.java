@@ -20,6 +20,7 @@ import java.util.Stack;
 
 import java.lang.Throwable;
 
+import javafx.scene.web.WebEngine;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 
@@ -46,6 +47,7 @@ public class EditorModel
     public CodeArea thfArea;
     public CodeArea wysArea;
 
+    public WebEngine engine;
     public Document doc;
 
     public LinkedList<Node> tptpInputNodes;
@@ -109,8 +111,8 @@ public class EditorModel
     public void updateStyle()
     {
         StringBuilder style = new StringBuilder()
-            .append("-fx-font-family: " + Config.getFont() + ";\n")
-            .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
+                .append("-fx-font-family: " + Config.getFont() + ";\n")
+                .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
 
         //thfArea.setStyle(style.toString());
         //wysArea.setStyle(style.toString());
@@ -143,7 +145,7 @@ public class EditorModel
 
     private void addSyntaxHighlighting(int start, int end) {
         ListIterator<Node> itr = tptpInputNodes.listIterator(start);
-        
+
         while (itr.hasNext() && itr.nextIndex() <= end) {
             Node next = itr.next();
             addHighlightingToTptpInput(next);
@@ -152,7 +154,7 @@ public class EditorModel
 
     private void addHighlightingToTptpInput(Node node) {
         int baseStartIndex = node.startIndex;
-        
+
         for (Node child : node.getChildren()) {
             addHighlighting(child, baseStartIndex);
         }
@@ -160,11 +162,11 @@ public class EditorModel
 
     private void addHighlighting(Node node, int baseStartIndex) {
         String style = rule2CssColor.get(node.getRule());
-        
+
         if (style != null) {
             thfArea.setStyle(baseStartIndex + node.startIndex, baseStartIndex + node.stopIndex + 1, Collections.singleton(style));
         }
-        
+
         for (Node child : node.getChildren()) {
             addHighlighting(child, baseStartIndex);
         }
@@ -275,7 +277,7 @@ public class EditorModel
 
                 /* div without class: inserted by webkit at enter, br: inserted by us after parsing */
                 if( (el.getTagName().equals("DIV") && el.getAttribute("class") == null) ||
-                    (el.getTagName().equals("BR")) )
+                        (el.getTagName().equals("BR")) )
                     content.append("\n");
             }
         }
