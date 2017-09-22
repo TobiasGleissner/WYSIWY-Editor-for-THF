@@ -112,7 +112,6 @@ public class EditorModel
     public void updateStyle()
     {
         StringBuilder style = new StringBuilder()
-                .append("-fx-font-family: " + Config.getFont() + ";\n")
                 .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
 
         //thfArea.setStyle(style.toString());

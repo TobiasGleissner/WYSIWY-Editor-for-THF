@@ -10,23 +10,24 @@ public class Config {
     private static Preferences prefs = Preferences.userNodeForPackage(Config.class);
 
     // common
+    public static final String name = "editor";
+    public static final String USER_AGENT = "thf_editor";
+
+    // editor
+    public static final double fontSizeIncrementStep = 0.1;
+    public static final double fontSizePresentationMode = 2.0;
+
+    /***************
+     * PREFERENCES
+     **************/
+
+    // common
     public static void removePreference(String pref){prefs.remove(pref);}
-    public static String name = "editor";
-    public static String USER_AGENT = "thf_editor";
 
-    // gui
-    public static String getFont() {
-        return prefs.get("font", "monospace");
-    }
-
+    // editor
     public static double getFontSize() {
-        return prefs.getDouble("fontSize", 12);
+        return prefs.getDouble("fontSize", 1.0);
     }
-
-    public static void setFont(String arg) {
-        prefs.put("font", arg);
-    }
-
     public static void setFontSize(double arg) {
         prefs.putDouble("fontSize", arg);
     }
@@ -35,7 +36,6 @@ public class Config {
     public static String getUrlSystemOnTPTP() {
         return prefs.get("urlSystemOnTPTP", "http://www.cs.miami.edu/~tptp/cgi-bin/SystemOnTPTP");
     }
-
     public static String getUrlSystemOnTPTPFormReply() {
         return prefs.get("urlSystemOnTPTPFormRepl", "http://www.cs.miami.edu/~tptp/cgi-bin/SystemOnTPTPFormReply");
     }

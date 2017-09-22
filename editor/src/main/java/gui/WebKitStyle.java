@@ -1,6 +1,5 @@
 package gui;
 
-import javafx.scene.web.WebEngine;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -11,28 +10,64 @@ import java.util.stream.Collectors;
 
 public class WebKitStyle {
 
-    private  Document doc;
-    Element style;
-    static String defaultCss;
+    private Document doc;
+    private double fontSize;
 
+    private static final double fontSizeIncrementStep = Config.fontSizeIncrementStep;
+    private static final double fontSizePresentationMode = Config.fontSizePresentationMode;
+    private static String defaultCss;
     static{
         InputStream cssInputStream = ClassLoader.getSystemResourceAsStream("gui/editorField.css");
         defaultCss = new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
     }
 
-    public WebKitStyle(){}
-
+    public WebKitStyle(){
+        this.fontSize = Config.getFontSize();
+    }
 
     public void setDoc(Document doc){
         this.doc = doc;
+        updateCss();
     }
-    public void updateCss(){
-        System.out.println("asdasd");
-        style = doc.getElementById("style");
-        String st = "*{color:green;}\n";//+defaultCss;
+
+    private void updateCss(){
+        Element style = doc.getElementById("style");
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("*{\n");
+        sb.append("font-size: ");
+        sb.append(fontSize);
+        sb.append("em;\n");
+        sb.append("}\n");
+        sb.append(defaultCss);
+
+        String st = sb.toString();
         System.out.println(st);
         style.setTextContent(st);
     }
+
+    public void setFontSize(double fontSize){
+        if (fontSize <= 0){
+            System.err.println("Invalid fontSize: " + fontSize);
+            return;
+        }
+        this.fontSize = fontSize;
+        this.updateCss();
+    }
+
+    public void incrementFontSize(){
+        this.setFontSize(this.fontSize + fontSizeIncrementStep);
+    }
+
+    public void decrementFontSize(){
+        this.setFontSize(this.fontSize - fontSizeIncrementStep);
+    }
+
+    public void setFontSizeToPresentationMode(){
+        this.setFontSize(fontSizePresentationMode);
+    }
+
+
 
 
 

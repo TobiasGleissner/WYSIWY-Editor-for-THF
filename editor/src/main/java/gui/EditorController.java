@@ -167,7 +167,6 @@ public class EditorController implements Initializable {
                             model.doc = model.engine.getDocument();
                             model.style = new WebKitStyle();
                             model.style.setDoc(doc);
-                            model.style.updateCss();
 
                             System.out.println("doc = " + doc);
 
@@ -249,10 +248,6 @@ public class EditorController implements Initializable {
     @FXML
     private void onTestPref(ActionEvent e)
     {
-        if(Config.getFont().equals("monospace"))
-            Config.setFont("xos4 Terminus");
-        else
-            Config.setFont("monospace");
 
         model.updateStyle();
 
