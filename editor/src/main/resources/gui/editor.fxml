@@ -24,7 +24,7 @@
 
 <?import javafx.scene.control.TreeView?>
 <?import gui.fileBrowser.FileTreeView?>
-<?import gui.structure.StructureTreeView?>
+<?import gui.fileStructure.StructureTreeView?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>

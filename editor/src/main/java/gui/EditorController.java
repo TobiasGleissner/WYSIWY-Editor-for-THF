@@ -5,20 +5,14 @@ import java.net.URL;
 import java.io.IOException;
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import java.net.URISyntaxException;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import gui.structure.StructureTreeView;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import gui.fileStructure.StructureTreeView;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -32,12 +26,9 @@ import javafx.event.ActionEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.RadioMenuItemBuilder;
-import javafx.scene.control.Tab;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
@@ -48,14 +39,9 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.RichTextChange;
 import org.fxmisc.richtext.model.PlainTextChange;
 import org.fxmisc.richtext.model.StyledText;
-import org.fxmisc.richtext.model.StyledDocument;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpan;
-import org.fxmisc.richtext.model.Paragraph;
 
 import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
-import parser.ParseContext;
 import prover.TPTPDefinitions;
 import prover.remote.HttpProver;
 
