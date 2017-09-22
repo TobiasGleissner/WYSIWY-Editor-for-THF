@@ -9,11 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +39,8 @@ public class EditorModel
     public LinkedList<Node> tptpInputNodes;
     private HashMap<String, String> rule2CssColor;
 
+    private ArrayList<String> recentlyOpenedFiles;
+
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
@@ -50,6 +48,8 @@ public class EditorModel
         rule2CssColor = new HashMap<String, String>();
         rule2CssColor.put("functor", "c0");
         rule2CssColor.put("defined_functor", "c1");
+
+        recentlyOpenedFiles = new ArrayList<>(); // first element = oldest file, last element = latest file
     }
 
     public void addErrorMessage(String string)
@@ -63,6 +63,11 @@ public class EditorModel
         addErrorMessage(e.getLocalizedMessage());
     }
 
+    /**
+     * Loads text into THF area
+     * Does not add to recently opened files
+     * @param stream
+     */
     public void openStream(InputStream stream)
     {
         try
@@ -76,12 +81,19 @@ public class EditorModel
         }
     }
 
+    /**
+     * Loads the content of a file into the THF area
+     * Every opening method MUST use this
+     * Adds to recently opened files
+     * @param file
+     */
     public void openFile(File file)
     {
         try
         {
             InputStream stream = new FileInputStream(file);
             openStream(stream);
+            updateRecentlyOpenedFiles(file);
         }
         catch(java.io.IOException t)
         {
@@ -89,8 +101,17 @@ public class EditorModel
         }
     }
 
-    public void openDirectory(File directory){
-        System.out.println("OPEN DIRECTORY");
+    /**
+     * Updates concerning recently opened files
+     * Is called after opening a file
+     * @param file
+     */
+    private void updateRecentlyOpenedFiles(File file){
+        recentlyOpenedFiles.remove(file.getAbsolutePath());
+        recentlyOpenedFiles.add(file.getAbsolutePath());
+        if (recentlyOpenedFiles.size() > Config.maxRecentlyOpenedFiles) recentlyOpenedFiles.remove(0);
+        Config.setRecentlyOpenedFiles(recentlyOpenedFiles);
+        // TODO reflect in Menu File > recently opened Files
     }
 
     public void updateStyle()

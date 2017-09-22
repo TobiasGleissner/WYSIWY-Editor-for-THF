@@ -18,7 +18,6 @@ public class Config {
     public static String getFont() {
         return prefs.get("font", "monospace");
     }
-
     public static double getFontSize() {
         return prefs.getDouble("fontSize", 12);
     }
@@ -26,16 +25,25 @@ public class Config {
     public static void setFont(String arg) {
         prefs.put("font", arg);
     }
-
     public static void setFontSize(double arg) {
         prefs.putDouble("fontSize", arg);
+    }
+
+    // user actions
+    public static int maxRecentlyOpenedFiles = 20;
+    public static ArrayList<String> getRecentlyOpenedFiles(){
+        String files = prefs.get("recentlyOpenedFiles","");
+        List<String> list = Arrays.asList(files.split(","));
+        return new ArrayList<>(list.stream().map(n -> n.substring(6)).collect(Collectors.toList()));
+    }
+    public static void setRecentlyOpenedFiles(List<String> files){
+        prefs.put("localProverList",files.stream().map(p->"prover" + p).reduce(",",String::concat));
     }
 
     // prover remote
     public static String getUrlSystemOnTPTP() {
         return prefs.get("urlSystemOnTPTP", "http://www.cs.miami.edu/~tptp/cgi-bin/SystemOnTPTP");
     }
-
     public static String getUrlSystemOnTPTPFormReply() {
         return prefs.get("urlSystemOnTPTPFormRepl", "http://www.cs.miami.edu/~tptp/cgi-bin/SystemOnTPTPFormReply");
     }
@@ -43,7 +51,6 @@ public class Config {
     public static void setUrlSystemOnTPTP(String arg) {
         prefs.put("urlSystemOnTPTP", arg);
     }
-
     public static void setUrlSystemOnTPTPFormReply(String arg) {
         prefs.put("urlSystemOnTPTPFormRepl", arg);
     }
@@ -54,7 +61,6 @@ public class Config {
         List<String>  list = Arrays.asList(provers.split(","));
         return list.stream().map(n -> n.substring(6)).collect(Collectors.toList());
     }
-
     public static void setLocalProvers(List<String> provers){
         prefs.put("localProverList",provers.stream().map(p->"prover" + p).reduce(",",String::concat));
     }
@@ -65,7 +71,6 @@ public class Config {
         }
         return prefs.get("prover" + prover,null);
     }
-
     public static void setLocalProverCommand(String prover, String command) {
         prefs.put(prover, command);
     }
