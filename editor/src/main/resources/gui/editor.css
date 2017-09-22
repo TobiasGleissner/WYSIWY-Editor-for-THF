@@ -3,22 +3,23 @@
 
 .root {
     -fx-base: #ececec;
-    -fx-color: -fx-base;
-    -fx-dark-grey: derive(-fx-base,-20%);
-    -fx-icon-dark-grey: derive(-fx-base,-70%);
-    -fx-icon-hover: derive(-fx-icon-dark-grey,50%);
-    -fx-background-light-grey: derive(-fx-color,26.4%);
-    -fx-background-lighter-grey: derive(-fx-color,40%);
-    -fx-background: -fx-background-light-grey;
-    -fx-body-color: derive(-fx-color,-5%);
+    -fx-light-base: derive(-fx-color,26.4%);
+    -fx-lighter-base: derive(-fx-color,40%);
+    -fx-medium-base: derive(-fx-darker-base,50%);
+    -fx-slightly-darker-base: derive(-fx-color,-5%);
+    -fx-dark-base: derive(-fx-base,-20%);
+    -fx-darker-base: derive(-fx-base,-70%);
     -fx-hover-base: ladder(
         -fx-base,
         derive(-fx-base,20%) 20%,
         derive(-fx-base,30%) 35%,
         derive(-fx-base,40%) 50%
      );
-     -fx-cell-hover-color: black;
-     -fx-default-button: transparent;
+    -fx-color: -fx-base;
+    -fx-background: -fx-light-base;
+    -fx-body-color: -fx-slightly-darker-base;
+    -fx-default-button: transparent;
+    -fx-selection-bar: derive(-fx-lighter-base,-5%);
 }
 
 .root.popup {
@@ -28,13 +29,23 @@
 
 /* === icons === */
 
-.menu-icon{
-    -fx-fill: -fx-icon-dark-grey;
+.menu-icon {
+    -fx-font-family: 'FontAwesome';
+    -fx-font-size: 90%;
+    -fx-fill: -fx-darker-base;
 }
 
-.menu-icon:hover{
-    -fx-fill: -fx-icon-hover;
+.menu-icon:hover {
+    -fx-fill: -fx-medium-base;
 }
+
+.filebrowser-icon {
+    -fx-font-family: 'FontAwesome';
+    -fx-font-size: 90%;
+    -fx-fill: -fx-darker-base;
+    -fx-padding: 0em 0.3em 0.5em 0.5em;
+}
+
 
 /* === buttons === */
 
@@ -45,35 +56,44 @@
     -fx-padding: 0em 0.3em 0.5em 0.5em;
 }
 
+
 /* === menubar === */
 
 .menu-bar {
-    -fx-background-color: -fx-background-lighter-grey;
-    -fx-background-insets: 0;
-    -fx-border-width: 0;
+    -fx-background-color: -fx-lighter-base;
+    -fx-background-insets: 0px 80px 0px 0px;
     -fx-border-width: 0px 0px 2px 0px;
     -fx-border-color: transparent transparent derive(-fx-color,2%) transparent;
 }
 
 .menu-bar > .container > .menu-button:hover {
-    -fx-background-color: derive(-fx-background-lighter-grey,-5%);
+    -fx-background-color: -fx-selection-bar;
 }
 
 .menu-bar > .container > .menu-button:hover > .label {
-     -fx-text-fill: -fx-icon-dark-grey;
+     -fx-text-fill: -fx-darker-base;
+}
+
+.context-menu {
+    -fx-background-insets: -1 0 -1 0;
+    -fx-padding: 0;
+}
+
+.context-menu .accelerator-text {
+    -fx-padding: 0 0 0 9;
 }
 
 
 /* === toolbar === */
 
 .tool-bar:horizontal {
-    -fx-background-color: -fx-background-lighter-grey;
+    -fx-background-color: -fx-lighter-base;
     -fx-pref-height: 32;
     -fx-padding: 0 0 -7 11;
     -fx-spacing: 0;
     -fx-background-insets: 0;
     -fx-border-width: 0px 0px 1.5px 0px;
-    -fx-border-color: transparent transparent -fx-dark-grey transparent;
+    -fx-border-color: transparent transparent -fx-dark-base transparent;
 }
 
 .tool-bar:horizontal > .container > .menu-button {
@@ -83,11 +103,11 @@
     -fx-padding: 0em 0.3em 0.5em 0.5em;
 }
 
-.tool-bar > .container > .menu-button > .arrow-button {
-    -fx-padding: 0.5em 0em 0.5em -0.3em;
+.tool-bar:horizontal > .container > .menu-button > .arrow-button {
+    -fx-padding: 0.6em 0em 0.5em -2.55em;
 }
 
-.tool-bar > .container > .menu-button > .arrow-button > .arrow {
+.tool-bar:horizontal > .container > .menu-button > .arrow-button > .arrow {
     -fx-background-color: -fx-body-color, ladder(
         -fx-color,
         white 30%,
@@ -96,6 +116,14 @@
     -fx-pref-width: 5px;
     -fx-shape: "M14.77,23.795L5.185,14.21c-0.879-0.879-0.879-2.317,0-3.195l0.8-0.801c0.877-0.878,2.316-0.878,3.194,0  l7.315,7.315l7.316-7.315c0.878-0.878,2.317-0.878,3.194,0l0.8,0.801c0.879,0.878,0.879,2.316,0,3.195l-9.587,9.585  c-0.471,0.472-1.104,0.682-1.723,0.647C15.875,24.477,15.243,24.267,14.77,23.795z";
 }
+
+.tool-bar:horizontal > .container > .menu-button > .arrow-button > .arrow:hover {
+    -fx-background-color: -fx-body-color, -fx-medium-base;
+}
+
+
+/* === scrollbar === */
+
 
 
 /* === split panes === */
@@ -110,6 +138,10 @@
 
 
 /* === tab panes === */
+
+.tab-pane {
+    -fx-background-color: white;
+}
 
 .tab-pane > .tab-header-area {
     -fx-background-insets: 0;
@@ -135,7 +167,7 @@
 }
 
 .tab-pane:right > .tab-header-area > .headers-region > .tab:selected:right {
-    -fx-background-color: derive(-fx-color,26.4%);
+    -fx-background-color: white;
 }
 
 .tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
@@ -143,7 +175,7 @@
 }
 
 .tab-pane > .tab-header-area > .headers-region > .tab:selected {
-    -fx-background: derive(-fx-color,26.4%);
+    -fx-background: white;
 }
 
 .tab-pane > .tab-header-area > .tab-header-background {
@@ -175,6 +207,41 @@
 }
 
 
+/* === tree view === */
+
+.tree-view {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0, 1;
+    -fx-padding: 1 1 1 1;
+}
+
+.tree-cell > .tree-disclosure-node {
+    -fx-padding: 4 6 4 8;
+}
+
+.tree-cell > .tree-disclosure-node > .arrow {
+    -fx-background-color: -fx-body-color, ladder(
+        -fx-color,
+        white 30%,
+        derive(-fx-color,-63%) 31%
+    );
+    -fx-scale-y: 0.4;
+    -fx-shape: "M14.77,23.795L5.185,14.21c-0.879-0.879-0.879-2.317,0-3.195l0.8-0.801c0.877-0.878,2.316-0.878,3.194,0  l7.315,7.315l7.316-7.315c0.878-0.878,2.317-0.878,3.194,0l0.8,0.801c0.879,0.878,0.879,2.316,0,3.195l-9.587,9.585  c-0.471,0.472-1.104,0.682-1.723,0.647C15.875,24.477,15.243,24.267,14.77,23.795z";
+}
+
+.tree-cell:expanded > .tree-disclosure-node > .arrow {
+    -fx-rotate: -90;
+}
+
+.tree-cell:hover {
+    -fx-background-color: -fx-lighter-base;
+}
+
+.tree-cell:selected{
+    -fx-background-color: -fx-light-base;
+}
+
+
 /* === syntax highlighting === */
 
 .c0 { -fx-fill: #FF0000; }
@@ -186,3 +253,14 @@
 .c6 { -fx-fill: #0000FF; }
 .c7 { -fx-fill: #4B0082; }
 .c8 { -fx-fill: #8B00FF; }
+
+.lineno {
+    -fx-background-color: -fx-lighter-base;
+    -fx-padding: 0 6 0 6;
+}
+
+.lineno .text {
+    -fx-font-style: normal;
+    -fx-font-size: smaller;
+    -fx-font-family: monospace;
+}

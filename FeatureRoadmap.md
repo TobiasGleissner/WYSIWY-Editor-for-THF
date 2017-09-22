@@ -26,6 +26,7 @@ Besides the editor part the software should be able to (locally and remotely) in
 * Automatic check for contradictory axioms
 * Integration of additional tools for formatting, format conversion, semantic embedding of non-classical logics, ... toolchain creation
 * Testing Framework
+* proving history
 
 ### Misc Features
 * TPTP Browser

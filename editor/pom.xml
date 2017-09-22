@@ -37,9 +37,9 @@
                     <target>1.8</target>
                     <testSource>1.8</testSource>
                     <testTarget>1.8</testTarget>
-                    <compilerArgument>
-                        -Xlint:unchecked
-                    </compilerArgument>
+                    <compilerArgs>
+                        <arg>-Xlint:deprecation,unchecked</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
@@ -143,6 +143,16 @@
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx</artifactId>
             <version>8.9</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jiconfont</groupId>
+            <artifactId>jiconfont-javafx</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jiconfont</groupId>
+            <artifactId>jiconfont-bundle</artifactId>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>

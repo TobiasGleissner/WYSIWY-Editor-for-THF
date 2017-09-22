@@ -9,11 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Stack;
@@ -57,6 +53,8 @@ public class EditorModel
     private int parserNodeIdCur = 0;
     private HashMap<Integer, Node> parserNodes;
 
+    private ArrayList<String> recentlyOpenedFiles;
+
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
@@ -64,6 +62,8 @@ public class EditorModel
         rule2CssColor = new HashMap<String, String>();
         rule2CssColor.put("functor", "c0");
         rule2CssColor.put("defined_functor", "c1");
+
+        recentlyOpenedFiles = new ArrayList<>(); // first element = oldest file, last element = latest file
 
         parserNodes = new HashMap();
     }
@@ -79,25 +79,40 @@ public class EditorModel
         addErrorMessage(e.getLocalizedMessage());
     }
 
-    public void openStream(InputStream stream)
+    /**
+     * Loads text into THF area
+     * Does not add to recently opened files
+     * @param stream
+     */
+    public String openStream(InputStream stream)
     {
         try
         {
             byte[] content = IOUtils.toByteArray(stream);
-            thfArea.replaceText(new String(content, StandardCharsets.UTF_8));
+            return new String(content, StandardCharsets.UTF_8);
         }
         catch(IOException e)
         {
             addErrorMessage(e);
         }
+
+        return null;
     }
 
+    /**
+     * Loads the content of a file into the THF area
+     * Every opening method MUST use this
+     * Adds to recently opened files
+     * @param file
+     */
     public void openFile(File file)
     {
         try
         {
             InputStream stream = new FileInputStream(file);
-            openStream(stream);
+            String content = openStream(stream);
+            thfArea.replaceText(content);
+            updateRecentlyOpenedFiles(file);
         }
         catch(java.io.IOException t)
         {
@@ -105,8 +120,17 @@ public class EditorModel
         }
     }
 
-    public void openDirectory(File directory){
-        System.out.println("OPEN DIRECTORY");
+    /**
+     * Updates concerning recently opened files
+     * Is called after opening a file
+     * @param file
+     */
+    private void updateRecentlyOpenedFiles(File file){
+        recentlyOpenedFiles.remove(file.getAbsolutePath());
+        recentlyOpenedFiles.add(file.getAbsolutePath());
+        if (recentlyOpenedFiles.size() > Config.maxRecentlyOpenedFiles) recentlyOpenedFiles.remove(0);
+        Config.setRecentlyOpenedFiles(recentlyOpenedFiles);
+        // TODO reflect in Menu File > recently opened Files
     }
 
     public void updateStyle()

@@ -46,7 +46,7 @@
                                         <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
-                                <MenuItem text="Exit">
+                                <MenuItem onAction="#onNAMEExit" text="Exit">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
@@ -63,15 +63,14 @@
                                     </accelerator>
                                 </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false" />
-                                <MenuItem onAction="#onFileOpen" text="Open file">
+                                <MenuItem onAction="#onFileOpen" text="Open File">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
-                                <SeparatorMenuItem mnemonicParsing="false" />
-                                <MenuItem onAction="#onDirectoryOpen" text="Open directory">
+                                <MenuItem onAction="#onDirectoryOpen" text="Open Directory">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                        <KeyCodeCombination alt="UP" code="D" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false" />
@@ -138,22 +137,35 @@
                             </items>
                         </Menu>
 
-                        <!-- menuitem prover -->
-                        <Menu text="Prover">
+                        <!-- menuitem view -->
+                        <Menu fx:id="menubarView" text="View">
                             <items>
-                                <MenuItem text="Run">
+                                <Menu text="Tool Windows">
+                                    <items>
+                                        <MenuItem text="Project" onAction="#onViewToolWindowProject">
+                                        </MenuItem>
+                                    </items>
+                                </Menu>
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem text="Increase Font Size" onAction="#onViewIncreaseFontSize">
+                                </MenuItem>
+                                <MenuItem text="Decrease Font Size" onAction="#onViewDecreaseFontSize">
+                                </MenuItem>
+                                <MenuItem text="Enter Presentation mode" onAction="#onViewEnterPresentationMode">
+                                </MenuItem>
+
+                            </items>
+                        </Menu>
+
+                        <!-- menuitem prover -->
+                        <Menu fx:id="menubarRunProver" text="Prover">
+                            <items>
+                                <MenuItem text="Run selected Prover">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="R" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false" />
-                                <RadioMenuItem mnemonicParsing="false" selected="true" text="LEO-III">
-                                   <toggleGroup>
-                                      <ToggleGroup fx:id="SelectedProver" />
-                                   </toggleGroup>
-                                </RadioMenuItem>
-                                <RadioMenuItem mnemonicParsing="false" text="Satallax" toggleGroup="$SelectedProver" />
-                                <RadioMenuItem mnemonicParsing="false" text="Vampire" toggleGroup="$SelectedProver" />
                             </items>
                         </Menu>
 
@@ -198,15 +210,14 @@
                         <HBox prefWidth="20" />
                     </items>
                     <items>
-                        <MenuButton mnemonicParsing="false">
+                        <Button mnemonicParsing="false">
                             <graphic>
                                <FontAwesomeIconView glyphName="PLAY" styleClass="menu-icon" />
                             </graphic>
-                            <tooltip><Tooltip text="Run Prover" /></tooltip>
-                            <items>
-                                <MenuItem mnemonicParsing="false" text="Action 1" />
-                                <MenuItem mnemonicParsing="false" text="Action 2" />
-                            </items>
+                            <tooltip><Tooltip text="Run selected Prover" /></tooltip>
+                        </Button>
+                        <MenuButton fx:id="toolbarRunProver" mnemonicParsing="false">
+                            <tooltip><Tooltip text="Select and run Prover" /></tooltip>
                         </MenuButton>
                     </items>
                     <!-- debug buttons -->
@@ -236,23 +247,13 @@
                         <!-- tabs left -->
                         <TabPane prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
-                                <Tab text="File Browser">
+                                <Tab text="Project">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                         <FileTreeView fx:id="fileBrowser"/>
                                     </content>
                                 </Tab>
-                                <Tab text="List of Axioms">
-                                    <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                    </content>
-                                </Tab>
-                                <Tab text="List of Types">
-                                    <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                    </content>
-                                </Tab>
-                                <Tab text="List of Constants">
+                                <Tab text="Structure">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                     </content>
@@ -267,6 +268,7 @@
                         <WebView fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />
 
                         <!-- tabs right -->
+                        <!--
                         <TabPane prefHeight="200.0" prefWidth="200.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
                                 <Tab text="1">
@@ -286,6 +288,7 @@
                                 </Tab>
                             </tabs>
                         </TabPane>
+                        -->
 
                     </items>
                 </SplitPane>
