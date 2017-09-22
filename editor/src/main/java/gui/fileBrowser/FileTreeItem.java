@@ -29,11 +29,11 @@ public class FileTreeItem extends TreeItem<FileWrapper> {
     static Image imageTPTP;
     static Image imageDirectory;
     static{
-        InputStream image = ClassLoader.getSystemResourceAsStream("gui/images/fileBrowser/defaultFile.png");
+        InputStream image = FileTreeItem.class.getResourceAsStream("/gui/images/fileBrowser/defaultFile.png");
         imageFile = new Image(image, 10, 10, false, false);
-        image = ClassLoader.getSystemResourceAsStream("gui/images/fileBrowser/TPTP.png");
+        image = FileTreeItem.class.getResourceAsStream("/gui/images/fileBrowser/TPTP.png");
         imageTPTP = new Image(image, 10, 10, false, false);
-        image = ClassLoader.getSystemResourceAsStream("gui/images/fileBrowser/folder.png");
+        image = FileTreeItem.class.getResourceAsStream("/gui/images/fileBrowser/folder.png");
         imageDirectory = new Image(image, 10, 10, false, false);
     }
     File file;
