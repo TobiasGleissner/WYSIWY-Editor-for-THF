@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.List;
+import java.util.Optional;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -32,7 +33,9 @@ import javafx.event.ActionEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
-
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 
@@ -191,7 +194,8 @@ public class EditorController implements Initializable {
         MenuItem copyContent = new MenuItem("Copy file content to clipboard");
         MenuItem cutFile = new MenuItem("Cut");
         MenuItem pasteFile = new MenuItem("Paste");
-        contextMenuFile.getItems().addAll(copyFileName, copyPathFile, copyRelPathFile, copyContent, cutFile, pasteFile);
+        MenuItem deleteFile = new MenuItem("Delete");
+        contextMenuFile.getItems().addAll(copyFileName, copyPathFile, copyRelPathFile, copyContent, cutFile, pasteFile, deleteFile);
 
         cut.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -254,6 +258,26 @@ public class EditorController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 copyFilePathToClipboard(true);
+            }
+        });
+        
+        // Delete file in file browser.
+        deleteFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                TreeItem<FileWrapper> item = fileBrowser.getSelectionModel().getSelectedItem();
+                File file = new File(getPathToSelectedItem(item, true, false).toString());
+                
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Delete file");
+                alert.setHeaderText("Delete file?");
+                alert.setContentText("Do you really want to delete the file "+item.getValue().toString()+"?");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK){
+                    file.delete();
+                    item.getParent().getChildren().remove(item);
+                }
             }
         });
 
