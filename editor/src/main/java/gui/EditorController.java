@@ -183,12 +183,12 @@ public class EditorController implements Initializable {
                 }
         );
 
-        engine.setOnAlert(t -> System.out.println(t));
-        engine.setOnError(e -> System.out.println(e.getMessage()));
+        model.engine.setOnAlert(t -> System.out.println(t));
+        model.engine.setOnError(e -> System.out.println(e.getMessage()));
 
         try
         {
-            engine.loadContent(
+            model.engine.loadContent(
                 IOUtils.toString(getClass().getResourceAsStream("/gui/editor.html"), "UTF-8")
             );
         }
