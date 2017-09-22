@@ -248,7 +248,7 @@ public class EditorController implements Initializable {
      * @return the path of the selected item.
      */
     private Path getPathToSelectedItem(TreeItem<FileWrapper> selectedItem, Boolean onlyLeavesAllowed) {
-        if (onlyLeavesAllowed && !selectedItem.isLeaf()) {
+        if ( selectedItem == null || onlyLeavesAllowed && !selectedItem.isLeaf()) {
             return null;
         }
         Path root = dir.toPath();
