@@ -248,11 +248,17 @@ public class EditorController implements Initializable {
         return root;
     }
     
+    /**
+     * Copy path of selected item in file browser to system clipboard.
+     */
     private void copyFilePathToClipboard() {
         Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false);
         copyStringToClipboard(path.toString());
     }
     
+    /**
+     * Copy @param string to system clipboard.
+     */
     private void copyStringToClipboard(String string) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         StringSelection selection = new StringSelection(string);
