@@ -408,6 +408,8 @@ public class EditorModel
                         newSpan.appendChild(doc.createTextNode(builder.toString()));
                         newNode.appendChild(newSpan);
                         
+                        builder.delete(0, builder.length());
+                        
                         if (spanElements.size() > 0) {
                             spanElement = spanElements.pop();
                             nextEnd = spanElement.getEndIndex();
@@ -417,6 +419,7 @@ public class EditorModel
                 }
                 
                 Text textNode = doc.createTextNode(builder.toString());
+                builder.delete(0, builder.length());
                 newNode.appendChild(textNode);
             }
             newRoot.insertBefore(newNode, sibling);
