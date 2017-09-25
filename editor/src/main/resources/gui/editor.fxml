@@ -253,7 +253,6 @@
                                 <Tab fx:id="tabPaneLeftCollapse" styleClass="tab-collapse" />
                                 <Tab text="Project">
                                     <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                         <FileTreeView fx:id="fileBrowser"/>
                                     </content>
                                 </Tab>
