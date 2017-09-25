@@ -63,8 +63,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 
-import com.sun.javafx.webkit.WebConsoleListener;
-
 import netscape.javascript.JSObject;
 
 import javax.xml.transform.Transformer;
@@ -77,12 +75,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.model.RichTextChange;
-import org.fxmisc.richtext.model.PlainTextChange;
-import org.fxmisc.richtext.model.StyledText;
 
 import org.apache.commons.io.IOUtils;
 
@@ -168,12 +160,14 @@ public class EditorController implements Initializable {
         wysArea.richChanges().subscribe(this::onWYSTextChange);
         */
 
+        /*
         WebConsoleListener.setDefaultListener(new WebConsoleListener(){
             @Override
             public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
                 System.out.println("Console: [" + sourceId + ":" + lineNumber + "] " + message);
             }
         });
+        */
 
         //this.model.thfArea = thfArea;
         //this.model.wysArea = wysArea;
@@ -545,22 +539,6 @@ public class EditorController implements Initializable {
     @FXML
     private void onPrintTree(ActionEvent e) {
         model.printTPTPTrees();
-    }
-
-    @FXML
-    private void onTHFTextChange(PlainTextChange change) {
-        if(change.getInserted().equals(change.getRemoved()))
-            return;
-
-        //System.out.println("inserted = " + change.getInserted().getText());
-        //System.out.println("removed  = " + change.getRemoved().getText());
-
-        model.updateTHFTree(change.getPosition(), change.getInsertionEnd(), change.getRemovalEnd());
-    }
-
-    @FXML
-    private void onWYSTextChange(RichTextChange<Collection<String>,StyledText<Collection<String>>,Collection<String>> change) {
-        System.out.println("wysiwyg change");
     }
 
     private void addCurrentlyAvailableProversToMenus() {

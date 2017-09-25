@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.Menu?>
@@ -20,7 +19,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
-<?import org.fxmisc.richtext.CodeArea?>
+<?import javafx.scene.text.Font?>
 
 <?import javafx.scene.control.TreeView?>
 <?import gui.fileBrowser.FileTreeView?>
@@ -184,25 +183,22 @@
                 <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
                         <Button onAction="#onTestPref">
-                            <graphic>
-                                <FontAwesomeIconView glyphName="BEER" styleClass="menu-icon" />
-                            </graphic>
+                            <font><Font name="FontAwesome"/></font>
+                            &#xf0fc; <!-- BEER -->
                             <tooltip><Tooltip text="Button Testing Preferences" /></tooltip>
                         </Button>
                     </items>
                     <items>
                         <Button onAction="#onReparse">
-                           <graphic>
-                              <FontAwesomeIconView glyphName="BED" styleClass="menu-icon" />
-                           </graphic>
+                            <font><Font name="FontAwesome"/></font>
+                            &#xf236; <!-- BED -->
                            <tooltip><Tooltip text="Parse again" /></tooltip>
                         </Button>
                     </items>
                     <items>
                         <Button onAction="#onPrintTree">
-                            <graphic>
-                               <FontAwesomeIconView glyphName="HEART" styleClass="menu-icon" />
-                            </graphic>
+                            <font><Font name="FontAwesome"/></font>
+                            &#xf004; <!-- HEART -->
                             <tooltip><Tooltip text="Print the THF tree" /></tooltip>
                          </Button>
                     </items>
@@ -211,9 +207,7 @@
                     </items>
                     <items>
                         <Button mnemonicParsing="false">
-                            <graphic>
-                               <FontAwesomeIconView glyphName="PLAY" styleClass="menu-icon" />
-                            </graphic>
+                            PLAY
                             <tooltip><Tooltip text="Run selected Prover" /></tooltip>
                         </Button>
                         <MenuButton fx:id="toolbarRunProver" mnemonicParsing="false">

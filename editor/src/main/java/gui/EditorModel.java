@@ -23,10 +23,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
-
 import org.apache.commons.io.IOUtils;
 
 import parser.AstGen;
@@ -38,9 +34,6 @@ import util.tree.Node;
 
 public class EditorModel
 {
-    public CodeArea thfArea;
-    public CodeArea wysArea;
-
     public WebEngine engine;
     public Document doc;
     public WebKitStyle style;
@@ -109,7 +102,7 @@ public class EditorModel
         {
             InputStream stream = new FileInputStream(file);
             String content = openStream(stream);
-            thfArea.replaceText(content);
+            // thfArea.replaceText(content);
             updateRecentlyOpenedFiles(file);
         }
         catch(java.io.IOException t)
@@ -163,35 +156,6 @@ public class EditorModel
             addSyntaxHighlighting(0, tptpInputNodes.size() - 1);
         }
         */
-    }
-
-    private void addSyntaxHighlighting(int start, int end) {
-        ListIterator<Node> itr = tptpInputNodes.listIterator(start);
-
-        while (itr.hasNext() && itr.nextIndex() <= end) {
-            Node next = itr.next();
-            addHighlightingToTptpInput(next);
-        }
-    }
-
-    private void addHighlightingToTptpInput(Node node) {
-        int baseStartIndex = node.startIndex;
-
-        for (Node child : node.getChildren()) {
-            addHighlighting(child, baseStartIndex);
-        }
-    }
-
-    private void addHighlighting(Node node, int baseStartIndex) {
-        String style = rule2CssColor.get(node.getRule());
-
-        if (style != null) {
-            thfArea.setStyle(baseStartIndex + node.startIndex, baseStartIndex + node.stopIndex + 1, Collections.singleton(style));
-        }
-
-        for (Node child : node.getChildren()) {
-            addHighlighting(child, baseStartIndex);
-        }
     }
 
     private void reparseArea(int oldNodeId, boolean removeLeft, boolean removeRight)
@@ -467,107 +431,6 @@ public class EditorModel
             }
             newRoot.insertBefore(newNode, sibling);
         }
-    }
-
-    public void updateTHFTree(int start, int insEnd, int delEnd)
-    {
-        int offset = insEnd - delEnd;
-
-        int parseStart = -1;
-        int parseEnd = -1;
-
-        ListIterator<Node> nodeIt = tptpInputNodes.listIterator();
-
-        /* First we skip all nodes that don't reach the changed area yet.
-         * TODO: This could be optimized with trees. */
-        Node prev = null;
-        while(nodeIt.hasNext())
-        {
-            Node next = nodeIt.next();
-
-            int nextIndex = next.stopIndex+1;
-            // System.out.println("startIndex = " + next.startIndex + ", nextIndex = " + nextIndex + ", start = " + start);
-
-            if(nextIndex >= start)
-            {
-                // System.out.println("delete[0]");
-                nodeIt.remove();
-                break;
-            }
-
-            prev = next;
-        }
-
-        if(prev != null)
-            parseStart = prev.stopIndex+1;
-
-        /* Now we delete all nodes that reach the changed area. */
-        while(nodeIt.hasNext())
-        {
-            Node next = nodeIt.next();
-
-            if(next.startIndex <= delEnd)
-            {
-                // System.out.println("delete[1]");
-                nodeIt.remove();
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        if(nodeIt.hasNext())
-        {
-            Node next = nodeIt.next();
-            if(parseEnd == -1)
-                parseEnd = next.startIndex;
-
-            nodeIt.previous();
-        }
-
-        /* If we didn't find any preceeding or following completely parsed
-         * chunks we have to bite the bullet and need to restart the parser
-         * with the maxial constraints. */
-        if(parseStart == -1)
-            parseStart = 0;
-        if(parseEnd == -1)
-            parseEnd = thfArea.getLength();
-
-        /* Reparse the changed area we identified. */
-        // reparseArea(parseStart, parseEnd, nodeIt);
-
-        /* Now we update all nodes following the changed area. */
-        while(nodeIt.hasNext())
-        {
-            Node next = nodeIt.next();
-
-            next.startIndex += offset;
-            next.stopIndex += offset;
-
-            if(parseEnd == -1)
-                parseEnd = next.startIndex;
-        }
-    }
-
-    public void updateRainbows()
-    {
-        String text = thfArea.getText();
-
-        if(text.length() < 4)
-            return;
-
-        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<Collection<String>>();
-        for(int i = 0; i < text.length()/4; ++i)
-        {
-            if(text.charAt(i) == '\n')
-                spansBuilder.add(Collections.emptyList(), 1);
-            else
-                spansBuilder.add(Collections.singleton("c" + (i%8+1)), 4);
-        }
-
-        StyleSpans<Collection<String>> spans = spansBuilder.create();
-        thfArea.setStyleSpans(0, spans);
     }
 
     public void onViewIncreaseFontSize() {
