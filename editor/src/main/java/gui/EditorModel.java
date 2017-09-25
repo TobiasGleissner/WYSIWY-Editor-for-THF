@@ -424,7 +424,7 @@ public class EditorModel
                     lastParsedToken++;
                     
                     if (lastParsedToken == nextEnd + 1) {
-                        Element newSpan = doc.createElement("span");
+                        Element newSpan = doc.createElement("subsection");
                         newSpan.setAttribute("class", spanElement.getTag());
                         newSpan.appendChild(doc.createTextNode(builder.toString()));
                         newNode.appendChild(newSpan);
