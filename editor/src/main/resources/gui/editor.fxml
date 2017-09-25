@@ -39,7 +39,7 @@
                                         <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
-                                <MenuItem text="Preferences">
+                                <MenuItem text="Preferences" onAction="#onPreferences">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>

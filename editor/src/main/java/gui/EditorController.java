@@ -21,16 +21,21 @@ import java.util.LinkedList;
 
 import gui.fileStructure.StructureTreeView;
 
+import gui.preferences.PreferencesController;
+import gui.preferences.PreferencesModel;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 
+import javafx.scene.Scene;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.scene.control.Alert;
@@ -469,5 +474,25 @@ public class EditorController implements Initializable {
 
     @FXML
     public void onViewEnterPresentationMode(ActionEvent actionEvent) {
+    }
+
+    public void onPreferences(ActionEvent actionEvent) {
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/preferences.fxml"));
+        loader.setControllerFactory(t->new PreferencesController(new PreferencesModel(), stage));
+
+        Scene scene = null;
+        try {
+            scene = new Scene(loader.load());
+            stage.setScene(scene);
+            //stage.initModality(Modality.APPLICATION_MODAL);
+            //stage.setAlwaysOnTop(true);
+            stage.show();
+            //stage.toFront();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
