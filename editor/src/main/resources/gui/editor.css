@@ -29,13 +29,24 @@
 
 /* === icons === */
 
-.menu-icon {
+.icon {
     -fx-font-family: 'FontAwesome';
     -fx-font-size: 90%;
     -fx-fill: -fx-darker-base;
 }
 
-.menu-icon:hover {
+.icon:hover {
+    -fx-fill: -fx-medium-base;
+}
+
+.tabpane-icon {
+    -fx-font-family: 'FontAwesome';
+    -fx-font-size: 100%;
+    -fx-fill: -fx-darker-base;
+    -fx-rotate: 180;
+}
+
+.tabpane-icon:hover {
     -fx-fill: -fx-medium-base;
 }
 
@@ -152,6 +163,10 @@
     -fx-background-insets: 8, 8 8 8 8, 8;
 }
 
+.tab-collapse:hover {
+    -fx-background-color: transparent;
+}
+
 .tab-pane > .tab-header-area > .headers-region > .tab {
     -fx-background: -fx-body-color;
     -fx-background-insets: 0;
@@ -160,10 +175,6 @@
     -fx-faint-focus-color: transparent;
     -fx-padding: 0 10 0 10;
     -fx-border-width:0px;
-}
-
-.tab-collapse:hover {
-    -fx-background-color: -fx-body-color;
 }
 
 .tab-pane:right > .tab-header-area > .headers-region > .tab:right {

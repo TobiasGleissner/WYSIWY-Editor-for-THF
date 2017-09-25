@@ -21,8 +21,6 @@ import java.util.Optional;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import java.text.DecimalFormat;
-
 import gui.preferences.PreferencesController;
 import gui.preferences.PreferencesModel;
 import javafx.beans.value.ChangeListener;
@@ -64,6 +62,9 @@ import org.fxmisc.richtext.model.RichTextChange;
 import org.fxmisc.richtext.model.PlainTextChange;
 import org.fxmisc.richtext.model.StyledText;
 
+import jiconfont.icons.FontAwesome;
+import jiconfont.javafx.IconNode;
+
 import gui.fileBrowser.FileTreeView;
 import gui.fileStructure.StructureTreeView;
 import gui.fileBrowser.FileWrapper;
@@ -76,6 +77,8 @@ public class EditorController implements Initializable {
     private EditorModel model;
     private Stage mainStage;
     private File dir;
+    static FontAwesome iconCollapse = FontAwesome.ARROW_DOWN;
+    static FontAwesome iconUncollapse = FontAwesome.ARROW_UP;
 
     @FXML
     private Menu menubarRunProver;
@@ -460,6 +463,9 @@ public class EditorController implements Initializable {
     }
 
     private void makeTabPaneCollapsable() {
+        IconNode icon = new IconNode(iconUncollapse);
+        icon.getStyleClass().add("tabpane-icon");
+        tabPaneLeftCollapse.setGraphic(icon);
         tabPaneLeft.getSelectionModel().select(1);
         tabPaneLeft.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
             @Override
@@ -468,13 +474,19 @@ public class EditorController implements Initializable {
                     double width = splitPaneVertical.getWidth();
                     double[] orgDividerPositions = splitPaneVertical.getDividerPositions();
                     double minDividerPosition = tabPaneLeft.getTabMaxHeight()/width;
+                    IconNode icon;
                     if (minDividerPosition/orgDividerPositions[0]<0.95) {
+                        icon = new IconNode(iconCollapse);
+                        tabPaneLeftCollapse.setGraphic(icon);
                         splitPaneVertical.setDividerPosition(0,minDividerPosition+(1/width));
                         splitPaneVertical.setResizableWithParent(tabPaneLeft, Boolean.FALSE);
                     } else {
+                        icon = new IconNode(iconUncollapse);
                         splitPaneVertical.setDividerPosition(0,0.2);
                         splitPaneVertical.setResizableWithParent(tabPaneLeft, Boolean.TRUE);
                     }
+                    icon.getStyleClass().add("tabpane-icon");
+                    tabPaneLeftCollapse.setGraphic(icon);
                     tabPaneLeft.getSelectionModel().select(oldTab);
                 }
             }

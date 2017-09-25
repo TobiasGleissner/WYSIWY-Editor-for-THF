@@ -188,7 +188,7 @@
                     <items>
                         <Button onAction="#onTestPref">
                             <graphic>
-                                <FontAwesomeIconView glyphName="BEER" styleClass="menu-icon" />
+                                <FontAwesomeIconView glyphName="BEER" styleClass="icon" />
                             </graphic>
                             <tooltip><Tooltip text="Button Testing Preferences" /></tooltip>
                         </Button>
@@ -196,7 +196,7 @@
                     <items>
                         <Button onAction="#onReparse">
                            <graphic>
-                              <FontAwesomeIconView glyphName="BED" styleClass="menu-icon" />
+                              <FontAwesomeIconView glyphName="BED" styleClass="icon" />
                            </graphic>
                            <tooltip><Tooltip text="Parse again" /></tooltip>
                         </Button>
@@ -204,7 +204,7 @@
                     <items>
                         <Button onAction="#onPrintTree">
                             <graphic>
-                               <FontAwesomeIconView glyphName="HEART" styleClass="menu-icon" />
+                               <FontAwesomeIconView glyphName="HEART" styleClass="icon" />
                             </graphic>
                             <tooltip><Tooltip text="Print the THF tree" /></tooltip>
                          </Button>
@@ -215,7 +215,7 @@
                     <items>
                         <Button mnemonicParsing="false">
                             <graphic>
-                               <FontAwesomeIconView glyphName="PLAY" styleClass="menu-icon" />
+                               <FontAwesomeIconView glyphName="PLAY" styleClass="icon" />
                             </graphic>
                             <tooltip><Tooltip text="Run selected Prover" /></tooltip>
                         </Button>
@@ -250,8 +250,7 @@
                         <!-- tabs left -->
                         <TabPane fx:id="tabPaneLeft" prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
-                                <Tab fx:id="tabPaneLeftCollapse" text="c" styleClass="tab-collapse">
-                                </Tab>
+                                <Tab fx:id="tabPaneLeftCollapse" styleClass="tab-collapse" />
                                 <Tab text="Project">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
