@@ -5,7 +5,10 @@
 .variable {
     color: #04859D;
 }
-.thf_unitary_type .thf_apply_type .thf_unitary_type{
+.thf_unitary_type {
+    color: #FF0000;
+}
+.thf_apply_type {
     color: #FF0000;
 }
 .thf_binary_type {

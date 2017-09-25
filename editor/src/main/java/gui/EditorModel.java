@@ -5,13 +5,13 @@ import java.io.StringReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Stack;
-
 import java.lang.Throwable;
 
 import javafx.scene.web.WebEngine;
@@ -29,7 +29,7 @@ import parser.AstGen;
 import parser.ParseContext;
 
 import exceptions.ParseException;
-
+import util.SpanElement;
 import util.tree.Node;
 
 public class EditorModel
@@ -44,12 +44,31 @@ public class EditorModel
     private HashMap<Integer, Node> parserNodes;
 
     private ArrayList<String> recentlyOpenedFiles;
+    
+    private LinkedList<String> css;
 
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
         recentlyOpenedFiles = new ArrayList<>(); // first element = oldest file, last element = latest file
         parserNodes = new HashMap();
+        
+        // Extract css classes for syntax highlighting from our css file.
+        this.css = new LinkedList<String>();
+        Scanner scanner;
+        try {
+            scanner = new Scanner(new FileReader("./src/main/resources/gui/editorHighlighting.css"));
+            String match = null;
+            Pattern pattern = Pattern.compile("\\n\\s*(\\.[^\\. ]+)\\s*\\{");
+            while ((match = scanner.findWithinHorizon(pattern, 0)) != null) {
+                Matcher matcher = pattern.matcher(match);
+                matcher.find();
+                css.add(matcher.group(1).substring(1));
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            addErrorMessage(e);
+        }
     }
 
     public void addErrorMessage(String string)
@@ -314,7 +333,7 @@ public class EditorModel
             if(!hasError)
                 node = parseContext.getRoot().getFirstChild();
 
-            if(hasError || node.stopIndex <= node.startIndex)
+            if(hasError || node.stopIndex < node.startIndex)
             {
                 node = new Node("not_parsed");
                 parserNodes.put(new Integer(parserNodeIdCur), node);
@@ -342,7 +361,11 @@ public class EditorModel
             }
 
             parserNodes.put(new Integer(parserNodeIdCur), node);
-
+            
+            // Start preprocessing for highlighting
+            LinkedList<SpanElement> spanElements = new LinkedList<SpanElement>();
+            addSpanElements(node, spanElements);
+            
             Element newNode = doc.createElement("span");
             newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
             newNode.setAttribute("class", "hm_node");
@@ -351,6 +374,15 @@ public class EditorModel
 
             /* NOTE: Highlighting modifies this part! */
             String[] lines = part.split("\n");
+            int lastParsedToken = 0;
+            int nextEnd = -1;
+            int startIndex = -1;
+            SpanElement spanElement = null;
+            if (spanElements.size() > 0) {
+                spanElement = spanElements.pop();
+                nextEnd = spanElement.getEndIndex();
+                startIndex = spanElement.getStartIndex();
+            }
             for(int i = 0; i < lines.length; ++i)
             {
                 if(i != 0)
@@ -359,11 +391,50 @@ public class EditorModel
                     newNode.appendChild(br);
                 }
 
-                Text textNode = doc.createTextNode(lines[i]);
+                
+                StringBuilder builder = new StringBuilder();
+                
+                for (int j = 0; j < lines[i].length(); j++) {
+                    if (lastParsedToken == startIndex && builder.length() > 0) {
+                        newNode.appendChild(doc.createTextNode(builder.toString()));
+                    }
+                    
+                    builder.append(lines[i].charAt(j));
+                    lastParsedToken++;
+                    
+                    if (lastParsedToken == nextEnd + 1) {
+                        Element newSpan = doc.createElement("span");
+                        newSpan.setAttribute("class", spanElement.getTag());
+                        newSpan.appendChild(doc.createTextNode(builder.toString()));
+                        newNode.appendChild(newSpan);
+                        
+                        if (spanElements.size() > 0) {
+                            spanElement = spanElements.pop();
+                            nextEnd = spanElement.getEndIndex();
+                            startIndex = spanElement.getStartIndex();
+                        }
+                    }
+                }
+                
+                Text textNode = doc.createTextNode(builder.toString());
                 newNode.appendChild(textNode);
             }
             newRoot.insertBefore(newNode, sibling);
         }
+    }
+
+    private void addSpanElements(Node node, LinkedList<SpanElement> spanElements) {
+        if (node == null)
+            return;
+        
+        if (css.contains(node.getRule())) {
+            spanElements.add(new SpanElement(node.startIndex, node.stopIndex, node.getRule()));
+        }
+        
+        for (Node n : node.getChildren()) {
+            addSpanElements(n, spanElements);
+        }
+        
     }
 
     public void onViewIncreaseFontSize() {
