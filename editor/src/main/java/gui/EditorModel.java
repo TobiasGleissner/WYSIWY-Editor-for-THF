@@ -391,12 +391,12 @@ public class EditorModel
                     newNode.appendChild(br);
                 }
 
-                
                 StringBuilder builder = new StringBuilder();
                 
                 for (int j = 0; j < lines[i].length(); j++) {
                     if (lastParsedToken == startIndex && builder.length() > 0) {
                         newNode.appendChild(doc.createTextNode(builder.toString()));
+                        builder.delete(0, builder.length());
                     }
                     
                     builder.append(lines[i].charAt(j));
