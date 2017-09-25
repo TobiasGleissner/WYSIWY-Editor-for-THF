@@ -409,6 +409,7 @@ public class EditorModel
                 {
                     Element br = doc.createElement("br");
                     newNode.appendChild(br);
+                    lastParsedToken++;
                 }
 
                 StringBuilder builder = new StringBuilder();
