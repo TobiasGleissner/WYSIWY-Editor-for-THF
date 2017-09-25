@@ -56,19 +56,15 @@ public class EditorModel
         // Extract css classes for syntax highlighting from our css file.
         this.css = new LinkedList<String>();
         Scanner scanner;
-        try {
-            scanner = new Scanner(new FileReader("./src/main/resources/gui/editorHighlighting.css"));
-            String match = null;
-            Pattern pattern = Pattern.compile("\\n\\s*(\\.[^\\. ]+)\\s*\\{");
-            while ((match = scanner.findWithinHorizon(pattern, 0)) != null) {
-                Matcher matcher = pattern.matcher(match);
-                matcher.find();
-                css.add(matcher.group(1).substring(1));
-            }
-            scanner.close();
-        } catch (FileNotFoundException e) {
-            addErrorMessage(e);
+        scanner = new Scanner(getClass().getResourceAsStream("/gui/editorHighlighting.css"));
+        String match = null;
+        Pattern pattern = Pattern.compile("\\n\\s*(\\.[^\\. ]+)\\s*\\{");
+        while ((match = scanner.findWithinHorizon(pattern, 0)) != null) {
+            Matcher matcher = pattern.matcher(match);
+            matcher.find();
+            css.add(matcher.group(1).substring(1));
         }
+        scanner.close();
     }
 
     public void addErrorMessage(String string)
