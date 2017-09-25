@@ -57,7 +57,7 @@ public class Config {
 
     // prover local
     public static List<String> getLocalProvers(){
-        String provers = prefs.get("localProverList","proversatallax,proverleo2,provernitpick");
+        String provers = prefs.get("localProverList","proversatallax");
         List<String>  list = Arrays.asList(provers.split(","));
         return list.stream()
                 .filter(n->n.length() >= 6).filter(n-> n.substring(0,6).equals("prover"))

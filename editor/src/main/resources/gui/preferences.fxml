@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import javafx.scene.control.TextField?>
 <AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.preferences.PreferencesController">
    <children>
       <TabPane prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE">
@@ -21,11 +22,12 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ComboBox id="localProversCombo" layoutX="325.0" layoutY="40.0" prefHeight="26.0" prefWidth="198.0" />
-                        <Button id="applyButton" onAction="#onApplyProvers" layoutX="531.0" layoutY="40.0" mnemonicParsing="false" text="Apply" />
-                        <Button id="newProverButton" onAction="#onNewProver" layoutX="531.0" layoutY="80.0" mnemonicParsing="false" text="Apply" />
-                        <Button id="testProverCommandButton" onAction="#onTestProver" layoutX="531.0" layoutY="120.0" mnemonicParsing="false" text="Test Provers" />
-                        <TextArea id="proverCommandTextArea" layoutX="14.0" layoutY="40.0" prefHeight="120.0" prefWidth="303.0" />
+                        <ComboBox fx:id="localProversComboBox" layoutX="325.0" layoutY="40.0" prefHeight="26.0" prefWidth="198.0" />
+                        <Button fx:id="applyButton" onAction="#onApplyProvers" layoutX="531.0" layoutY="40.0" mnemonicParsing="false" text="Apply" />
+                         <Button fx:id="newProverButton" onAction="#onNewProver" layoutX="531.0" layoutY="80.0" mnemonicParsing="false" text="New" />
+                         <Button fx:id="deleteProverButton" onAction="#onDeleteProver" layoutX="531.0" layoutY="120.0" mnemonicParsing="false" text="Delete" />
+                        <Button fx:id="testProverCommandButton" onAction="#onTestProver" layoutX="531.0" layoutY="160.0" mnemonicParsing="false" text="Test Provers" />
+                        <TextField fx:id="proverCommandTextField" layoutX="14.0" layoutY="40.0" prefHeight="120.0" prefWidth="303.0" />
                         <Label layoutX="14.0" layoutY="19.0" text="Indicate filename with %f and timeout with %t" />
                      </children>
                   </AnchorPane>
