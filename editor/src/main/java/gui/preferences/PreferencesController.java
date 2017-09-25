@@ -30,4 +30,6 @@ public class PreferencesController implements Initializable {
         System.out.println("ontest");
     }
 
+    public void onNewProver(ActionEvent actionEvent) {
+    }
 }
