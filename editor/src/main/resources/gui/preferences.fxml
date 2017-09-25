@@ -9,6 +9,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TreeView?>
 <AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.preferences.PreferencesController">
    <children>
       <TabPane prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE">
@@ -20,17 +22,25 @@
             </Tab>
             <Tab text="Provers">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ComboBox fx:id="localProversComboBox" layoutX="325.0" layoutY="40.0" prefHeight="26.0" prefWidth="198.0" />
-                        <Button fx:id="applyButton" onAction="#onApplyProvers" layoutX="531.0" layoutY="40.0" mnemonicParsing="false" text="Apply" />
-                         <Button fx:id="newProverButton" onAction="#onNewProver" layoutX="531.0" layoutY="80.0" mnemonicParsing="false" text="New" />
-                         <Button fx:id="deleteProverButton" onAction="#onDeleteProver" layoutX="531.0" layoutY="120.0" mnemonicParsing="false" text="Delete" />
-                        <Button fx:id="testProverCommandButton" onAction="#onTestProver" layoutX="531.0" layoutY="160.0" mnemonicParsing="false" text="Test Provers" />
-                        <TextField fx:id="proverCommandTextField" layoutX="14.0" layoutY="40.0" prefHeight="120.0" prefWidth="303.0" />
-                        <Label layoutX="14.0" layoutY="19.0" text="Indicate filename with %f and timeout with %t" />
-                     </children>
-                  </AnchorPane>
+                   <VBox>
+                       <children>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                             <children>
+                                 <Label layoutX="14.0" layoutY="19.0" text="Indicate filename with %f and timeout with %t" />
+                                <Button fx:id="applyButton" onAction="#onApplyProvers" layoutX="531.0" layoutY="40.0" mnemonicParsing="false" text="Apply" />
+                                 <Button fx:id="newProverButton" onAction="#onNewProver" layoutX="531.0" layoutY="80.0" mnemonicParsing="false" text="New" />
+                                 <Button fx:id="deleteProverButton" onAction="#onDeleteProver" layoutX="531.0" layoutY="120.0" mnemonicParsing="false" text="Delete" />
+                                <Button fx:id="testProverCommandButton" onAction="#onTestProver" layoutX="531.0" layoutY="160.0" mnemonicParsing="false" text="Test Provers" />
+                                <TextField fx:id="proverNameTextField" layoutX="14.0" layoutY="40.0" prefHeight="40.0" prefWidth="303.0" />
+                                 <Label fx:id="nameTakenWarning" layoutX="14.0" layoutY="80.0" text="Name already taken" />
+                                 <TextField fx:id="proverCommandTextField" layoutX="14.0" layoutY="120.0" prefHeight="40.0" prefWidth="303.0" />
+                             </children>
+                          </AnchorPane>
+                           <AnchorPane>
+                               <TreeView fx:id="localProverTree" layoutX="14.0" layoutY="160.0"></TreeView>
+                           </AnchorPane>
+                       </children>
+                   </VBox>
                </content>
             </Tab>
          </tabs>

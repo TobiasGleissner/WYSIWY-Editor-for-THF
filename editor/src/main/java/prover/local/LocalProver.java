@@ -34,6 +34,10 @@ public class LocalProver implements Prover {
     public List<String> getAvailableProvers(TPTPDefinitions.TPTPDialect dialect){
         return availableProvers;
     }
+    public List<String> getAvailableProvers(){
+        return availableProvers;
+    }
+
 
     public static LocalProver getInstance(){
         if (instance == null){
@@ -43,18 +47,24 @@ public class LocalProver implements Prover {
         return instance;
     }
 
-    public void addProver(String proverName, String command) throws NameAlreadyInUseException {
-        if (availableProvers.contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + Config.getLocalProverCommand(proverName));
+    public void addProver(String proverName, String command, boolean override) throws NameAlreadyInUseException {
+        if (!override && availableProvers.contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + Config.getLocalProverCommand(proverName));
         Config.setLocalProverCommand(proverName, command);
+        if (availableProvers.contains(proverName)) return;
         availableProvers.add(proverName);
         Config.setLocalProvers(availableProvers);
     }
 
-    public void removeProver(String proverName) throws NameAlreadyInUseException {
-        if (!availableProvers.contains(proverName)) return;
+    public void removeProver(String proverName) throws ProverNotAvailableException {
+        if (!availableProvers.contains(proverName)) throw new ProverNotAvailableException("prover not available");
         Config.removePreference(proverName);
         availableProvers.remove(proverName);
         Config.setLocalProvers(availableProvers);
+    }
+
+    // may return null
+    public String getProverCommand(String prover){
+        return Config.getLocalProverCommand(prover);
     }
 
     @Override

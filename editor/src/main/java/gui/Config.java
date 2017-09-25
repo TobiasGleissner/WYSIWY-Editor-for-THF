@@ -57,24 +57,26 @@ public class Config {
 
     // prover local
     public static List<String> getLocalProvers(){
-        String provers = prefs.get("localProverList","proversatallax");
+        System.out.println(prefs.get("localProverList",null));
+        String provers = prefs.get("localProverList","");
         List<String>  list = Arrays.asList(provers.split(","));
+        list.stream()
+                .filter(n->n.length() >= 6).filter(n-> n.substring(0,6).equals("prover"))
+                .map(n -> n.substring(6)).forEach(n-> System.out.println("localprover:"+ n));
         return list.stream()
                 .filter(n->n.length() >= 6).filter(n-> n.substring(0,6).equals("prover"))
                 .map(n -> n.substring(6)).collect(Collectors.toList());
     }
     public static void setLocalProvers(List<String> provers){
-        prefs.put("localProverList",provers.stream().map(p->"prover" + p).reduce(",",String::concat));
+        System.out.println("setlocalprovers:"+ String.join(",",provers));
+        prefs.put("localProverList", String.join(",",provers));
     }
 
     public static String getLocalProverCommand(String prover) {
-        switch(prover){
-            case "satallax": return prefs.get("proversatallax", "satallax -t %t %f");
-        }
         return prefs.get("prover" + prover,null);
     }
     public static void setLocalProverCommand(String prover, String command) {
-        prefs.put(prover, command);
+        prefs.put("prover" + prover, command);
     }
 
 }
