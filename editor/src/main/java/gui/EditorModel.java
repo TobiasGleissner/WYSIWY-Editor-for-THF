@@ -212,21 +212,29 @@ public class EditorModel
         {
             org.w3c.dom.Node n = nodes.pop();
 
+            // System.out.println("start node");
+
             if(n instanceof Text)
             {
+                // System.out.println("is text");
                 Text t = (Text)n;
-                content.append(t.getWholeText());
+                content.append(t.getTextContent());
             }
 
             NodeList list = n.getChildNodes();
             for(int i = list.getLength(); i > 0; --i)
+            {
+                // System.out.println("add child");
                 nodes.push(list.item(i-1));
+            }
 
             if(n instanceof Element)
             {
+                System.out.println("is element");
+
                 Element el = (Element)n;
-                System.out.println("tag_name = '" + el.getTagName() + "'");
-                System.out.println("class = '" + el.getAttribute("class") + "'");
+                // System.out.println("tag_name = '" + el.getTagName() + "'");
+                // System.out.println("class = '" + el.getAttribute("class") + "'");
 
                 if(el.getTagName().equals("BR"))
                     content.append("\n");
@@ -234,6 +242,7 @@ public class EditorModel
         }
 
         String text = content.toString();
+        // System.out.println("text = '" + text + "'");
 
         /* NOTE: We hardcode knowledge of the grammar here. This is ugly and may fail at any point. I'm sorry. :/ */
         Pattern pattern = Pattern.compile("(\\A|\\s|\\.)(thf|tff|fof|cnf|include)\\(");
@@ -269,8 +278,10 @@ public class EditorModel
             String part = text.substring(off_start, off_end);
             // System.out.println("part = '" + part + "'");
 
+            boolean hasError = false;
+
             StringReader textReader = new StringReader(text.substring(off_start, off_end));
-            CharStream stream;
+            CharStream stream = null;
             try
             {
                 stream = CharStreams.fromReader(textReader, "THF Window");
@@ -278,74 +289,34 @@ public class EditorModel
             catch(IOException e)
             {
                 addErrorMessage(e);
-
-                /* TODO: Code duplication. */
-                Node node = new Node("not_parsed");
-                parserNodes.put(new Integer(parserNodeIdCur), node);
-
-                Element newNode = doc.createElement("span");
-                newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
-                newNode.setAttribute("class", "not_parsed");
-                parserNodeIdCur++;
-
-                String[] lines = part.split("\n");
-                for(int i = 0; i < lines.length; ++i)
-                {
-                    if(i != 0)
-                    {
-                        Element br = doc.createElement("br");
-                        newNode.appendChild(br);
-                    }
-
-                    Text textNode = doc.createTextNode(lines[i]);
-                    newNode.appendChild(textNode);
-                }
-                newRoot.insertBefore(newNode, sibling);
-
-                continue;
+                hasError = true;
             }
 
-            ParseContext parseContext;
+            ParseContext parseContext = null;
             try
             {
-                parseContext = AstGen.parse(stream, "tptp_input_or_empty");
+                if(!hasError)
+                    parseContext = AstGen.parse(stream, "tptp_input_or_empty");
             }
             catch(ParseException e)
             {
                 addErrorMessage(e);
-
-                /* TODO: Code duplication. */
-                Node node = new Node("not_parsed");
-                parserNodes.put(new Integer(parserNodeIdCur), node);
-
-                Element newNode = doc.createElement("span");
-                newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
-                newNode.setAttribute("class", "not_parsed");
-                parserNodeIdCur++;
-
-                String[] lines = part.split("\n");
-                for(int i = 0; i < lines.length; ++i)
-                {
-                    if(i != 0)
-                    {
-                        Element br = doc.createElement("br");
-                        newNode.appendChild(br);
-                    }
-
-                    Text textNode = doc.createTextNode(lines[i]);
-                    newNode.appendChild(textNode);
-                }
-                newRoot.insertBefore(newNode, sibling);
-
-                continue;
+                hasError = true;
             }
 
-            if(parseContext.hasParseError())
+            if(!hasError && parseContext.hasParseError())
             {
                 addErrorMessage("unable to parse: " + parseContext.getParseError());
+                hasError = true;
+            }
 
-                /* TODO: Code duplication. */
-                Node node = new Node("not_parsed");
+            Node node = null;
+            if(!hasError)
+                node = parseContext.getRoot().getFirstChild();
+
+            if(hasError || node.stopIndex <= node.startIndex)
+            {
+                node = new Node("not_parsed");
                 parserNodes.put(new Integer(parserNodeIdCur), node);
 
                 Element newNode = doc.createElement("span");
@@ -369,15 +340,6 @@ public class EditorModel
 
                 continue;
             }
-
-            Node node = parseContext.getRoot().getFirstChild();
-
-            /* Empty nodes don't need to be inserted. */
-            if(node.stopIndex <= node.startIndex)
-                continue;
-
-            node.startIndex += off_start;
-            node.stopIndex += off_start;
 
             parserNodes.put(new Integer(parserNodeIdCur), node);
 

@@ -70,6 +70,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import com.sun.javafx.webkit.WebConsoleListener;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -164,9 +166,20 @@ public class EditorController implements Initializable {
 
     private int num_updates;
 
+    public class JSCallbackListener
+    {
+        public void debug(String str)
+        {
+            System.out.println("DEBUG = " + str);
+        }
+    }
+
+    JSCallbackListener jsCallbackListener;
+
     public EditorController(EditorModel model, Stage mainStage) {
         this.model = model;
         this.mainStage = mainStage;
+        this.jsCallbackListener = new JSCallbackListener();
 
         num_updates = 0;
     }
@@ -184,14 +197,12 @@ public class EditorController implements Initializable {
         wysArea.richChanges().subscribe(this::onWYSTextChange);
         */
 
-        /*
         WebConsoleListener.setDefaultListener(new WebConsoleListener(){
             @Override
             public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
                 System.out.println("Console: [" + sourceId + ":" + lineNumber + "] " + message);
             }
         });
-        */
 
         //this.model.thfArea = thfArea;
         //this.model.wysArea = wysArea;
@@ -224,6 +235,9 @@ public class EditorController implements Initializable {
                                 return;
 
                             jsDoc = (JSObject) doc;
+
+                            JSObject window = (JSObject) model.engine.executeScript("window");
+                            window.setMember("java", jsCallbackListener);
 
                             Integer sel = (Integer) jsDoc.eval("getSelection().anchorOffset");
                             System.out.println("selection = " + sel);

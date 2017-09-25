@@ -19,9 +19,14 @@
                         range.insertNode(br);
                         range.selectNode(br);
 
+                        var real_next = br.nextSibling;
+                        while(real_next != null && real_next.nodeType == 3 && real_next.textContent.trim().length == 0)
+                            real_next = real_next.nextSibling;
+
+                        var par = br.parentNode;
+
                         /* Properly represent empty lines at the end of the input. */
-                        if(br.nextSibling == null ||
-                           (br.nextSibling.nodeType == 3 && (br.nextSibling.textContent.length == 0)))
+                        if(real_next == null && par.nodeName.toLowerCase() == "body")
                         {
                             br = document.createElement("br");
                             range.insertNode(br);
@@ -32,6 +37,21 @@
                         selection.addRange(range);
                         selection.collapseToEnd();
                     }
+                }
+            );
+
+            document.addEventListener("input",
+                function(e)
+                {
+                    var propList = "";
+                    for(var propName in e) {
+                        if(typeof(e[propName]) != "undefined") {
+                            propList += (propName + ", ");
+                        }
+                    }
+                    java.debug(propList);
+
+                    java.debug(e.target);
                 }
             );
         </script>
