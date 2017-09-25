@@ -1,5 +1,7 @@
 package gui.preferences;
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.stage.Stage;
 
@@ -18,4 +20,14 @@ public class PreferencesController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
     }
+
+    @FXML
+    public void onApplyProvers(){
+        System.out.println("onapply");
+    }
+    @FXML
+    public void onTestProver(){
+        System.out.println("ontest");
+    }
+
 }
