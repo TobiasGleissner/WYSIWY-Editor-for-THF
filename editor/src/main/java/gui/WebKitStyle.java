@@ -19,6 +19,8 @@ public class WebKitStyle {
     static{
         InputStream cssInputStream = ClassLoader.getSystemResourceAsStream("gui/editorField.css");
         defaultCss = new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
+        cssInputStream = ClassLoader.getSystemResourceAsStream("gui/editorHighlighting.css");
+        defaultCss += new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
     }
 
     public WebKitStyle(){
