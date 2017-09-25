@@ -58,6 +58,7 @@ import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
 import prover.TPTPDefinitions;
 import prover.remote.HttpProver;
+import prover.local.LocalProver;
 
 public class EditorController implements Initializable {
 
@@ -136,7 +137,7 @@ public class EditorController implements Initializable {
 
         model.updateStyle();
 
-        addCurrentlyAvailableProversToMenus();
+        addCurrentlyavailableProversRemoteToMenus();
     }
 
     @FXML
@@ -215,7 +216,7 @@ public class EditorController implements Initializable {
                 copyFileOrDirectoryName();
             }
         });
-        
+
         // Copy file content to clipboard
         copyContent.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -232,7 +233,7 @@ public class EditorController implements Initializable {
                 }
             }
         });
-        
+
         copyPath.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -246,28 +247,28 @@ public class EditorController implements Initializable {
                 copyFilePathToClipboard(false);
             }
         });
-        
+
         copyRelPathFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 copyFilePathToClipboard(true);
             }
         });
-        
+
         copyRelPath.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 copyFilePathToClipboard(true);
             }
         });
-        
+
         // Delete file in file browser.
         deleteFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 TreeItem<FileWrapper> item = fileBrowser.getSelectionModel().getSelectedItem();
                 File file = new File(getPathToSelectedItem(item, true, false).toString());
-                
+
                 Alert alert = new Alert(AlertType.CONFIRMATION);
                 alert.setTitle("Delete file");
                 alert.setHeaderText("Delete file?");
@@ -311,7 +312,7 @@ public class EditorController implements Initializable {
         if (relativePath) {
             root = Paths.get("");
         } else {
-            root = dir.toPath();            
+            root = dir.toPath();
         }
         LinkedList<String> paths = new LinkedList<String>();
         paths.add(selectedItem.getValue().toString());
@@ -344,7 +345,7 @@ public class EditorController implements Initializable {
         StringSelection selection = new StringSelection(string);
         clipboard.setContents(selection, selection);
     }
-    
+
     // Copy the name of the selected file or directory in the file browser to the clipboard.
     private void copyFileOrDirectoryName() {
         TreeItem<FileWrapper> item = fileBrowser.getSelectionModel().getSelectedItem();
@@ -407,26 +408,40 @@ public class EditorController implements Initializable {
         System.out.println("wysiwyg change");
     }
 
-    private void addCurrentlyAvailableProversToMenus() {
+    private void addCurrentlyavailableProversRemoteToMenus() {
         try {
-            List<String> availableProvers = HttpProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
+            List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
+            List<String> availableProversRemote = HttpProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
 
-            // add list of provers to menubar
             ToggleGroup menubarProvers = new ToggleGroup();
-            for (Iterator<String> i = availableProvers.iterator(); i.hasNext();) {
+            // add list of local provers to menubar
+            for (Iterator<String> i = availableProversLocal.iterator(); i.hasNext();) {
+                RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
+                item.setToggleGroup(menubarProvers);
+                menubarRunProver.getItems().add(item);
+            }
+            // add list of remote provers to menubar
+            for (Iterator<String> i = availableProversRemote.iterator(); i.hasNext();) {
                 RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
                 item.setToggleGroup(menubarProvers);
                 menubarRunProver.getItems().add(item);
             }
 
-            // add list of provers to toolbar
+            // listener for the toolbar prover menu
             toolbarRunProver.showingProperty().addListener(new ChangeListener<Boolean>() {
                 @Override
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                     if(newValue) {
                         toolbarRunProver.getItems().clear();
                         ToggleGroup toolbarProvers = new ToggleGroup();
-                        for (Iterator<String> i = availableProvers.iterator(); i.hasNext();) {
+                        // add list of local provers to toolbar
+                        for (Iterator<String> i = availableProversLocal.iterator(); i.hasNext();) {
+                            RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
+                            item.setToggleGroup(toolbarProvers);
+                            toolbarRunProver.getItems().add(item);
+                        }
+                        // add list of remote provers to toolbar
+                        for (Iterator<String> i = availableProversRemote.iterator(); i.hasNext();) {
                             RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
                             item.setToggleGroup(toolbarProvers);
                             toolbarRunProver.getItems().add(item);
