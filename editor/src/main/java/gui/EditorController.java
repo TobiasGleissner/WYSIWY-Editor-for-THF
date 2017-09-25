@@ -172,6 +172,17 @@ public class EditorController implements Initializable {
         {
             System.out.println("DEBUG = " + str);
         }
+
+        public void sleep(Integer ms)
+        {
+            try
+            {
+                Thread.sleep(ms.longValue());
+            }
+            catch(InterruptedException e)
+            {
+            }
+        }
     }
 
     JSCallbackListener jsCallbackListener;

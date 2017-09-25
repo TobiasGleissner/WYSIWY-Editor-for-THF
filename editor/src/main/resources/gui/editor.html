@@ -6,16 +6,17 @@
             document.addEventListener("keypress",
                 function(e)
                 {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    var selection = window.getSelection();
+                    var range = selection.getRangeAt(0);
+                    range.deleteContents();
+
                     if(e.charCode == 13)
                     {
-                        e.stopPropagation();
-                        e.preventDefault();
-
-                        selection = window.getSelection();
-
-                        range = selection.getRangeAt(0);
                         range.deleteContents();
-                        br = document.createElement("br");
+                        var br = document.createElement("br");
                         range.insertNode(br);
                         range.selectNode(br);
 
@@ -33,25 +34,101 @@
                             range.selectNode(br);
                         }
 
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                        selection.collapseToEnd();
+                        range.setEndAfter(br);
+                        range.collapse(false);
                     }
+                    else
+                    {
+                        var text = document.createTextNode(String.fromCharCode(e.charCode));
+                        range.insertNode(text);
+                        range.selectNode(text);
+                    }
+
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    selection.collapseToEnd();
                 }
             );
 
-            document.addEventListener("input",
+            document.addEventListener("paste",
                 function(e)
                 {
-                    var propList = "";
-                    for(var propName in e) {
-                        if(typeof(e[propName]) != "undefined") {
-                            propList += (propName + ", ");
-                        }
-                    }
-                    java.debug(propList);
+                    e.stopPropagation();
+                    e.preventDefault();
 
-                    java.debug(e.target);
+                    var hm_node_id_left = 0;
+                    var hm_node_id_right = 0;
+
+                    var clipboard_data = e.clipboardData;
+                    var text = clipboard_data.getData('text/plain');
+
+                    var selection = window.getSelection();
+                    var range = selection.getRangeAt(0);
+
+                    for(var i = 0; i < 2; ++i)
+                    {
+                        if(i == 0)
+                            var node = range.startContainer;
+                        else
+                            var node = range.endContainer;
+
+                        while(
+                            node.nodeName.toLowerCase() != "body" &&
+                            (
+                                node.nodeType != 1 ||
+                                !node.getAttribute('id') ||
+                                !node.getAttribute('id').startsWith('hm_node_')
+                            )
+                        )
+                            node = node.parentNode;
+
+                        java.debug("found parent " + node);
+
+                        if(node.nodeName.toLowerCase() == "body")
+                        {
+                            if(i == 0)
+                                node = document.body.firstChild;
+                            else
+                                node = document.body.lastChild;
+                        }
+
+                        if(range.isPointInRange(node, 0))
+                        {
+                            if(i == 0)
+                                node = node.previousSibling;
+                            else
+                                node = node.nextSibling;
+                        }
+
+                        var id = -1;
+                        if(node.nodeType == 1)
+                        {
+                            var id_str = node.getAttribute('id');
+                            if(id_str)
+                            {
+                                var match = id_str.match(/^hm_node_(\d+)$/);
+                                if(match)
+                                    id = parseInt(match[1]);
+                            }
+                        }
+
+                        java.debug("i = " + i + ", id = " + id);
+                    }
+
+                    range.deleteContents();
+
+                    for(line in text.split("\n"))
+                    {
+                        var text_node = document.createTextNode(text);
+                        var br = document.createElement("br");
+
+                        range.insertNode(text_node);
+                        range.selectNode(text_node);
+                    }
+
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    selection.collapseToEnd();
                 }
             );
         </script>

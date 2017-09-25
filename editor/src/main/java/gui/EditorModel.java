@@ -99,8 +99,32 @@ public class EditorModel
         {
             InputStream stream = new FileInputStream(file);
             String content = openStream(stream);
-            doc.getElementsByTagName("body").item(0).setTextContent(content);
-            reparse();
+
+            org.w3c.dom.Node body = doc.getElementsByTagName("body").item(0);
+
+            while(body.hasChildNodes())
+            {
+                body.removeChild(body.getFirstChild());
+            }
+
+            boolean first = true;
+            for(String line : content.split("\n"))
+            {
+                if(first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    Element br = doc.createElement("br");
+                    body.appendChild(br);
+                }
+
+                Text textNode = doc.createTextNode(line);
+                body.appendChild(textNode);
+            }
+
+            // reparse();
             updateRecentlyOpenedFiles(file);
         }
         catch(java.io.IOException t)
@@ -231,11 +255,11 @@ public class EditorModel
         {
             org.w3c.dom.Node n = nodes.pop();
 
-            // System.out.println("start node");
+            System.out.println("start node");
 
             if(n instanceof Text)
             {
-                // System.out.println("is text");
+                System.out.println("is text");
                 Text t = (Text)n;
                 content.append(t.getTextContent());
             }
@@ -243,7 +267,7 @@ public class EditorModel
             NodeList list = n.getChildNodes();
             for(int i = list.getLength(); i > 0; --i)
             {
-                // System.out.println("add child");
+                System.out.println("add child");
                 nodes.push(list.item(i-1));
             }
 
@@ -252,10 +276,10 @@ public class EditorModel
                 System.out.println("is element");
 
                 Element el = (Element)n;
-                // System.out.println("tag_name = '" + el.getTagName() + "'");
-                // System.out.println("class = '" + el.getAttribute("class") + "'");
+                System.out.println("tag_name = '" + el.getTagName() + "'");
+                System.out.println("class = '" + el.getAttribute("class") + "'");
 
-                if(el.getTagName().equals("BR"))
+                if(el.getTagName().toLowerCase().equals("br"))
                     content.append("\n");
             }
         }
@@ -338,7 +362,7 @@ public class EditorModel
                 node = new Node("not_parsed");
                 parserNodes.put(new Integer(parserNodeIdCur), node);
 
-                Element newNode = doc.createElement("span");
+                Element newNode = doc.createElement("section");
                 newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
                 newNode.setAttribute("class", "not_parsed");
                 parserNodeIdCur++;
@@ -361,12 +385,12 @@ public class EditorModel
             }
 
             parserNodes.put(new Integer(parserNodeIdCur), node);
-            
+
             // Start preprocessing for highlighting
             LinkedList<SpanElement> spanElements = new LinkedList<SpanElement>();
             addSpanElements(node, spanElements);
-            
-            Element newNode = doc.createElement("span");
+
+            Element newNode = doc.createElement("section");
             newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
             newNode.setAttribute("class", "hm_node");
 
