@@ -4,14 +4,16 @@ import java.net.URL;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+
 import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.List;
@@ -19,7 +21,7 @@ import java.util.Optional;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import gui.fileStructure.StructureTreeView;
+import java.text.DecimalFormat;
 
 import gui.preferences.PreferencesController;
 import gui.preferences.PreferencesModel;
@@ -31,6 +33,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
 import javafx.event.EventHandler;
+import javafx.event.Event;
 import javafx.event.ActionEvent;
 
 import javafx.scene.Scene;
@@ -43,7 +46,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-
 import javafx.scene.control.Menu;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.MenuButton;
@@ -52,6 +54,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.Tab;
 
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -60,6 +65,7 @@ import org.fxmisc.richtext.model.PlainTextChange;
 import org.fxmisc.richtext.model.StyledText;
 
 import gui.fileBrowser.FileTreeView;
+import gui.fileStructure.StructureTreeView;
 import gui.fileBrowser.FileWrapper;
 import prover.TPTPDefinitions;
 import prover.remote.HttpProver;
@@ -79,6 +85,12 @@ public class EditorController implements Initializable {
     private CodeArea thfArea;
     @FXML
     private CodeArea wysArea;
+    @FXML
+    private SplitPane splitPaneVertical;
+    @FXML
+    private TabPane tabPaneLeft;
+    @FXML
+    private Tab tabPaneLeftCollapse;
     @FXML
     private FileTreeView fileBrowser;
     @FXML
@@ -142,7 +154,8 @@ public class EditorController implements Initializable {
 
         model.updateStyle();
 
-        addCurrentlyavailableProversRemoteToMenus();
+        addCurrentlyavailableProversToMenus();
+        makeTabPaneCollapsable();
     }
 
     @FXML
@@ -154,7 +167,6 @@ public class EditorController implements Initializable {
     private void onFileNew(ActionEvent e) {
         System.out.println("newfile");
     }
-
 
     @FXML
     private void onDirectoryOpen(ActionEvent e) {
@@ -413,7 +425,63 @@ public class EditorController implements Initializable {
         System.out.println("wysiwyg change");
     }
 
-    private void addCurrentlyavailableProversRemoteToMenus() {
+    @FXML
+    public void onViewToolWindowProject(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void onViewIncreaseFontSize(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void onViewDecreaseFontSize(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void onViewEnterPresentationMode(ActionEvent actionEvent) {
+    }
+
+    public void onPreferences(ActionEvent actionEvent) {
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/preferences.fxml"));
+        loader.setControllerFactory(t->new PreferencesController(new PreferencesModel(), stage));
+
+        Scene scene = null;
+        try {
+            scene = new Scene(loader.load());
+            stage.setScene(scene);
+            //stage.initModality(Modality.APPLICATION_MODAL);
+            //stage.setAlwaysOnTop(true);
+            stage.show();
+            //stage.toFront();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void makeTabPaneCollapsable() {
+        tabPaneLeft.getSelectionModel().select(1);
+        tabPaneLeft.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+            @Override
+            public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
+                if(newTab == tabPaneLeftCollapse) {
+                    double width = splitPaneVertical.getWidth();
+                    double[] orgDividerPositions = splitPaneVertical.getDividerPositions();
+                    double minDividerPosition = tabPaneLeft.getTabMaxHeight()/width;
+                    if (minDividerPosition/orgDividerPositions[0]<0.95) {
+                        splitPaneVertical.setDividerPosition(0,minDividerPosition+(1/width));
+                        splitPaneVertical.setResizableWithParent(tabPaneLeft, Boolean.FALSE);
+                    } else {
+                        splitPaneVertical.setDividerPosition(0,0.2);
+                        splitPaneVertical.setResizableWithParent(tabPaneLeft, Boolean.TRUE);
+                    }
+                    tabPaneLeft.getSelectionModel().select(oldTab);
+                }
+            }
+        });
+    }
+
+    private void addCurrentlyavailableProversToMenus() {
         try {
             List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
             List<String> availableProversRemote = HttpProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
@@ -457,42 +525,5 @@ public class EditorController implements Initializable {
         } catch (IOException e) {
             // TODO: write log entry
         }
-    }
-
-
-    @FXML
-    public void onViewToolWindowProject(ActionEvent actionEvent) {
-    }
-
-    @FXML
-    public void onViewIncreaseFontSize(ActionEvent actionEvent) {
-    }
-
-    @FXML
-    public void onViewDecreaseFontSize(ActionEvent actionEvent) {
-    }
-
-    @FXML
-    public void onViewEnterPresentationMode(ActionEvent actionEvent) {
-    }
-
-    public void onPreferences(ActionEvent actionEvent) {
-        Stage stage = new Stage();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/preferences.fxml"));
-        loader.setControllerFactory(t->new PreferencesController(new PreferencesModel(), stage));
-
-        Scene scene = null;
-        try {
-            scene = new Scene(loader.load());
-            stage.setScene(scene);
-            //stage.initModality(Modality.APPLICATION_MODAL);
-            //stage.setAlwaysOnTop(true);
-            stage.show();
-            //stage.toFront();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
     }
 }

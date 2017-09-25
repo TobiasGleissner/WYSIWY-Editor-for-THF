@@ -162,6 +162,10 @@
     -fx-border-width:0px;
 }
 
+.tab-collapse:hover {
+    -fx-background-color: -fx-body-color;
+}
+
 .tab-pane:right > .tab-header-area > .headers-region > .tab:right {
     -fx-background-color: -fx-body-color;
 }
