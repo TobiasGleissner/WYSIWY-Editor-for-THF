@@ -75,7 +75,7 @@ public class EditorModel
      * Does not add to recently opened files
      * @param stream
      */
-    public String openStream(InputStream stream)
+    private String openStream(InputStream stream)
     {
         try
         {
@@ -102,7 +102,8 @@ public class EditorModel
         {
             InputStream stream = new FileInputStream(file);
             String content = openStream(stream);
-            // thfArea.replaceText(content);
+            doc.getElementsByTagName("body").item(0).setTextContent(content);
+            reparse();
             updateRecentlyOpenedFiles(file);
         }
         catch(java.io.IOException t)
@@ -110,6 +111,7 @@ public class EditorModel
             addErrorMessage(t);
         }
     }
+
 
     /**
      * Updates concerning recently opened files

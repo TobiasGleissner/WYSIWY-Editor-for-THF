@@ -109,32 +109,56 @@ public class EditorController implements Initializable {
     @FXML
     public void debugALG0157()
     {
-        model.openFile(new File("./src/main/resources/test/ALG015^7.p"));
+        try {
+            model.openFile(new File(getClass().getResource("/test/ALG015^7.p").toURI()));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
     @FXML
     public void debugCOM1601()
     {
-        model.openFile(new File("./src/main/resources/test/COM160^1.p"));
+        try {
+            model.openFile(new File(getClass().getResource("/test/COM160^1.p").toURI()));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
     @FXML
     public void debugLCL6331()
     {
-        model.openFile(new File("./src/main/resources/test/LCL633^1.p"));
+        try {
+            model.openFile(new File(getClass().getResource("/test/LCL633^1.p").toURI()));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
     @FXML
     public void debugLCL6341()
     {
-        model.openFile(new File("./src/main/resources/test/LCL634^1.p"));
+        try {
+            model.openFile(new File(getClass().getResource("/test/LCL634^1.p").toURI()));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
     @FXML
     public void debugSYN0001()
     {
-        model.openFile(new File("./src/main/resources/test/SYN000^1.p"));
+        try {
+            model.openFile(new File(getClass().getResource("/test/SYN000^1.p").toURI()));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
     @FXML
     public void debugSYN0002()
     {
-        model.openFile(new File("./src/main/resources/test/SYN000^2.p"));
+        try {
+            model.openFile(new File(getClass().getResource("/test/SYN000^2.p").toURI()));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
     // DEBUG END
 
