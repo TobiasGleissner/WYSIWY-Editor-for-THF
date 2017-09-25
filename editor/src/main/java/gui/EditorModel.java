@@ -382,7 +382,7 @@ public class EditorModel
 
             parserNodes.put(new Integer(parserNodeIdCur), node);
 
-            // Start preprocessing for highlighting
+            /* Preprocessing for highlighting: extract sections which have to be highlighted. */
             LinkedList<SpanElement> spanElements = new LinkedList<SpanElement>();
             addSpanElements(node, spanElements);
 
@@ -392,7 +392,6 @@ public class EditorModel
 
             parserNodeIdCur++;
 
-            /* NOTE: Highlighting modifies this part! */
             String[] lines = part.split("\n");
             int lastParsedToken = 0;
             int nextEnd = -1;
@@ -423,6 +422,7 @@ public class EditorModel
                     builder.append(lines[i].charAt(j));
                     lastParsedToken++;
                     
+                    // Add highlighting.
                     if (lastParsedToken == nextEnd + 1) {
                         Element newSpan = doc.createElement("subsection");
                         newSpan.setAttribute("class", spanElement.getTag());
