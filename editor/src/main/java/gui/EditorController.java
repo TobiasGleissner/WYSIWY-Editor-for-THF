@@ -597,18 +597,22 @@ public class EditorController implements Initializable {
 
 
     @FXML
-    public void onViewToolWindowProject(ActionEvent actionEvent) {
+    public void onViewToolWindowProject(ActionEvent actionEvent){
+
     }
 
     @FXML
     public void onViewIncreaseFontSize(ActionEvent actionEvent) {
+        model.onViewIncreaseFontSize();
     }
 
     @FXML
     public void onViewDecreaseFontSize(ActionEvent actionEvent) {
+        model.onViewDecreaseFontSize();
     }
 
     @FXML
     public void onViewEnterPresentationMode(ActionEvent actionEvent) {
+        model.onViewEnterPresentationMode();
     }
 }

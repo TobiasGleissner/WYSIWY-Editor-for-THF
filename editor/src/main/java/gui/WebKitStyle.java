@@ -42,8 +42,10 @@ public class WebKitStyle {
         sb.append(defaultCss);
 
         String st = sb.toString();
-        System.out.println(st);
+        //System.out.println(st);
         style.setTextContent(st);
+
+
     }
 
     public void setFontSize(double fontSize){
@@ -55,11 +57,11 @@ public class WebKitStyle {
         this.updateCss();
     }
 
-    public void incrementFontSize(){
+    public void increaseFontSize(){
         this.setFontSize(this.fontSize + fontSizeIncrementStep);
     }
 
-    public void decrementFontSize(){
+    public void decreaseFontSize(){
         this.setFontSize(this.fontSize - fontSizeIncrementStep);
     }
 

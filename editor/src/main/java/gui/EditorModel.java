@@ -5,8 +5,6 @@ import java.io.StringReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
-import java.nio.file.Path;
-import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 
 import java.util.*;
@@ -570,5 +568,18 @@ public class EditorModel
 
         StyleSpans<Collection<String>> spans = spansBuilder.create();
         thfArea.setStyleSpans(0, spans);
+    }
+
+    public void onViewIncreaseFontSize() {
+        style.increaseFontSize();
+    }
+
+    public void onViewDecreaseFontSize() {
+        style.decreaseFontSize();
+    }
+
+    public void onViewEnterPresentationMode() {
+        style.setFontSize(2.0);
+        // TODO close side drawer, ...
     }
 }
