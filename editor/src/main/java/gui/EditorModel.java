@@ -39,7 +39,6 @@ public class EditorModel
     public WebKitStyle style;
 
     public LinkedList<Node> tptpInputNodes;
-    private HashMap<String, String> rule2CssColor;
 
     private int parserNodeIdCur = 0;
     private HashMap<Integer, Node> parserNodes;
@@ -49,13 +48,7 @@ public class EditorModel
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
-
-        rule2CssColor = new HashMap<String, String>();
-        rule2CssColor.put("functor", "c0");
-        rule2CssColor.put("defined_functor", "c1");
-
         recentlyOpenedFiles = new ArrayList<>(); // first element = oldest file, last element = latest file
-
         parserNodes = new HashMap();
     }
 
@@ -70,24 +63,9 @@ public class EditorModel
         addErrorMessage(e.getLocalizedMessage());
     }
 
-    /**
-     * Loads text into THF area
-     * Does not add to recently opened files
-     * @param stream
-     */
-    private String openStream(InputStream stream)
-    {
-        try
-        {
-            byte[] content = IOUtils.toByteArray(stream);
-            return new String(content, StandardCharsets.UTF_8);
-        }
-        catch(IOException e)
-        {
-            addErrorMessage(e);
-        }
-
-        return null;
+    public String openStream(InputStream stream) throws IOException {
+        byte[] content = IOUtils.toByteArray(stream);
+        return new String(content, StandardCharsets.UTF_8);
     }
 
     /**
@@ -124,15 +102,6 @@ public class EditorModel
         if (recentlyOpenedFiles.size() > Config.maxRecentlyOpenedFiles) recentlyOpenedFiles.remove(0);
         Config.setRecentlyOpenedFiles(recentlyOpenedFiles);
         // TODO reflect in Menu File > recently opened Files
-    }
-
-    public void updateStyle()
-    {
-        StringBuilder style = new StringBuilder()
-                .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
-
-        //thfArea.setStyle(style.toString());
-        //wysArea.setStyle(style.toString());
     }
 
     public void printTPTPTrees()

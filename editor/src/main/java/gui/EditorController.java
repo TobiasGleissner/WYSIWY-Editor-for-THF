@@ -250,7 +250,6 @@ public class EditorController implements Initializable {
         // Element el = engine.getDocument().getElementById("content");
         // System.out.println("" + sel);
 
-        model.updateStyle();
 
         addCurrentlyAvailableProversToMenus();
     }
@@ -344,7 +343,11 @@ public class EditorController implements Initializable {
                     model.addErrorMessage(e);
                 }
                 if (stream != null) {
-                    copyStringToClipboard(model.openStream(stream));
+                    try {
+                        copyStringToClipboard(model.openStream(stream));
+                    } catch (IOException e1) {
+                        model.addErrorMessage(e1);
+                    }
                 }
             }
         });
@@ -495,8 +498,6 @@ public class EditorController implements Initializable {
     @FXML
     private void onTestPref(ActionEvent e)
     {
-
-        model.updateStyle();
 
         Integer sel = (Integer) jsDoc.eval("getSelection().anchorOffset");
         System.out.println("selection = " + sel);
