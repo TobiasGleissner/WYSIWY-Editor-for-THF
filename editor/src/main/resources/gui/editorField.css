@@ -2,6 +2,7 @@
 * {
     font-style: normal;
     font-family: monospace;
+    white-space: pre-wrap;
 }
 
 /* line numbering */
