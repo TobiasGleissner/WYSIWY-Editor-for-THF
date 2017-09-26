@@ -68,9 +68,7 @@ public class Config {
                 .map(n -> n.substring(6)).collect(Collectors.toList());
     }
     public static void setLocalProvers(List<String> provers){
-        System.out.println(provers.size());
-        System.out.println("setlocalprovers:"+ String.join(",",provers));
-        prefs.put("localProverList", String.join(",",provers));
+        prefs.put("localProverList", String.join(",",provers.stream().map(n->"prover"+n).collect(Collectors.toList())));
     }
 
     public static String getLocalProverCommand(String prover) {

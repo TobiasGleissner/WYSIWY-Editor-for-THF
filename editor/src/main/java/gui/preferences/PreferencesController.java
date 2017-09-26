@@ -72,8 +72,9 @@ public class PreferencesController implements Initializable {
 
     private void updateLocalProversTree(){
         root.getChildren().removeAll(root.getChildren());
-        for (String p : lp.getAvailableProvers()){
-            System.out.println(p);
+        List<String> proverList =lp.getAvailableProvers();
+        Collections.sort(proverList);
+        for (String p : proverList){
             root.getChildren().add(new TreeItem<>(p));
         }
     }
@@ -99,7 +100,6 @@ public class PreferencesController implements Initializable {
             LocalProver.getInstance().addProver(proverName,proverCommand,true);
         } catch (NameAlreadyInUseException e) {}
         updateLocalProversTree();
-        Config.getLocalProvers().stream().forEach(p-> System.out.println(p + ":"  + Config.getLocalProverCommand(p)));
     }
 
     @FXML
@@ -116,12 +116,10 @@ public class PreferencesController implements Initializable {
         proverCommandTextField.setText(proverCommand);
         try {
             lp.addProver(proverName,proverCommand,true);
-            System.out.println(proverName);
         } catch (NameAlreadyInUseException e) {
-            System.out.println("nameAlreadytaken:" + proverName);
+            // does not happen due to while loop
         }
         updateLocalProversTree();
-        Config.getLocalProvers().stream().forEach(p-> System.out.println(p + ":"  + Config.getLocalProverCommand(p)));
     }
 
     @FXML
@@ -129,7 +127,7 @@ public class PreferencesController implements Initializable {
         try {
             lp.removeProver(localProverTree.getSelectionModel().getSelectedItem().getValue());
         } catch (ProverNotAvailableException e) {
-            System.out.println("asd:" + localProverTree.getSelectionModel().getSelectedItem().getValue());
         }
+        updateLocalProversTree();
     }
 }

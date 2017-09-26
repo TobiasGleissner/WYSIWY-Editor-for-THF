@@ -50,24 +50,15 @@ public class LocalProver implements Prover {
     public void addProver(String proverName, String command, boolean override) throws NameAlreadyInUseException {
         if (!override && availableProvers.contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + Config.getLocalProverCommand(proverName));
         Config.setLocalProverCommand(proverName, command);
-        if (availableProvers.contains(proverName)) {
-            System.out.println("contain");
-            return;
-        };
         availableProvers.add(proverName);
         Config.setLocalProvers(availableProvers);
     }
 
     public void removeProver(String proverName) throws ProverNotAvailableException {
         if (!availableProvers.contains(proverName)) throw new ProverNotAvailableException("prover not available");
-        Config.removePreference(proverName);
+        Config.removePreference("prover" + proverName);
         availableProvers.remove(proverName);
         Config.setLocalProvers(availableProvers);
-    }
-
-    // may return null
-    public String getProverCommand(String prover){
-        return Config.getLocalProverCommand(prover);
     }
 
     @Override
