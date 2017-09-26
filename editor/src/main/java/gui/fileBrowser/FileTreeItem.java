@@ -97,7 +97,7 @@ public class FileTreeItem extends TreeItem<FileWrapper> {
             if (files != null) {
                 ObservableList<TreeItem<FileWrapper>> children = FXCollections.observableArrayList();
                 for (File childFile : files) {
-                    TreeItem a = new FileTreeItem(new FileWrapper(childFile));
+                    TreeItem<FileWrapper> a = new FileTreeItem(new FileWrapper(childFile));
                     a.setGraphic(getIconNodeByFile(childFile));
                     children.add(a);
                 }

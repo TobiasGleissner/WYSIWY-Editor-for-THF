@@ -18,7 +18,7 @@ public class FileTreeView extends TreeView<FileWrapper> {
 
     public void openDirectory(File f){
         //this.getChildren().clear();
-        TreeItem root = new FileTreeItem(new FileWrapper(f));
+        TreeItem<FileWrapper> root = new FileTreeItem(new FileWrapper(f));
         IconNode icon = new IconNode(FileTreeItem.iconDirectory);
         icon.getStyleClass().add("filebrowser-icon");
         root.setGraphic(icon);

@@ -3,7 +3,6 @@ package gui.preferences;
 import exceptions.NameAlreadyInUseException;
 import exceptions.ProverNotAvailableException;
 import gui.Config;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -12,12 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import prover.local.LocalProver;
-import sun.misc.IOUtils;
 import util.RandomString;
 
-import java.io.File;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.*;
 
 public class PreferencesController implements Initializable {
