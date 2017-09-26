@@ -144,6 +144,18 @@ public class EditorController implements Initializable {
 
     public class JSCallbackListener
     {
+        private EditorModel model;
+
+        public JSCallbackListener(EditorModel model)
+        {
+            this.model = model;
+        }
+
+        public int start_parsing(int startNode, int endNode)
+        {
+            return model.reparseArea(startNode, endNode);
+        }
+
         public void debug(String str)
         {
             System.out.println("DEBUG = " + str);
@@ -166,7 +178,7 @@ public class EditorController implements Initializable {
     public EditorController(EditorModel model, Stage mainStage) {
         this.model = model;
         this.mainStage = mainStage;
-        this.jsCallbackListener = new JSCallbackListener();
+        this.jsCallbackListener = new JSCallbackListener(model);
 
         num_updates = 0;
     }

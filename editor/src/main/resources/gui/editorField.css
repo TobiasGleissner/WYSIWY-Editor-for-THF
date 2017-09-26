@@ -9,8 +9,7 @@ html, body {
     font-family: monospace;
     white-space: pre-wrap;
     overflow: auto;
-    padding: 1vh 1vh 1vh 1vh;
-    max-height: 98vh;
+    max-height: 100vh;
 }
 
 *:focus {
