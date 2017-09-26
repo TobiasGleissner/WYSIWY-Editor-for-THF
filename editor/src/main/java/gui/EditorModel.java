@@ -34,6 +34,7 @@ import util.tree.Node;
 
 public class EditorModel
 {
+    private static Logging log = Logging.getInstance();
     public WebEngine engine;
     public Document doc;
     public WebKitStyle style;
@@ -43,14 +44,15 @@ public class EditorModel
     private int parserNodeIdCur = 0;
 
     private ArrayList<String> recentlyOpenedFiles;
-    
+
     private LinkedList<String> css;
+    public WebEngine outputEngine;
 
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
         recentlyOpenedFiles = new ArrayList<>(); // first element = oldest file, last element = latest file
-        
+
         // Extract css classes for syntax highlighting from our css file.
         this.css = new LinkedList<String>();
         Scanner scanner;
@@ -112,6 +114,7 @@ public class EditorModel
             InputStream stream = new FileInputStream(file);
             openStream(stream);
             updateRecentlyOpenedFiles(file);
+            log.info("Opened " + file.getAbsolutePath());
         }
         catch(FileNotFoundException e)
         {
@@ -396,11 +399,11 @@ public class EditorModel
         if (css.contains(node.getRule())) {
             spanElements.add(new SpanElement(node.startIndex, node.stopIndex, node.getRule()));
         }
-        
+
         for (Node n : node.getChildren()) {
             addSpanElements(n, spanElements);
         }
-        
+
     }
 
     public void onViewIncreaseFontSize() {

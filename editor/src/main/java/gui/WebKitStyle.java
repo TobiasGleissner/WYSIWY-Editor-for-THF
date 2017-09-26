@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public class WebKitStyle {
 
     private Document doc;
+    private Document outputDoc;
     private double fontSize;
 
     private static final double fontSizeIncrementStep = Config.fontSizeIncrementStep;
@@ -32,6 +33,27 @@ public class WebKitStyle {
         updateCss();
     }
 
+    public void setOutputDoc(Document doc){
+        this.outputDoc = doc;
+        updateCssOutputDoc();
+    }
+
+    private void updateCssOutputDoc() {
+        Element style = outputDoc.getElementById("style");
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("*{\n");
+        sb.append("font-size: ");
+        sb.append(fontSize);
+        sb.append("cm;\n");
+        sb.append("}\n");
+        //sb.append(defaultCss);
+
+        String st = sb.toString();
+        //System.out.println(st);
+        style.setTextContent(st);
+    }
+
     private void updateCss(){
         Element style = doc.getElementById("style");
         StringBuilder sb = new StringBuilder();
@@ -39,15 +61,13 @@ public class WebKitStyle {
         sb.append("*{\n");
         sb.append("font-size: ");
         sb.append(fontSize);
-        sb.append("em;\n");
+        sb.append("cm;\n");
         sb.append("}\n");
         sb.append(defaultCss);
 
         String st = sb.toString();
         //System.out.println(st);
         style.setTextContent(st);
-
-
     }
 
     public void setFontSize(double fontSize){

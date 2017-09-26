@@ -1,7 +1,5 @@
 package gui;
 
-import java.io.*;
-import java.net.URI;
 import java.net.URL;
 
 import java.io.IOException;
@@ -10,7 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.StringWriter;
-import java.io.IOException;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,7 +17,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 
 import java.util.Stack;
-import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.List;
 import java.util.Optional;
@@ -41,22 +37,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
 import javafx.event.EventHandler;
-import javafx.event.Event;
 import javafx.event.ActionEvent;
 
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.MenuButton;
@@ -90,7 +81,6 @@ import jiconfont.icons.FontAwesome;
 import jiconfont.javafx.IconNode;
 
 import gui.fileBrowser.FileTreeView;
-import gui.fileStructure.StructureTreeView;
 import gui.fileBrowser.FileWrapper;
 import prover.TPTPDefinitions;
 import prover.remote.HttpProver;
@@ -98,6 +88,7 @@ import prover.local.LocalProver;
 
 public class EditorController implements Initializable {
 
+    private static Logging log = Logging.getInstance();
     private EditorModel model;
     private Stage mainStage;
     private File dir;
@@ -125,9 +116,12 @@ public class EditorController implements Initializable {
     private FileTreeView fileBrowser;
     @FXML
     private StructureTreeView structureView;
+    @FXML
+    public WebView outputWebView;
 
     JSObject jsDoc = null;
     Document doc = null;
+    private Document outputDoc;
 
     // DEBUG
     @FXML
@@ -230,6 +224,8 @@ public class EditorController implements Initializable {
 
         model.engine = this.thfArea.getEngine();
         model.engine.setJavaScriptEnabled(true);
+        model.style = new WebKitStyle();
+
         //URL cssURL = getClass().getResource("/gui/editorField.css");
         //model.engine.setUserStyleSheetLocation(cssURL.toString());
         //InputStream cssInputStream = ClassLoader.getSystemResourceAsStream("gui/editorField.css");
@@ -247,7 +243,6 @@ public class EditorController implements Initializable {
                         {
                             doc = model.engine.getDocument();
                             model.doc = model.engine.getDocument();
-                            model.style = new WebKitStyle();
                             model.style.setDoc(doc);
 
                             System.out.println("doc = " + doc);
@@ -266,6 +261,28 @@ public class EditorController implements Initializable {
                     }
                 }
         );
+
+        //model.outputEngine = outputWebView.getEngine();
+        log.outputEngine = outputWebView.getEngine();
+        log.outputEngine.getLoadWorker().stateProperty().addListener(
+                new ChangeListener<Worker.State>()
+                {
+                    @Override
+                    public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState)
+                    {
+                        if(newState == Worker.State.SUCCEEDED) {
+                            log.init();
+                            model.style.setOutputDoc(log.outputEngine.getDocument());
+                        }
+
+                    }});
+
+        try {
+            log.outputEngine.loadContent(IOUtils.toString(getClass().getResourceAsStream("/gui/output.html"), "UTF-8"));
+        } catch (IOException e) {
+            // TODO
+            e.printStackTrace();
+        }
 
         model.engine.setOnAlert(t -> System.out.println(t));
         model.engine.setOnError(e -> System.out.println(e.getMessage()));
@@ -288,6 +305,7 @@ public class EditorController implements Initializable {
 
         addCurrentlyAvailableProversToMenus();
         makeTabPaneCollapsable();
+
     }
 
     @FXML

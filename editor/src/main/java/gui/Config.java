@@ -37,7 +37,7 @@ public class Config {
 
     // editor
     public static double getFontSize() {
-        return prefs.getDouble("fontSize", 1.0);
+        return prefs.getDouble("fontSize", 0.4);
     }
     public static void setFontSize(double arg) {
         prefs.putDouble("fontSize", arg);

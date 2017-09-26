@@ -27,6 +27,7 @@
 <?import gui.fileBrowser.FileTreeView?>
 <?import gui.fileStructure.StructureTreeView?>
 
+<?import javafx.scene.web.WebView?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
@@ -292,11 +293,8 @@
                 </SplitPane>
 
                 <!-- prover output -->
-                <TextFlow prefHeight="296.0" prefWidth="1000.0">
-                    <children>
-                        <HBox prefHeight="55.0" />
-                    </children>
-                </TextFlow>
+                <WebView fx:id="outputWebView" prefHeight="296.0" prefWidth="1000.0">
+                </WebView>
 
             </items>
         </SplitPane>
