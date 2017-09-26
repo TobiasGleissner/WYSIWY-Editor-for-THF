@@ -18,9 +18,9 @@ public class WebKitStyle {
     private static final double fontSizePresentationMode = Config.fontSizePresentationMode;
     private static String defaultCss;
     static{
-        InputStream cssInputStream = ClassLoader.getSystemResourceAsStream("gui/editorField.css");
+        InputStream cssInputStream = WebKitStyle.class.getResourceAsStream("/gui/editorField.css");
         defaultCss = new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
-        cssInputStream = ClassLoader.getSystemResourceAsStream("gui/editorHighlighting.css");
+        cssInputStream = WebKitStyle.class.getResourceAsStream("/gui/editorHighlighting.css");
         defaultCss += new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
     }
 
