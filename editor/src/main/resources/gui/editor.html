@@ -8,8 +8,6 @@
             var selection = window.getSelection();
             var editor = document.getElementById("editor");
 
-            java.debug("selection = " + selection.rangeCount);
-
             if(selection.rangeCount == 0)
             {
                 var range = document.createRange();
@@ -24,13 +22,11 @@
         document.addEventListener("keypress",
             function(e)
             {
-                java.debug("test");
-
                 e.stopPropagation();
                 e.preventDefault();
 
                 var selection = window.getSelection();
-                var range = selection.getRangeAt(0);
+                var range = selection.getRangeAt(0).cloneRange();
                 range.deleteContents();
 
                 var new_text = String.fromCharCode(e.charCode);
@@ -42,10 +38,15 @@
                 var text = document.createTextNode(new_text);
                 range.insertNode(text);
                 range.selectNode(text);
+                range.collapse(false);
 
                 selection.removeAllRanges();
                 selection.addRange(range);
-                selection.collapseToEnd();
+
+                var hidden = document.createElement("span");
+                text.parentNode.insertBefore(hidden, text);
+                hidden.scrollIntoView();
+                hidden.parentNode.removeChild(hidden);
             }
         );
 

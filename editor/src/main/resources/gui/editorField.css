@@ -1,8 +1,16 @@
 /* general */
+html, body {
+    overflow: hidden;
+    height: 100vh;
+}
+
 #editor {
     font-style: normal;
     font-family: monospace;
     white-space: pre-wrap;
+    overflow: auto;
+    padding: 1vh 1vh 1vh 1vh;
+    max-height: 98vh;
 }
 
 *:focus {
