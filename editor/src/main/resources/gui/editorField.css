@@ -1,0 +1,19 @@
+/* general */
+html, body {
+    overflow: hidden;
+    height: 100vh;
+}
+
+#editor {
+    font-style: normal;
+    font-family: monospace;
+    white-space: pre-wrap;
+    overflow: auto;
+    max-height: 100vh;
+}
+
+*:focus {
+    outline: none;
+}
+
+/* line numbering */

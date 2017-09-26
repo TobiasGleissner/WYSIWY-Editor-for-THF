@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style id="style"></style>
+    <script>
+        function make_selection_valid(e)
+        {
+            var selection = window.getSelection();
+            var editor = document.getElementById("editor");
+
+            if(selection.rangeCount == 0)
+            {
+                var range = document.createRange();
+                range.setStart(editor, 0);
+                range.setEnd(editor, 0);
+                selection.addRange(range);
+            }
+        }
+        document.addEventListener("click", make_selection_valid);
+        document.addEventListener("keypress", make_selection_valid);
+
+        function get_range_as_text_offset(node, range)
+        {
+            var ret = 0;
+            while(node != null)
+            {
+
+                if(range.intersectsNode(node))
+                {
+                    node = node.firstChild;
+                }
+                else
+                {
+                    ret += node.textContent.length;
+                    node = node.nextSibling;
+                }
+            }
+            return ret + range.startOffset;
+        }
+
+        function new_range_by_text_offset(node, offset)
+        {
+            while(node != null)
+            {
+                var new_offset = offset - node.textContent.length;
+
+                if(new_offset <= 0)
+                {
+                    if(node.firstChild == null)
+                    {
+                        var range = new Range();
+                        range.setStart(node, offset);
+                        range.setEnd(node, offset);
+                        return range;
+                    }
+                    else
+                    {
+                        node = node.firstChild;
+                    }
+                }
+                else
+                {
+                    offset = new_offset;
+                    node = node.nextSibling;
+                }
+            }
+
+            return null;
+        }
+
+        function maybe_scroll_to_range(range)
+        {
+            var hidden = document.createElement("span");
+            hidden.textContent = ".";
+            range.insertNode(hidden);
+            hidden.scrollIntoViewIfNeeded(false);
+            java.debug("offsetTop = " + hidden.offsetTop);
+            hidden.parentNode.removeChild(hidden);
+        }
+
+        function start_incremental_parsing(selection)
+        {
+            var range = selection.getRangeAt(0);
+
+            var start_node = -1;
+            var end_node = -1;
+
+            /* Find the start and end of the area we need to reparse. */
+            for(var i = 0; i < 2; ++i)
+            {
+                var id = -1;
+
+                if(i == 0)
+                    var node = range.startContainer;
+                else
+                    var node = range.endContainer;
+
+                var is_first = true;
+                var is_last = true;
+
+                if(node.nodeType == 3)
+                {
+                    if(range.startOffset-1 != 0)
+                        is_first = false;
+                    if(range.endOffset-1 == node.textContent.length-1)
+                        is_last = false;
+
+                    node = node.parentElement;
+                };
+
+                var prev_node = node;
+                /* Find the parent hm_node_ _OR_ go all the way back up to the
+                 * editor node. */
+                while(
+                    !node.getAttribute('id') ||
+                    (
+                        !node.getAttribute('id').toLowerCase() == "editor" &&
+                        !node.getAttribute('id').startsWith('hm_node_')
+                    )
+                )
+                {
+                    if(node.previousSibling)
+                        is_first = false;
+                    if(node.nextSibling)
+                        is_last = false;
+
+                    prev_node = node;
+                    node = node.parentElement;
+                }
+
+
+                if(node.getAttribute('id').toLowerCase() == "editor")
+                {
+                    /* Start with our parent one below the editor node. */
+                    node = prev_node;
+
+                    while(
+                        node.nodeType != 1 ||
+                        !node.getAttribute('id') ||
+                        !node.getAttribute('id').startsWith('hm_node_')
+                    )
+                    {
+                        if(i == 0)
+                            node = node.previousSibling;
+                        else
+                            node = node.nextSibling;
+
+                        /* If we didn't find any we need to start to reparse
+                         * from the edges. */
+                        if(!node)
+                            break;
+                    }
+
+                    /* If we know we need to reparse from the edges we already
+                       found our bounds. */
+                    if(!node)
+                    {
+                        if(i == 0)
+                            start_node = -1;
+                        else
+                            end_node = -1;
+
+                        break;
+                    }
+                }
+
+                if(is_first && i == 0)
+                    node = node.previousSibling;
+                if(is_last && i != 0)
+                    node = node.nextSibling;
+
+                if(node && node.nodeType == 1)
+                {
+                    var id_str = node.getAttribute('id');
+                    if(id_str)
+                    {
+                        var match = id_str.match(/^hm_node_(\d+)$/);
+                        if(match)
+                            id = parseInt(match[1]);
+                    }
+                }
+
+                if(i == 0)
+                    start_node = id;
+                else
+                    end_node = id;
+            }
+
+            if(start_node >= 0)
+                node = document.getElementById("hm_node_" + start_node);
+            else
+                node = editor.firstChild;
+            var offset = get_range_as_text_offset(node, range);
+
+            var id = java.start_parsing(start_node, end_node);
+
+            node = document.getElementById("hm_node_" + id);
+            selection.removeAllRanges();
+            var range = new_range_by_text_offset(node, offset);
+            selection.addRange(range);
+        }
+
+        document.addEventListener("keydown",
+            function(e)
+            {
+                if(e.keyCode == 8)
+                {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    var selection = window.getSelection();
+                    if(selection.isCollapsed)
+                        selection.modify("extend", "backward", "character");
+
+                    selection.deleteFromDocument();
+
+                    maybe_scroll_to_range(selection.getRangeAt(0));
+                    start_incremental_parsing(selection);
+                }
+                else if(e.keyCode == 46)
+                {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    var selection = window.getSelection();
+                    if(selection.isCollapsed)
+                        selection.modify("extend", "forward", "character");
+
+                    selection.deleteFromDocument();
+
+                    maybe_scroll_to_range(selection.getRangeAt(0));
+                    start_incremental_parsing(selection);
+                }
+            }
+        );
+
+        document.addEventListener("keypress",
+            function(e)
+            {
+                e.stopPropagation();
+                e.preventDefault();
+
+                var selection = window.getSelection();
+                var range = selection.getRangeAt(0).cloneRange();
+                range.deleteContents();
+
+                var new_text = String.fromCharCode(e.charCode);
+                if(e.charCode == 13)
+                {
+                    new_text = "\n";
+                }
+
+                var text = document.createTextNode(new_text);
+                range.insertNode(text);
+                range.selectNode(text);
+                range.collapse(false);
+
+                selection.removeAllRanges();
+                selection.addRange(range);
+
+                maybe_scroll_to_range(range);
+                start_incremental_parsing(selection);
+            }
+        );
+
+        document.addEventListener("paste",
+            function(e)
+            {
+                e.stopPropagation();
+                e.preventDefault();
+
+                var hm_node_id_left = 0;
+                var hm_node_id_right = 0;
+
+                var clipboard_data = e.clipboardData;
+                var text = clipboard_data.getData('text/plain');
+
+                var selection = window.getSelection();
+                var range = selection.getRangeAt(0).cloneRange();
+                range.deleteContents();
+                var text_node = document.createTextNode(text);
+                range.insertNode(text_node);
+                range.selectNode(text_node);
+                range.collapse(false);
+
+                selection.removeAllRanges();
+                selection.addRange(range);
+
+                start_incremental_parsing(selection);
+            }
+        );
+    </script>
+</head>
+<body>
+    <div id="editor" contenteditable="true"/>
+</body>
+</html>

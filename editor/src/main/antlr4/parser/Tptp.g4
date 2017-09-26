@@ -5,8 +5,11 @@
  *  Date: Dec 2016
  *  Last updated: Feb 2017
  */
-grammar Tptp;
 
+
+
+
+grammar Tptp;
 
 // %----v6.4.0.0 (TPTP version.internal development number)
 // %----v6.4.0.1 Noted that <number>s may not be used in CNF or FOF.
@@ -158,8 +161,8 @@ Distinct_object : '"' Do_char+ '"';
 
 // Comments
 
-WS : [ \r\t\n]+ -> skip ;
-Line_comment : '%' ~[\r\n]* -> skip;
+WS : [ \r\t\n]+ -> skip;
+Line_comment : '%' ~[\r\n]* -> channel(1);
 Block_comment : '/*' .*? '*/' -> skip;
 
 

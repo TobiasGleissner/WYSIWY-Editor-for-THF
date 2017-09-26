@@ -20,10 +20,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.web.WebView?>
 
-<?import org.fxmisc.richtext.CodeArea?>
-
-<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.text.Font?>
 
 <?import gui.fileBrowser.FileTreeView?>
 <?import gui.fileStructure.StructureTreeView?>
@@ -187,25 +186,22 @@
                 <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
                         <Button onAction="#onTestPref">
-                            <graphic>
-                                <FontAwesomeIconView glyphName="BEER" styleClass="icon" />
-                            </graphic>
+                            <font><Font name="FontAwesome"/></font>
+                            &#xf0fc; <!-- BEER -->
                             <tooltip><Tooltip text="Button Testing Preferences" /></tooltip>
                         </Button>
                     </items>
                     <items>
                         <Button onAction="#onReparse">
-                           <graphic>
-                              <FontAwesomeIconView glyphName="BED" styleClass="icon" />
-                           </graphic>
+                            <font><Font name="FontAwesome"/></font>
+                            &#xf236; <!-- BED -->
                            <tooltip><Tooltip text="Parse again" /></tooltip>
                         </Button>
                     </items>
                     <items>
                         <Button onAction="#onPrintTree">
-                            <graphic>
-                               <FontAwesomeIconView glyphName="HEART" styleClass="icon" />
-                            </graphic>
+                            <font><Font name="FontAwesome"/></font>
+                            &#xf004; <!-- HEART -->
                             <tooltip><Tooltip text="Print the THF tree" /></tooltip>
                          </Button>
                     </items>
@@ -214,9 +210,7 @@
                     </items>
                     <items>
                         <Button mnemonicParsing="false">
-                            <graphic>
-                               <FontAwesomeIconView glyphName="PLAY" styleClass="icon" />
-                            </graphic>
+                            PLAY
                             <tooltip><Tooltip text="Run selected Prover" /></tooltip>
                         </Button>
                         <MenuButton fx:id="toolbarRunProver" mnemonicParsing="false">
@@ -265,10 +259,10 @@
                         </TabPane>
 
                         <!-- thf editor -->
-                        <CodeArea fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
+                        <WebView fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
 
                         <!-- wysiwyg editor -->
-                        <CodeArea fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />
+                        <WebView fx:id="wysArea" prefHeight="200.0" prefWidth="200.0" />
 
                         <!-- tabs right -->
                         <!--

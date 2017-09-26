@@ -5,22 +5,23 @@ import java.io.StringReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
-import java.nio.file.Path;
-import java.nio.file.Files;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import java.lang.Throwable;
 
+import javafx.scene.web.WebEngine;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import org.apache.commons.io.IOUtils;
 
@@ -28,28 +29,40 @@ import parser.AstGen;
 import parser.ParseContext;
 
 import exceptions.ParseException;
-
+import util.SpanElement;
 import util.tree.Node;
 
 public class EditorModel
 {
-    public CodeArea thfArea;
-    public CodeArea wysArea;
+    public WebEngine engine;
+    public Document doc;
+    public WebKitStyle style;
 
     public LinkedList<Node> tptpInputNodes;
-    private HashMap<String, String> rule2CssColor;
+
+    private int parserNodeIdCur = 0;
 
     private ArrayList<String> recentlyOpenedFiles;
+    
+    private LinkedList<String> css;
 
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
-        
-        rule2CssColor = new HashMap<String, String>();
-        rule2CssColor.put("functor", "c0");
-        rule2CssColor.put("defined_functor", "c1");
-
         recentlyOpenedFiles = new ArrayList<>(); // first element = oldest file, last element = latest file
+        
+        // Extract css classes for syntax highlighting from our css file.
+        this.css = new LinkedList<String>();
+        Scanner scanner;
+        scanner = new Scanner(getClass().getResourceAsStream("/gui/editorHighlighting.css"));
+        String match = null;
+        Pattern pattern = Pattern.compile("\\n\\s*(\\.[^\\. ]+)\\s*\\{");
+        while ((match = scanner.findWithinHorizon(pattern, 0)) != null) {
+            Matcher matcher = pattern.matcher(match);
+            matcher.find();
+            css.add(matcher.group(1).substring(1));
+        }
+        scanner.close();
     }
 
     public void addErrorMessage(String string)
@@ -63,24 +76,27 @@ public class EditorModel
         addErrorMessage(e.getLocalizedMessage());
     }
 
-    /**
-     * Loads text into THF area
-     * Does not add to recently opened files
-     * @param stream
-     */
-    public String openStream(InputStream stream)
-    {
+    public void openStream(InputStream stream) {
         try
         {
-            byte[] content = IOUtils.toByteArray(stream);
-            return new String(content, StandardCharsets.UTF_8);
+            String content = IOUtils.toString(stream, "UTF-8");
+
+            org.w3c.dom.Node editor = doc.getElementById("editor");
+
+            while(editor.hasChildNodes())
+            {
+                editor.removeChild(editor.getFirstChild());
+            }
+
+            Text textNode = doc.createTextNode(content);
+            editor.appendChild(textNode);
+
+            reparse();
         }
         catch(IOException e)
         {
             addErrorMessage(e);
         }
-        
-        return null;
     }
 
     /**
@@ -94,15 +110,15 @@ public class EditorModel
         try
         {
             InputStream stream = new FileInputStream(file);
-            String content = openStream(stream);
-            thfArea.replaceText(content);
+            openStream(stream);
             updateRecentlyOpenedFiles(file);
         }
-        catch(java.io.IOException t)
+        catch(FileNotFoundException e)
         {
-            addErrorMessage(t);
+            addErrorMessage(e);
         }
     }
+
 
     /**
      * Updates concerning recently opened files
@@ -115,16 +131,6 @@ public class EditorModel
         if (recentlyOpenedFiles.size() > Config.maxRecentlyOpenedFiles) recentlyOpenedFiles.remove(0);
         Config.setRecentlyOpenedFiles(recentlyOpenedFiles);
         // TODO reflect in Menu File > recently opened Files
-    }
-
-    public void updateStyle()
-    {
-        StringBuilder style = new StringBuilder()
-            .append("-fx-font-family: " + Config.getFont() + ";\n")
-            .append("-fx-font-size: " + Config.getFontSize() + "pt;\n");
-
-        thfArea.setStyle(style.toString());
-        wysArea.setStyle(style.toString());
     }
 
     public void printTPTPTrees()
@@ -143,46 +149,47 @@ public class EditorModel
     public void reparse()
     {
         tptpInputNodes = new LinkedList<Node>();
-        reparseArea(0, thfArea.getLength()-1, tptpInputNodes.listIterator());
+        reparseArea(-1, -1);
+
+        /*
         if (tptpInputNodes.size() > 0) {
             addSyntaxHighlighting(0, tptpInputNodes.size() - 1);
         }
+        */
     }
 
-    private void addSyntaxHighlighting(int start, int end) {
-        ListIterator<Node> itr = tptpInputNodes.listIterator(start);
-        
-        while (itr.hasNext() && itr.nextIndex() <= end) {
-            Node next = itr.next();
-            addHighlightingToTptpInput(next);
-        }
-    }
-
-    private void addHighlightingToTptpInput(Node node) {
-        int baseStartIndex = node.startIndex;
-        
-        for (Node child : node.getChildren()) {
-            addHighlighting(child, baseStartIndex);
-        }
-    }
-
-    private void addHighlighting(Node node, int baseStartIndex) {
-        String style = rule2CssColor.get(node.getRule());
-        
-        if (style != null) {
-            thfArea.setStyle(baseStartIndex + node.startIndex, baseStartIndex + node.stopIndex + 1, Collections.singleton(style));
-        }
-        
-        for (Node child : node.getChildren()) {
-            addHighlighting(child, baseStartIndex);
-        }
-    }
-
-    private void reparseArea(int start, int end, ListIterator<Node> position)
+    public int reparseArea(int leftNodeId, int rightNodeId)
     {
-        //System.out.println("reparseArea: (" + start + "," + end + ")");
+        int ret = -1;
 
-        String text = thfArea.getText(start, end);
+        System.out.println("reparseArea(" + leftNodeId + "," + rightNodeId +")");
+
+        org.w3c.dom.Node sibling = null;
+        org.w3c.dom.Node editor = doc.getElementById("editor");
+
+        org.w3c.dom.Node leftNode = null;
+        if(leftNodeId >= 0)
+            leftNode = doc.getElementById("hm_node_" + leftNodeId);
+        else
+            leftNode = editor.getFirstChild();
+
+        if(rightNodeId >= 0)
+            sibling = doc.getElementById("hm_node_" + rightNodeId).getNextSibling();
+
+        System.out.println("sibling = " + sibling);
+        if(sibling instanceof Element)
+            System.out.println("sibling[id] = " + ((Element) sibling).getAttribute("id"));
+
+        StringBuilder content = new StringBuilder();
+        while(leftNode != null && (sibling == null || !leftNode.isEqualNode(sibling)))
+        {
+            content.append(leftNode.getTextContent());
+            org.w3c.dom.Node old = leftNode;
+            leftNode = leftNode.getNextSibling();
+            editor.removeChild(old);
+        }
+
+        String text = content.toString();
 
         /* NOTE: We hardcode knowledge of the grammar here. This is ugly and may fail at any point. I'm sorry. :/ */
         Pattern pattern = Pattern.compile("(\\A|\\s|\\.)(thf|tff|fof|cnf|include)\\(");
@@ -200,17 +207,13 @@ public class EditorModel
             }
             else
             {
-                off_start = matcher.start();
+                off_start = matcher.start() + matcher.group(1).length();
             }
-
-            /* This should only be true if \A matched. */
-            if(off_start != 0)
-                off_start++;
 
             int off_end;
             if(matcher.find())
             {
-                off_end = matcher.start();
+                off_end = matcher.start() + matcher.group(1).length();
             }
             else
             {
@@ -222,8 +225,10 @@ public class EditorModel
             String part = text.substring(off_start, off_end);
             // System.out.println("part = '" + part + "'");
 
+            boolean hasError = false;
+
             StringReader textReader = new StringReader(text.substring(off_start, off_end));
-            CharStream stream;
+            CharStream stream = null;
             try
             {
                 stream = CharStreams.fromReader(textReader, "THF Window");
@@ -231,134 +236,130 @@ public class EditorModel
             catch(IOException e)
             {
                 addErrorMessage(e);
-                continue;
+                hasError = true;
             }
 
-            ParseContext parseContext;
+            ParseContext parseContext = null;
             try
             {
-                parseContext = AstGen.parse(stream, "tptp_input_or_empty");
+                if(!hasError)
+                    parseContext = AstGen.parse(stream, "tptp_input_or_empty");
             }
             catch(ParseException e)
             {
                 addErrorMessage(e);
-                continue;
+                hasError = true;
             }
 
-            if(parseContext.hasParseError())
+            if(!hasError && parseContext.hasParseError())
             {
                 addErrorMessage("unable to parse: " + parseContext.getParseError());
+                hasError = true;
+            }
+
+            Node node = null;
+            if(!hasError)
+                node = parseContext.getRoot().getFirstChild();
+
+            if(hasError || node.stopIndex < node.startIndex)
+            {
+                node = new Node("not_parsed");
+
+                Element newNode = doc.createElement("section");
+                newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
+                newNode.setAttribute("class", "not_parsed");
+                if(ret == -1) ret = parserNodeIdCur;
+                parserNodeIdCur++;
+
+                Text textNode = doc.createTextNode(part);
+                newNode.appendChild(textNode);
+
+                editor.insertBefore(newNode, sibling);
+
                 continue;
             }
 
-            Node node = parseContext.getRoot().getFirstChild();
+            /* Preprocessing for highlighting: extract sections which have to be highlighted. */
+            LinkedList<SpanElement> spanElements = new LinkedList<SpanElement>();
+            addSpanElements(node, spanElements);
 
-            node.startIndex += off_start + start;
-            node.stopIndex += off_start + start;
+            Element newNode = doc.createElement("section");
+            newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
+            newNode.setAttribute("class", "hm_node");
 
-            position.add(node);
-            addHighlightingToTptpInput(node);
+            if(ret == -1) ret = parserNodeIdCur;
+            parserNodeIdCur++;
+
+            int lastParsedToken = 0;
+            int nextEnd = -1;
+            int startIndex = -1;
+            SpanElement spanElement = null;
+            if (spanElements.size() > 0) {
+                spanElement = spanElements.pop();
+                nextEnd = spanElement.getEndIndex();
+                startIndex = spanElement.getStartIndex();
+            }
+
+            StringBuilder builder = new StringBuilder();
+            for (int j = 0; j < part.length(); j++) {
+                if (lastParsedToken == startIndex && builder.length() > 0) {
+                    newNode.appendChild(doc.createTextNode(builder.toString()));
+                    builder.delete(0, builder.length());
+                }
+
+                builder.append(part.charAt(j));
+                lastParsedToken++;
+
+                // Add highlighting.
+                if (lastParsedToken == nextEnd + 1) {
+                    Element newSpan = doc.createElement("subsection");
+                    newSpan.setAttribute("class", spanElement.getTag());
+                    newSpan.appendChild(doc.createTextNode(builder.toString()));
+                    newNode.appendChild(newSpan);
+
+                    builder.delete(0, builder.length());
+
+                    if (spanElements.size() > 0) {
+                        spanElement = spanElements.pop();
+                        nextEnd = spanElement.getEndIndex();
+                        startIndex = spanElement.getStartIndex();
+                    }
+                }
+            }
+
+            Text textNode = doc.createTextNode(builder.toString());
+            builder.delete(0, builder.length());
+            newNode.appendChild(textNode);
+            editor.insertBefore(newNode, sibling);
         }
+
+        return ret;
     }
 
-    public void updateTHFTree(int start, int insEnd, int delEnd)
-    {
-        int offset = insEnd - delEnd;
-
-        int parseStart = -1;
-        int parseEnd = -1;
-
-        ListIterator<Node> nodeIt = tptpInputNodes.listIterator();
-
-        /* First we skip all nodes that don't reach the changed area yet.
-         * TODO: This could be optimized with trees. */
-        Node prev = null;
-        while(nodeIt.hasNext())
-        {
-            Node next = nodeIt.next();
-
-            int nextIndex = next.stopIndex+1;
-            // System.out.println("startIndex = " + next.startIndex + ", nextIndex = " + nextIndex + ", start = " + start);
-
-            if(nextIndex >= start)
-            {
-                // System.out.println("delete[0]");
-                nodeIt.remove();
-                break;
-            }
-
-            prev = next;
-        }
-
-        if(prev != null)
-            parseStart = prev.stopIndex+1;
-
-        /* Now we delete all nodes that reach the changed area. */
-        while(nodeIt.hasNext())
-        {
-            Node next = nodeIt.next();
-
-            if(next.startIndex <= delEnd)
-            {
-                // System.out.println("delete[1]");
-                nodeIt.remove();
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        if(nodeIt.hasNext())
-        {
-            Node next = nodeIt.next();
-            if(parseEnd == -1)
-                parseEnd = next.startIndex;
-
-            nodeIt.previous();
-        }
-
-        /* If we didn't find any preceeding or following completely parsed
-         * chunks we have to bite the bullet and need to restart the parser
-         * with the maxial constraints. */
-        if(parseStart == -1)
-            parseStart = 0;
-        if(parseEnd == -1)
-            parseEnd = thfArea.getLength();
-
-        /* Reparse the changed area we identified. */
-        reparseArea(parseStart, parseEnd, nodeIt);
-
-        /* Now we update all nodes following the changed area. */
-        while(nodeIt.hasNext())
-        {
-            Node next = nodeIt.next();
-
-            next.startIndex += offset;
-            next.stopIndex += offset;
-
-            if(parseEnd == -1)
-                parseEnd = next.startIndex;
-        }
-    }
-
-    public void updateRainbows()
-    {
-        String text = thfArea.getText();
-
-        if(text.length() < 4)
+    private void addSpanElements(Node node, LinkedList<SpanElement> spanElements) {
+        if (node == null)
             return;
 
-        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<Collection<String>>();
-        for(int i = 0; i < text.length()/4; ++i)
-        {
-            if(text.charAt(i) == '\n')
-                spansBuilder.add(Collections.emptyList(), 1);
-            else
-                spansBuilder.add(Collections.singleton("c" + (i%8+1)), 4);
+        if (css.contains(node.getRule())) {
+            spanElements.add(new SpanElement(node.startIndex, node.stopIndex, node.getRule()));
         }
+        
+        for (Node n : node.getChildren()) {
+            addSpanElements(n, spanElements);
+        }
+        
+    }
 
-        StyleSpans<Collection<String>> spans = spansBuilder.create();
-        thfArea.setStyleSpans(0, spans);
+    public void onViewIncreaseFontSize() {
+        style.increaseFontSize();
+    }
+
+    public void onViewDecreaseFontSize() {
+        style.decreaseFontSize();
+    }
+
+    public void onViewEnterPresentationMode() {
+        style.setFontSize(2.0);
+        // TODO close side drawer, ...
     }
 }

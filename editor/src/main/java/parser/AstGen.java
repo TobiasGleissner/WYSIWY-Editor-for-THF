@@ -22,6 +22,7 @@ public class AstGen {
         parser.TptpLexer lexer = new parser.TptpLexer(inputStream);
         lexer.removeErrorListeners(); // only for production
         CommonTokenStream tokens = new CommonTokenStream(lexer);
+        CommonTokenStream comments = new CommonTokenStream(lexer,1);
         tokens.fill();
 
         parser.TptpParser parser = new parser.TptpParser(tokens);
@@ -56,6 +57,10 @@ public class AstGen {
         // create ast
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(treeListener, parserRuleContext);
+
+        // misc
+        parseContext.setComments(comments.getTokens());
+        parseContext.getComments().forEach(n-> System.out.println(n));
 
         // create and return ParseContext
         parseContext.setParserRuleContext(parserRuleContext);

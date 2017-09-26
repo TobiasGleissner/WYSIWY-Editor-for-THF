@@ -1,0 +1,26 @@
+/* THF styling */
+.formula_role {
+    color: #FF7C00;
+}
+.variable {
+    color: #04859D;
+}
+.thf_unitary_type {
+    color: #FF0000;
+}
+.thf_apply_type {
+    color: #FF0000;
+}
+.thf_binary_type {
+    color: #BF3030;
+}
+.functor {
+    color: #00CC00;
+}
+.defined_functor {
+    color: #269926;
+}
+.system_functor {
+    color: #008500;
+}
+
