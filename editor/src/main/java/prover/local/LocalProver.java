@@ -99,6 +99,7 @@ public class LocalProver implements Prover {
             stdout = stdout + s + "\n";
         }
         String stderr = "";
+        s = null;
         while ((s = stdError.readLine()) != null) {
             stderr += s;
         }
@@ -106,7 +107,8 @@ public class LocalProver implements Prover {
         if (stdout.contains("Usage:")) throw new ProverNotAvailableException("Prover could not be started");
 
         TPTPDefinitions.SZSDeductiveStatus status = parseSZSStatus(stdout);
-        double elapsedTime = 0;
+        System.out.println(stdout);
+        double elapsedTime = parseWC(stdout);
         ProveResult ret = new ProveResult();
         ret.elapsedTime = elapsedTime;
         ret.status = status;
@@ -120,6 +122,18 @@ public class LocalProver implements Prover {
         String cmdProver = Config.getLocalProverCommand(prover);
         ProveResult r = prove(problem,cmdProver,timeLimit);
         return new ProveResult(problem, source, prover, r.stdout, r.stderr, r.status, r.elapsedTime, timeLimit);
+    }
+
+    private double parseCPU(String s){
+        int CPUStart = s.indexOf("FINAL WATCH:") + 12;
+        int CPUEnd = s.indexOf("CPU");
+        return Double.parseDouble(s.substring(CPUStart,CPUEnd).trim());
+    }
+
+    private double parseWC(String s){
+        int WCStart = s.indexOf("CPU") + 3;
+        int WCEnd = s.indexOf("WC");
+        return Double.parseDouble(s.substring(WCStart,WCEnd).trim());
     }
 
     private TPTPDefinitions.SZSDeductiveStatus parseSZSStatus(String s) throws ProverResultNotInterpretableException {
