@@ -1,138 +1,133 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <style id="style"></style>
-        <script>
-            document.addEventListener("keypress",
-                function(e)
+<head>
+    <style id="style"></style>
+    <script>
+        function make_selection_valid(e)
+        {
+            var selection = window.getSelection();
+            var editor = document.getElementById("editor");
+
+            java.debug("selection = " + selection.rangeCount);
+
+            if(selection.rangeCount == 0)
+            {
+                var range = document.createRange();
+                range.setStart(editor, 0);
+                range.setEnd(editor, 0);
+                selection.addRange(range);
+            }
+        }
+        document.addEventListener("click", make_selection_valid);
+        document.addEventListener("keypress", make_selection_valid);
+
+        document.addEventListener("keypress",
+            function(e)
+            {
+                java.debug("test");
+
+                e.stopPropagation();
+                e.preventDefault();
+
+                var selection = window.getSelection();
+                var range = selection.getRangeAt(0);
+                range.deleteContents();
+
+                var new_text = String.fromCharCode(e.charCode);
+                if(e.charCode == 13)
                 {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    var selection = window.getSelection();
-                    var range = selection.getRangeAt(0);
-                    range.deleteContents();
-
-                    if(e.charCode == 13)
-                    {
-                        range.deleteContents();
-                        var br = document.createElement("br");
-                        range.insertNode(br);
-                        range.selectNode(br);
-
-                        var real_next = br.nextSibling;
-                        while(real_next != null && real_next.nodeType == 3 && real_next.textContent.trim().length == 0)
-                            real_next = real_next.nextSibling;
-
-                        var par = br.parentNode;
-
-                        /* Properly represent empty lines at the end of the input. */
-                        if(real_next == null && par.nodeName.toLowerCase() == "body")
-                        {
-                            br = document.createElement("br");
-                            range.insertNode(br);
-                            range.selectNode(br);
-                        }
-
-                        range.setEndAfter(br);
-                        range.collapse(false);
-                    }
-                    else
-                    {
-                        var text = document.createTextNode(String.fromCharCode(e.charCode));
-                        range.insertNode(text);
-                        range.selectNode(text);
-                    }
-
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                    selection.collapseToEnd();
+                    new_text = "\n";
                 }
-            );
 
-            document.addEventListener("paste",
-                function(e)
+                var text = document.createTextNode(new_text);
+                range.insertNode(text);
+                range.selectNode(text);
+
+                selection.removeAllRanges();
+                selection.addRange(range);
+                selection.collapseToEnd();
+            }
+        );
+
+        document.addEventListener("paste",
+            function(e)
+            {
+                e.stopPropagation();
+                e.preventDefault();
+
+                var hm_node_id_left = 0;
+                var hm_node_id_right = 0;
+
+                var clipboard_data = e.clipboardData;
+                var text = clipboard_data.getData('text/plain');
+
+                var selection = window.getSelection();
+                var range = selection.getRangeAt(0);
+
+                for(var i = 0; i < 2; ++i)
                 {
-                    e.stopPropagation();
-                    e.preventDefault();
+                    if(i == 0)
+                        var node = range.startContainer;
+                    else
+                        var node = range.endContainer;
 
-                    var hm_node_id_left = 0;
-                    var hm_node_id_right = 0;
+                    while(
+                        node.nodeName.toLowerCase() != "body" &&
+                        (
+                            node.nodeType != 1 ||
+                            !node.getAttribute('id') ||
+                            !node.getAttribute('id').startsWith('hm_node_')
+                        )
+                    )
+                        node = node.parentNode;
 
-                    var clipboard_data = e.clipboardData;
-                    var text = clipboard_data.getData('text/plain');
+                    java.debug("found parent " + node);
 
-                    var selection = window.getSelection();
-                    var range = selection.getRangeAt(0);
-
-                    for(var i = 0; i < 2; ++i)
+                    if(node.nodeName.toLowerCase() == "body")
                     {
                         if(i == 0)
-                            var node = range.startContainer;
+                            node = document.body.firstChild;
                         else
-                            var node = range.endContainer;
-
-                        while(
-                            node.nodeName.toLowerCase() != "body" &&
-                            (
-                                node.nodeType != 1 ||
-                                !node.getAttribute('id') ||
-                                !node.getAttribute('id').startsWith('hm_node_')
-                            )
-                        )
-                            node = node.parentNode;
-
-                        java.debug("found parent " + node);
-
-                        if(node.nodeName.toLowerCase() == "body")
-                        {
-                            if(i == 0)
-                                node = document.body.firstChild;
-                            else
-                                node = document.body.lastChild;
-                        }
-
-                        if(range.isPointInRange(node, 0))
-                        {
-                            if(i == 0)
-                                node = node.previousSibling;
-                            else
-                                node = node.nextSibling;
-                        }
-
-                        var id = -1;
-                        if(node.nodeType == 1)
-                        {
-                            var id_str = node.getAttribute('id');
-                            if(id_str)
-                            {
-                                var match = id_str.match(/^hm_node_(\d+)$/);
-                                if(match)
-                                    id = parseInt(match[1]);
-                            }
-                        }
-
-                        java.debug("i = " + i + ", id = " + id);
+                            node = document.body.lastChild;
                     }
 
-                    range.deleteContents();
-
-                    for(line in text.split("\n"))
+                    if(range.isPointInRange(node, 0))
                     {
-                        var text_node = document.createTextNode(text);
-                        var br = document.createElement("br");
-
-                        range.insertNode(text_node);
-                        range.selectNode(text_node);
+                        if(i == 0)
+                            node = node.previousSibling;
+                        else
+                            node = node.nextSibling;
                     }
 
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                    selection.collapseToEnd();
-                }
-            );
-        </script>
-    </head>
+                    var id = -1;
+                    if(node.nodeType == 1)
+                    {
+                        var id_str = node.getAttribute('id');
+                        if(id_str)
+                        {
+                            var match = id_str.match(/^hm_node_(\d+)$/);
+                            if(match)
+                                id = parseInt(match[1]);
+                        }
+                    }
 
-    <body contenteditable="true"></body>
+                    java.debug("i = " + i + ", id = " + id);
+                }
+
+                range.deleteContents();
+
+                var text_node = document.createTextNode(text);
+                range.insertNode(text_node);
+                range.selectNode(text_node);
+
+                selection.removeAllRanges();
+                selection.addRange(range);
+                selection.collapseToEnd();
+            }
+        );
+    </script>
 </head>
+<body>
+    <div id="editor" contenteditable="true"/>
+</body>
+</html>

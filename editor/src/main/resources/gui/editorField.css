@@ -1,8 +1,12 @@
 /* general */
-* {
+#editor {
     font-style: normal;
     font-family: monospace;
     white-space: pre-wrap;
+}
+
+*:focus {
+    outline: none;
 }
 
 /* line numbering */

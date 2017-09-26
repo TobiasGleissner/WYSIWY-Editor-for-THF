@@ -83,29 +83,15 @@ public class EditorModel
         {
             String content = IOUtils.toString(stream, "UTF-8");
 
-            org.w3c.dom.Node body = doc.getElementsByTagName("body").item(0);
+            org.w3c.dom.Node editor = doc.getElementById("editor");
 
-            while(body.hasChildNodes())
+            while(editor.hasChildNodes())
             {
-                body.removeChild(body.getFirstChild());
+                editor.removeChild(editor.getFirstChild());
             }
 
-            boolean first = true;
-            for(String line : content.split("\n"))
-            {
-                if(first)
-                {
-                    first = false;
-                }
-                else
-                {
-                    Element br = doc.createElement("br");
-                    body.appendChild(br);
-                }
-
-                Text textNode = doc.createTextNode(line);
-                body.appendChild(textNode);
-            }
+            Text textNode = doc.createTextNode(content);
+            editor.appendChild(textNode);
 
             // reparse();
         }
@@ -180,12 +166,6 @@ public class EditorModel
 
         //System.out.println("reparseArea: (" + start + "," + end + ")");
 
-        /*
-         * TODO:
-         *  - Make a Reader class for this and feed it to antlr.
-         *  - Make this start with a node of the caller's choosing.
-         */
-
         /* We have a node to replace. */
         org.w3c.dom.Node sibling = null; /* null if we don't have a next sibling. */
         org.w3c.dom.Node newRoot;
@@ -193,7 +173,7 @@ public class EditorModel
 
         if(oldNodeId >= 0)
         {
-            parseRoot = doc.createElement("body");
+            parseRoot = doc.createElement("div");
 
             String initialId = "hm_node_" + oldNodeId;
             org.w3c.dom.Node oldNode = doc.getElementById(initialId);
@@ -238,12 +218,13 @@ public class EditorModel
         }
         else /* We have to restart from the root. */
         {
-            parseRoot = doc.getElementsByTagName("body").item(0);
+            parseRoot = doc.getElementById("editor");
 
             org.w3c.dom.Node parent = parseRoot.getParentNode();
             parent.removeChild(parseRoot);
 
-            Element newRoot_ = doc.createElement("body");
+            Element newRoot_ = doc.createElement("doc");
+            newRoot_.setAttribute("id", "editor");
             newRoot_.setAttribute("contenteditable", "true");
             newRoot = newRoot_;
 
@@ -271,18 +252,6 @@ public class EditorModel
             {
                 System.out.println("add child");
                 nodes.push(list.item(i-1));
-            }
-
-            if(n instanceof Element)
-            {
-                System.out.println("is element");
-
-                Element el = (Element)n;
-                System.out.println("tag_name = '" + el.getTagName() + "'");
-                System.out.println("class = '" + el.getAttribute("class") + "'");
-
-                if(el.getTagName().toLowerCase().equals("br"))
-                    content.append("\n");
             }
         }
 
@@ -369,19 +338,8 @@ public class EditorModel
                 newNode.setAttribute("class", "not_parsed");
                 parserNodeIdCur++;
 
-                String[] lines = part.split("\n");
-                for(int i = 0; i < lines.length; ++i)
-                {
-                    if(i != 0)
-                    {
-                        Element br = doc.createElement("br");
-                        newNode.appendChild(br);
-                    }
-
-                    Text textNode = doc.createTextNode(lines[i]);
-                    newNode.appendChild(textNode);
-                }
-                newRoot.insertBefore(newNode, sibling);
+                Text textNode = doc.createTextNode(part);
+                newNode.appendChild(textNode);
 
                 continue;
             }
@@ -398,7 +356,6 @@ public class EditorModel
 
             parserNodeIdCur++;
 
-            String[] lines = part.split("\n");
             int lastParsedToken = 0;
             int nextEnd = -1;
             int startIndex = -1;
@@ -408,47 +365,37 @@ public class EditorModel
                 nextEnd = spanElement.getEndIndex();
                 startIndex = spanElement.getStartIndex();
             }
-            for(int i = 0; i < lines.length; ++i)
-            {
-                if(i != 0)
-                {
-                    Element br = doc.createElement("br");
-                    newNode.appendChild(br);
-                    lastParsedToken++;
+
+            StringBuilder builder = new StringBuilder();
+            for (int j = 0; j < part.length(); j++) {
+                if (lastParsedToken == startIndex && builder.length() > 0) {
+                    newNode.appendChild(doc.createTextNode(builder.toString()));
+                    builder.delete(0, builder.length());
                 }
 
-                StringBuilder builder = new StringBuilder();
-                
-                for (int j = 0; j < lines[i].length(); j++) {
-                    if (lastParsedToken == startIndex && builder.length() > 0) {
-                        newNode.appendChild(doc.createTextNode(builder.toString()));
-                        builder.delete(0, builder.length());
-                    }
-                    
-                    builder.append(lines[i].charAt(j));
-                    lastParsedToken++;
-                    
-                    // Add highlighting.
-                    if (lastParsedToken == nextEnd + 1) {
-                        Element newSpan = doc.createElement("subsection");
-                        newSpan.setAttribute("class", spanElement.getTag());
-                        newSpan.appendChild(doc.createTextNode(builder.toString()));
-                        newNode.appendChild(newSpan);
-                        
-                        builder.delete(0, builder.length());
-                        
-                        if (spanElements.size() > 0) {
-                            spanElement = spanElements.pop();
-                            nextEnd = spanElement.getEndIndex();
-                            startIndex = spanElement.getStartIndex();
-                        }
+                builder.append(part.charAt(j));
+                lastParsedToken++;
+
+                // Add highlighting.
+                if (lastParsedToken == nextEnd + 1) {
+                    Element newSpan = doc.createElement("subsection");
+                    newSpan.setAttribute("class", spanElement.getTag());
+                    newSpan.appendChild(doc.createTextNode(builder.toString()));
+                    newNode.appendChild(newSpan);
+
+                    builder.delete(0, builder.length());
+
+                    if (spanElements.size() > 0) {
+                        spanElement = spanElements.pop();
+                        nextEnd = spanElement.getEndIndex();
+                        startIndex = spanElement.getStartIndex();
                     }
                 }
-                
-                Text textNode = doc.createTextNode(builder.toString());
-                builder.delete(0, builder.length());
-                newNode.appendChild(textNode);
             }
+
+            Text textNode = doc.createTextNode(builder.toString());
+            builder.delete(0, builder.length());
+            newNode.appendChild(textNode);
             newRoot.insertBefore(newNode, sibling);
         }
     }
@@ -456,7 +403,7 @@ public class EditorModel
     private void addSpanElements(Node node, LinkedList<SpanElement> spanElements) {
         if (node == null)
             return;
-        
+
         if (css.contains(node.getRule())) {
             spanElements.add(new SpanElement(node.startIndex, node.stopIndex, node.getRule()));
         }
