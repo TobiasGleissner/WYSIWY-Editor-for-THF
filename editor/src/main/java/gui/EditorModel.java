@@ -282,6 +282,7 @@ public class EditorModel
             /* Preprocessing for highlighting: extract sections which have to be highlighted. */
             LinkedList<SpanElement> spanElements = new LinkedList<SpanElement>();
             addSpanElements(node, spanElements);
+            Collections.sort((List<SpanElement>) spanElements);
 
             Element newNode = doc.createElement("section");
             newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
@@ -293,6 +294,9 @@ public class EditorModel
             int lastParsedToken = 0;
             int nextEnd = -1;
             int startIndex = -1;
+            int endOfHighlightingArea = 0;
+            int startOfHighlightingArea = 0;
+            boolean finishHighlightingFromLastLine = false;
             SpanElement spanElement = null;
             if (spanElements.size() > 0) {
                 spanElement = spanElements.pop();
@@ -301,7 +305,56 @@ public class EditorModel
             }
 
             StringBuilder builder = new StringBuilder();
-            for (int j = 0; j < part.length(); j++) {
+            
+            while (lastParsedToken < part.length()) {
+                
+                if (startIndex == -1) {
+                    builder.append(part.substring(lastParsedToken));
+                    newNode.appendChild(doc.createTextNode(builder.toString()));
+                    builder.delete(0, builder.length());
+                    break;
+                }
+                
+                if (startIndex > lastParsedToken ) {
+                    builder.append(part.substring(lastParsedToken, startIndex));
+                    lastParsedToken += builder.length();
+                    
+                    Text textNode = doc.createTextNode(builder.toString());
+                    builder.delete(0, builder.length());
+                    newNode.appendChild(textNode);
+                }
+                
+                if (startIndex == lastParsedToken) {
+                    // TODO: For each inner highlighting, add subsection
+                    
+                    builder.append(part.substring(startIndex, nextEnd+1));
+                    lastParsedToken += builder.length();
+                    
+                    Element newSpan = doc.createElement("subsection");
+                    newSpan.setAttribute("class", spanElement.getTag());
+                    newSpan.appendChild(doc.createTextNode(builder.toString()));
+                    newNode.appendChild(newSpan);
+                    
+                    builder.delete(0, builder.length());
+                    
+                    if (spanElements.size() > 0) {
+                        while (spanElements.size() > 0 && (spanElements.peek().getStartIndex() <= startIndex || spanElements.peek().getStartIndex() < lastParsedToken)) {
+                            spanElements.pop();
+                        }
+                        if (spanElements.size() == 0) {
+                            startIndex = -1;
+                        } else {
+                            spanElement = spanElements.pop();
+                            nextEnd = spanElement.getEndIndex();
+                            startIndex = spanElement.getStartIndex();
+                        }
+                    } else {
+                        startIndex = -1;
+                    }
+                }
+            }
+            
+            /*for (int j = 0; j < part.length(); j++) {
                 if (lastParsedToken == startIndex && builder.length() > 0) {
                     newNode.appendChild(doc.createTextNode(builder.toString()));
                     builder.delete(0, builder.length());
@@ -325,7 +378,7 @@ public class EditorModel
                         startIndex = spanElement.getStartIndex();
                     }
                 }
-            }
+            }*/
 
             Text textNode = doc.createTextNode(builder.toString());
             builder.delete(0, builder.length());
