@@ -7,7 +7,7 @@ import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 public class Config {
-    private static Preferences prefs = Preferences.userNodeForPackage(Config.class);
+    public static Preferences prefs = Preferences.userNodeForPackage(Config.class);
 
     // common
     public static void removePreference(String pref){prefs.remove(pref);}
@@ -68,6 +68,7 @@ public class Config {
                 .map(n -> n.substring(6)).collect(Collectors.toList());
     }
     public static void setLocalProvers(List<String> provers){
+        System.out.println(provers.size());
         System.out.println("setlocalprovers:"+ String.join(",",provers));
         prefs.put("localProverList", String.join(",",provers));
     }
