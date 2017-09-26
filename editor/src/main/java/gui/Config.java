@@ -57,12 +57,8 @@ public class Config {
 
     // prover local
     public static List<String> getLocalProvers(){
-        System.out.println(prefs.get("localProverList",null));
         String provers = prefs.get("localProverList","");
         List<String>  list = Arrays.asList(provers.split(","));
-        list.stream()
-                .filter(n->n.length() >= 6).filter(n-> n.substring(0,6).equals("prover"))
-                .map(n -> n.substring(6)).forEach(n-> System.out.println("localprover:"+ n));
         return list.stream()
                 .filter(n->n.length() >= 6).filter(n-> n.substring(0,6).equals("prover"))
                 .map(n -> n.substring(6)).collect(Collectors.toList());
