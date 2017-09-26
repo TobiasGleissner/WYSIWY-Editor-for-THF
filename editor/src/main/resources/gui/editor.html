@@ -203,6 +203,7 @@
 
                 var new_text = String.fromCharCode(e.charCode);
                 if(e.charCode == 13)
+                    st applications will either use only keypress or use only keyup/keydow
                 {
                     new_text = "\n";
                 }
@@ -215,12 +216,10 @@
                 selection.removeAllRanges();
                 selection.addRange(range);
 
-                /*
                 var hidden = document.createElement("span");
                 text.parentNode.insertBefore(hidden, text);
                 hidden.scrollIntoView();
                 hidden.parentNode.removeChild(hidden);
-                */
 
                 start_incremental_parsing(selection);
             }

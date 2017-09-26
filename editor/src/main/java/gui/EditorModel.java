@@ -190,7 +190,6 @@ public class EditorModel
         }
 
         String text = content.toString();
-        System.out.println("text = '" + text + "'");
 
         /* NOTE: We hardcode knowledge of the grammar here. This is ugly and may fail at any point. I'm sorry. :/ */
         Pattern pattern = Pattern.compile("(\\A|\\s|\\.)(thf|tff|fof|cnf|include)\\(");
