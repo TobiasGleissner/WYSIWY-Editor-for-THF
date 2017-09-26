@@ -111,56 +111,32 @@ public class EditorController implements Initializable {
     @FXML
     public void debugALG0157()
     {
-        try {
-            model.openFile(new File(getClass().getResource("/test/ALG015^7.p").toURI()));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        model.openStream(getClass().getResourceAsStream("/test/ALG015^7.p"));
     }
     @FXML
     public void debugCOM1601()
     {
-        try {
-            model.openFile(new File(getClass().getResource("/test/COM160^1.p").toURI()));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        model.openStream(getClass().getResourceAsStream("/test/COM160^1.p"));
     }
     @FXML
     public void debugLCL6331()
     {
-        try {
-            model.openFile(new File(getClass().getResource("/test/LCL633^1.p").toURI()));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        model.openStream(getClass().getResourceAsStream("/test/LCL633^1.p"));
     }
     @FXML
     public void debugLCL6341()
     {
-        try {
-            model.openFile(new File(getClass().getResource("/test/LCL634^1.p").toURI()));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        model.openStream(getClass().getResourceAsStream("/test/LCL634^1.p"));
     }
     @FXML
     public void debugSYN0001()
     {
-        try {
-            model.openFile(new File(getClass().getResource("/test/SYN000^1.p").toURI()));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        model.openStream(getClass().getResourceAsStream("/test/SYN000^1.p"));
     }
     @FXML
     public void debugSYN0002()
     {
-        try {
-            model.openFile(new File(getClass().getResource("/test/SYN000^2.p").toURI()));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        model.openStream(getClass().getResourceAsStream("/test/SYN000^2.p"));
     }
     // DEBUG END
 
@@ -369,7 +345,7 @@ public class EditorController implements Initializable {
                 }
                 if (stream != null) {
                     try {
-                        copyStringToClipboard(model.openStream(stream));
+                        copyStringToClipboard(IOUtils.toString(stream, "UTF-8"));
                     } catch (IOException e1) {
                         model.addErrorMessage(e1);
                     }

@@ -78,23 +78,10 @@ public class EditorModel
         addErrorMessage(e.getLocalizedMessage());
     }
 
-    public String openStream(InputStream stream) throws IOException {
-        byte[] content = IOUtils.toByteArray(stream);
-        return new String(content, StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Loads the content of a file into the THF area
-     * Every opening method MUST use this
-     * Adds to recently opened files
-     * @param file
-     */
-    public void openFile(File file)
-    {
+    public void openStream(InputStream stream) {
         try
         {
-            InputStream stream = new FileInputStream(file);
-            String content = openStream(stream);
+            String content = IOUtils.toString(stream, "UTF-8");
 
             org.w3c.dom.Node body = doc.getElementsByTagName("body").item(0);
 
@@ -121,11 +108,30 @@ public class EditorModel
             }
 
             // reparse();
+        }
+        catch(IOException e)
+        {
+            addErrorMessage(e);
+        }
+    }
+
+    /**
+     * Loads the content of a file into the THF area
+     * Every opening method MUST use this
+     * Adds to recently opened files
+     * @param file
+     */
+    public void openFile(File file)
+    {
+        try
+        {
+            InputStream stream = new FileInputStream(file);
+            openStream(stream);
             updateRecentlyOpenedFiles(file);
         }
-        catch(java.io.IOException t)
+        catch(FileNotFoundException e)
         {
-            addErrorMessage(t);
+            addErrorMessage(e);
         }
     }
 
