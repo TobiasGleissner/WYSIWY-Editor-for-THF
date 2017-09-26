@@ -68,6 +68,16 @@
             return null;
         }
 
+        function maybe_scroll_to_range(range)
+        {
+            var hidden = document.createElement("span");
+            hidden.textContent = ".";
+            range.insertNode(hidden);
+            hidden.scrollIntoViewIfNeeded(false);
+            java.debug("offsetTop = " + hidden.offsetTop);
+            hidden.parentNode.removeChild(hidden);
+        }
+
         function start_incremental_parsing(selection)
         {
             var range = selection.getRangeAt(0);
@@ -182,7 +192,6 @@
                 node = editor.firstChild;
             var offset = get_range_as_text_offset(node, range);
 
-
             var id = java.start_parsing(start_node, end_node);
 
             node = document.getElementById("hm_node_" + id);
@@ -205,6 +214,7 @@
 
                     selection.deleteFromDocument();
 
+                    maybe_scroll_to_range(selection.getRangeAt(0));
                     start_incremental_parsing(selection);
                 }
                 else if(e.keyCode == 46)
@@ -218,6 +228,7 @@
 
                     selection.deleteFromDocument();
 
+                    maybe_scroll_to_range(selection.getRangeAt(0));
                     start_incremental_parsing(selection);
                 }
             }
@@ -247,6 +258,7 @@
                 selection.removeAllRanges();
                 selection.addRange(range);
 
+                maybe_scroll_to_range(range);
                 start_incremental_parsing(selection);
             }
         );
