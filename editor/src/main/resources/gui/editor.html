@@ -191,6 +191,38 @@
             selection.addRange(range);
         }
 
+        document.addEventListener("keydown",
+            function(e)
+            {
+                if(e.keyCode == 8)
+                {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    var selection = window.getSelection();
+                    if(selection.isCollapsed)
+                        selection.modify("extend", "backward", "character");
+
+                    selection.deleteFromDocument();
+
+                    start_incremental_parsing(selection);
+                }
+                else if(e.keyCode == 46)
+                {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    var selection = window.getSelection();
+                    if(selection.isCollapsed)
+                        selection.modify("extend", "forward", "character");
+
+                    selection.deleteFromDocument();
+
+                    start_incremental_parsing(selection);
+                }
+            }
+        );
+
         document.addEventListener("keypress",
             function(e)
             {
@@ -203,7 +235,6 @@
 
                 var new_text = String.fromCharCode(e.charCode);
                 if(e.charCode == 13)
-                    st applications will either use only keypress or use only keyup/keydow
                 {
                     new_text = "\n";
                 }
@@ -218,7 +249,7 @@
 
                 var hidden = document.createElement("span");
                 text.parentNode.insertBefore(hidden, text);
-                hidden.scrollIntoView();
+                hidden.scrollIntoView(scrollIntoViewOptions: {block: "nearest"});
                 hidden.parentNode.removeChild(hidden);
 
                 start_incremental_parsing(selection);
