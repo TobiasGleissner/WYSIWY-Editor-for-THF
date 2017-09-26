@@ -77,8 +77,8 @@ public class EditorController implements Initializable {
     private EditorModel model;
     private Stage mainStage;
     private File dir;
-    static FontAwesome iconCollapse = FontAwesome.ARROW_DOWN;
-    static FontAwesome iconUncollapse = FontAwesome.ARROW_UP;
+    static FontAwesome iconCollapse = FontAwesome.ANGLE_DOUBLE_DOWN;
+    static FontAwesome iconUncollapse = FontAwesome.ANGLE_DOUBLE_UP;
 
     @FXML
     private Menu menubarRunProver;
@@ -463,34 +463,49 @@ public class EditorController implements Initializable {
     }
 
     private void makeTabPaneCollapsable() {
-        IconNode icon = new IconNode(iconUncollapse);
+
+        IconNode icon = new IconNode(iconCollapse);
         icon.getStyleClass().add("tabpane-icon");
         tabPaneLeftCollapse.setGraphic(icon);
         tabPaneLeft.getSelectionModel().select(1);
+
         tabPaneLeft.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
                 if(newTab == tabPaneLeftCollapse) {
                     double width = splitPaneVertical.getWidth();
-                    double[] orgDividerPositions = splitPaneVertical.getDividerPositions();
-                    double minDividerPosition = tabPaneLeft.getTabMaxHeight()/width;
-                    IconNode icon;
-                    if (minDividerPosition/orgDividerPositions[0]<0.95) {
-                        icon = new IconNode(iconCollapse);
-                        tabPaneLeftCollapse.setGraphic(icon);
+                    double orgDividerPosition = splitPaneVertical.getDividers().get(0).positionProperty().getValue();
+                    double minDividerPosition = getMinDividerPosition();
+                    if (minDividerPosition/orgDividerPosition<0.95) {
                         splitPaneVertical.setDividerPosition(0,minDividerPosition+(1/width));
-                        splitPaneVertical.setResizableWithParent(tabPaneLeft, Boolean.FALSE);
                     } else {
-                        icon = new IconNode(iconUncollapse);
                         splitPaneVertical.setDividerPosition(0,0.2);
-                        splitPaneVertical.setResizableWithParent(tabPaneLeft, Boolean.TRUE);
                     }
-                    icon.getStyleClass().add("tabpane-icon");
-                    tabPaneLeftCollapse.setGraphic(icon);
                     tabPaneLeft.getSelectionModel().select(oldTab);
                 }
             }
         });
+
+        splitPaneVertical.getDividers().get(0).positionProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                IconNode icon;
+                if(getMinDividerPosition()/(double)newValue<0.95) {
+                    icon = new IconNode(iconCollapse);
+                    splitPaneVertical.setResizableWithParent(tabPaneLeft, Boolean.TRUE);
+                } else {
+                    icon = new IconNode(iconUncollapse);
+                    splitPaneVertical.setResizableWithParent(tabPaneLeft, Boolean.FALSE);
+                }
+                icon.getStyleClass().add("tabpane-icon");
+                tabPaneLeftCollapse.setGraphic(icon);
+            }
+        });
+
+    }
+
+    private double getMinDividerPosition() {
+        return tabPaneLeft.getTabMaxHeight()/splitPaneVertical.getWidth();
     }
 
     private void addCurrentlyavailableProversToMenus() {
