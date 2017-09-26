@@ -247,11 +247,6 @@
                 selection.removeAllRanges();
                 selection.addRange(range);
 
-                var hidden = document.createElement("span");
-                text.parentNode.insertBefore(hidden, text);
-                hidden.scrollIntoView(scrollIntoViewOptions: {block: "nearest"});
-                hidden.parentNode.removeChild(hidden);
-
                 start_incremental_parsing(selection);
             }
         );
