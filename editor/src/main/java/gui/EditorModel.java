@@ -91,7 +91,7 @@ public class EditorModel
             Text textNode = doc.createTextNode(content);
             editor.appendChild(textNode);
 
-            // reparse();
+            reparse();
         }
         catch(IOException e)
         {
