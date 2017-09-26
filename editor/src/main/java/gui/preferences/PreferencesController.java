@@ -2,6 +2,7 @@ package gui.preferences;
 
 import exceptions.NameAlreadyInUseException;
 import exceptions.ProverNotAvailableException;
+import exceptions.ProverResultNotInterpretableException;
 import gui.Config;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,9 +11,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import prover.ProveResult;
+import prover.TPTPDefinitions;
 import prover.local.LocalProver;
 import util.RandomString;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -37,13 +41,18 @@ public class PreferencesController implements Initializable {
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Provers
+        // Tree
         root = new TreeItem<>("Provers");
         localProverTree.setRoot(root);
         updateLocalProversTree();
-        // TODO what if no provers available
-        if (root.getChildren().size() != 0) currentProver = root.getChildren().get(0).getValue();
-        else currentProver = null;
+
+        // current prover
+        showFirstProver();
+
+        // misc
+        nameTakenWarning.setVisible(false);
+
+        // double click on tree item
         localProverTree.setOnMouseClicked(new EventHandler<MouseEvent>()
         {
             @Override
@@ -51,19 +60,20 @@ public class PreferencesController implements Initializable {
             {
                 if(mouseEvent.getClickCount() == 2)
                 {
-                    showFirstElement();
+                    showSelectedElement();
                 }
             }
         });
-        /*
+
+        // type in prover name text field
         proverNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            // prover in combo list (which should mean it is in the local Preferences too)
-            if (localProversComboBox.getItems().contains(newValue)){
-                proverAlreadyExistsWarning.setVisible(true);
-            } else {
-                proverAlreadyExistsWarning.setVisible(false);
-            }
-        });*/
+            if (currentProver != null && currentProver.equals(newValue))
+                nameTakenWarning.setVisible(false);
+            else if (lp.getAvailableProvers().contains(newValue))
+                nameTakenWarning.setVisible(true);
+            else
+                nameTakenWarning.setVisible(false);
+        });
     }
 
     private void updateLocalProversTree(){
@@ -82,25 +92,49 @@ public class PreferencesController implements Initializable {
         proverCommandTextField.setText(proverCmd);
     }
 
-    private void showFirstElement(){
+    private void showSelectedElement(){
         if (localProverTree.getSelectionModel().getSelectedItem().equals(root)) return;
         currentProver = localProverTree.getSelectionModel().getSelectedItem().getValue();
         showLocalProver(currentProver);
     }
 
+    private void showFirstProver(){
+        if (root.getChildren().size() == 0){ // tree is empty
+            currentProver = null;
+            proverCommandTextField.setText("");
+            proverNameTextField.setText("");
+            return;
+        }
+        currentProver = root.getChildren().get(0).getValue(); // set first element in tree as current
+        localProverTree.getSelectionModel().select(localProverTree.getRow(root.getChildren().get(0))); // select first element in tree
+        showLocalProver(currentProver);
+    }
+
     @FXML
     public void onApplyProvers(ActionEvent actionEvent){
+        if (currentProver == null) return;
         String proverName = proverNameTextField.getText();
         String proverCommand = proverCommandTextField.getText();
         try {
-            LocalProver.getInstance().addProver(proverName,proverCommand,true);
+            lp.removeProver(currentProver);
+        } catch (ProverNotAvailableException e) {
+        }
+        try {
+            lp.addProver(proverName,proverCommand,true);
         } catch (NameAlreadyInUseException e) {}
         updateLocalProversTree();
     }
 
     @FXML
     public void onTestProver(ActionEvent actionEvent){
-        System.out.println("ontest");
+        String proverCommand = proverCommandTextField.getText();
+        try {
+            ProveResult pr = lp.testTHFProver(proverCommand);
+            System.out.println("Prover working!");
+        } catch (ProverNotAvailableException|IOException|ProverResultNotInterpretableException e) {
+            System.err.println("Prover not working!");
+            System.err.println(e);
+        }
     }
 
     @FXML
@@ -108,6 +142,7 @@ public class PreferencesController implements Initializable {
         String proverName = "unnamed_" + RandomString.getRandomString();
         while (lp.getAvailableProvers().contains(proverName)) proverName = "unnamed_" + RandomString.getRandomString();
         String proverCommand = "";
+        currentProver = proverName;
         proverNameTextField.setText(proverName);
         proverCommandTextField.setText(proverCommand);
         try {
@@ -125,5 +160,6 @@ public class PreferencesController implements Initializable {
         } catch (ProverNotAvailableException e) {
         }
         updateLocalProversTree();
+        showFirstProver();
     }
 }

@@ -61,11 +61,14 @@ public class LocalProver implements Prover {
         Config.setLocalProvers(availableProvers);
     }
 
-    @Override
-    public ProveResult prove(String problem, String source, String prover, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
+    public ProveResult testTHFProver(String proverCommand) throws ProverNotAvailableException, IOException, ProverResultNotInterpretableException {
+        String testProblem = "thf(1,conjecture,$true).";
+        return prove(testProblem,proverCommand,5);
+    }
+
+    private ProveResult prove(String problem, String proverCommand, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
         File tempFile = null;
         BufferedWriter writer = null;
-        System.out.println(problem);
         try {
             tempFile = File.createTempFile(Config.name + "_", "_" + RandomString.getRandomString());
             writer = new BufferedWriter(new FileWriter(tempFile));
@@ -75,9 +78,8 @@ public class LocalProver implements Prover {
             throw e;
         }
 
-        String cmdProver = Config.getLocalProverCommand(prover);
-        cmdProver = cmdProver.replace("%f", tempFile.getAbsolutePath());
-        cmdProver = cmdProver.replace("%t", Integer.toString(timeLimit));
+        proverCommand = proverCommand.replace("%f", tempFile.getAbsolutePath());
+        proverCommand = proverCommand.replace("%t", Integer.toString(timeLimit));
         String cmdTreeLimitedRun = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         cmdTreeLimitedRun += "../scripts/TreeLimitedRun";
         cmdTreeLimitedRun = cmdTreeLimitedRun
@@ -86,7 +88,7 @@ public class LocalProver implements Prover {
                 + " "
                 + Integer.toString(timeLimit)
                 + " "
-                + cmdProver;
+                + proverCommand;
         Process proc = Runtime.getRuntime().exec(cmdTreeLimitedRun);
 
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
@@ -96,19 +98,38 @@ public class LocalProver implements Prover {
         while ((s = stdInput.readLine()) != null) {
             stdout = stdout + s + "\n";
         }
-        //String stderr = "";
-        //while ((s = stdError.readLine()) != null) {
-        //    stderr += s;
-        //}
+        String stderr = "";
+        while ((s = stdError.readLine()) != null) {
+            stderr += s;
+        }
+
+        if (stdout.contains("Usage:")) throw new ProverNotAvailableException("Prover could not be started");
 
         TPTPDefinitions.SZSDeductiveStatus status = parseSZSStatus(stdout);
         double elapsedTime = 0;
-        return new ProveResult(problem, source, prover, stdout, status, elapsedTime, timeLimit);
+        ProveResult ret = new ProveResult();
+        ret.elapsedTime = elapsedTime;
+        ret.status = status;
+        ret.stdout = stdout;
+        ret.stderr = stderr;
+        return ret;
     }
 
-    private TPTPDefinitions.SZSDeductiveStatus parseSZSStatus(String s){
-        String status = s.substring(s.indexOf("SZS status") + 11);
-        status = status.substring(0,status.indexOf("\n")).trim();
+    @Override
+    public ProveResult prove(String problem, String source, String prover, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
+        String cmdProver = Config.getLocalProverCommand(prover);
+        ProveResult r = prove(problem,cmdProver,timeLimit);
+        return new ProveResult(problem, source, prover, r.stdout, r.stderr, r.status, r.elapsedTime, timeLimit);
+    }
+
+    private TPTPDefinitions.SZSDeductiveStatus parseSZSStatus(String s) throws ProverResultNotInterpretableException {
+        int statusBeginning = s.indexOf("SZS status");
+        if (statusBeginning == -1) throw new ProverResultNotInterpretableException("Could not find SZS Status beginning");
+        statusBeginning += 11;
+        String status = s.substring(statusBeginning);
+        int statusEnd = status.indexOf("\n");
+        if (statusEnd == -1) throw new ProverResultNotInterpretableException("Could not find SZS Status ending");
+        status = status.substring(0,statusEnd).trim();
         return TPTPDefinitions.getStatusFromString(status);
     }
 

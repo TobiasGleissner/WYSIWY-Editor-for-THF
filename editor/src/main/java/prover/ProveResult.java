@@ -1,19 +1,22 @@
 package prover;
 
 public class ProveResult {
-    String problem;
-    String source;
-    String prover;
-    String proverOutput;
-    TPTPDefinitions.SZSDeductiveStatus status;
-    double elapsedTime;
-    double timelimit;
+    public String problem;
+    public String source;
+    public String prover;
+    public String stdout;
+    public String stderr;
+    public TPTPDefinitions.SZSDeductiveStatus status;
+    public double elapsedTime;
+    public double timelimit;
 
-    public ProveResult(String problem, String source, String prover, String proverOutput, TPTPDefinitions.SZSDeductiveStatus status, double elapsedTime, double timelimit) {
+    public ProveResult(){}
+    public ProveResult(String problem, String source, String prover, String stdout, String stderr, TPTPDefinitions.SZSDeductiveStatus status, double elapsedTime, double timelimit) {
         this.problem = problem;
         this.source = source;
         this.prover = prover;
-        this.proverOutput = proverOutput;
+        this.stdout = stdout;
+        this.stderr = stderr;
         this.status = status;
         this.elapsedTime = elapsedTime;
         this.timelimit = timelimit;
