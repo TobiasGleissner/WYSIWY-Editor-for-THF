@@ -101,6 +101,7 @@ public class EditorController implements Initializable {
     private EditorModel model;
     private Stage mainStage;
     private File dir;
+    private Tab lastSelectedTabBeforeCollapse = null;
     static FontAwesome iconCollapse = FontAwesome.ANGLE_DOUBLE_DOWN;
     static FontAwesome iconUncollapse = FontAwesome.ANGLE_DOUBLE_UP;
 
@@ -118,6 +119,8 @@ public class EditorController implements Initializable {
     private TabPane tabPaneLeft;
     @FXML
     private Tab tabPaneLeftCollapse;
+    @FXML
+    private Tab tabPaneLeftDummy;
     @FXML
     private FileTreeView fileBrowser;
     @FXML
@@ -621,21 +624,27 @@ public class EditorController implements Initializable {
         IconNode icon = new IconNode(iconCollapse);
         icon.getStyleClass().add("tabpane-icon");
         tabPaneLeftCollapse.setGraphic(icon);
-        tabPaneLeft.getSelectionModel().select(1);
 
         tabPaneLeft.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
-                if(newTab == tabPaneLeftCollapse) {
-                    double width = splitPaneVertical.getWidth();
+                if (oldTab != tabPaneLeftCollapse) {
                     double orgDividerPosition = splitPaneVertical.getDividers().get(0).positionProperty().getValue();
                     double minDividerPosition = getMinDividerPosition();
-                    if (minDividerPosition/orgDividerPosition<0.95) {
-                        splitPaneVertical.setDividerPosition(0,minDividerPosition+(1/width));
-                    } else {
-                        splitPaneVertical.setDividerPosition(0,0.2);
+                    if(newTab == tabPaneLeftCollapse) {
+                        if (minDividerPosition/orgDividerPosition<0.95) {
+                            lastSelectedTabBeforeCollapse = oldTab;
+                            splitPaneVertical.setDividerPosition(0,minDividerPosition+(1/splitPaneVertical.getWidth()));
+                            tabPaneLeft.getSelectionModel().select(tabPaneLeftDummy);
+                        } else {
+                            splitPaneVertical.setDividerPosition(0,0.2);
+                            tabPaneLeft.getSelectionModel().select(lastSelectedTabBeforeCollapse);
+                        }
+                    } else if (newTab != tabPaneLeftCollapse && newTab != tabPaneLeftDummy) {
+                        if (minDividerPosition/orgDividerPosition>=0.95) {
+                            splitPaneVertical.setDividerPosition(0,0.2);
+                        }
                     }
-                    tabPaneLeft.getSelectionModel().select(oldTab);
                 }
             }
         });
@@ -655,6 +664,8 @@ public class EditorController implements Initializable {
                 tabPaneLeftCollapse.setGraphic(icon);
             }
         });
+
+        tabPaneLeft.getSelectionModel().select(2);
 
     }
 

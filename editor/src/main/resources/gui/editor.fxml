@@ -244,13 +244,14 @@
                         <!-- tabs left -->
                         <TabPane fx:id="tabPaneLeft" prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
+                                <Tab fx:id="tabPaneLeftDummy" />
                                 <Tab fx:id="tabPaneLeftCollapse" styleClass="tab-collapse" />
-                                <Tab text="Project">
+                                <Tab fx:id="tabPaneLeftProject" text="Project">
                                     <content>
                                         <FileTreeView fx:id="fileBrowser"/>
                                     </content>
                                 </Tab>
-                                <Tab text="Structure">
+                                <Tab fx:id="tabPaneLeftStructure" text="Structure">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                     </content>
