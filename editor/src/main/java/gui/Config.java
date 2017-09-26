@@ -26,10 +26,10 @@ public class Config {
     public static ArrayList<String> getRecentlyOpenedFiles(){
         String files = prefs.get("recentlyOpenedFiles","");
         List<String> list = Arrays.asList(files.split(","));
-        return new ArrayList<>(list.stream().map(n -> n.substring(6)).collect(Collectors.toList()));
+        return new ArrayList<>(list);
     }
     public static void setRecentlyOpenedFiles(List<String> files){
-        prefs.put("localProverList",files.stream().map(p->"prover" + p).reduce(",",String::concat));
+        prefs.put("recentlyOpenedFiles", String.join(",",files.stream().map(n->"prover"+n).collect(Collectors.toList())));
     }
 
     // common

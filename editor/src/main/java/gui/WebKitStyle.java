@@ -91,7 +91,7 @@ public class WebKitStyle {
         this.setFontSize(fontSizePresentationMode);
     }
 
-
+    public void setDefaultFontSize(){ this.setFontSize(Config.getFontSize());}
 
 
 
