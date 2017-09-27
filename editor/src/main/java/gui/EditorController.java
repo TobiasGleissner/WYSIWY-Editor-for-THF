@@ -18,6 +18,7 @@ import java.awt.datatransfer.StringSelection;
 
 import java.util.Stack;
 import java.util.ResourceBundle;
+import java.util.Objects;
 import java.util.List;
 import java.util.Optional;
 import java.util.Iterator;
@@ -29,7 +30,7 @@ import javafx.concurrent.Worker;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import javafx.collections.ObservableList;
+import javafx.collections.ListChangeListener;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -258,7 +259,7 @@ public class EditorController implements Initializable {
         }
 
         // Initialize recently opened files
-        initalizeListOfRecentlyOpenedFiles();
+        initializeListOfRecentlyOpenedFiles();
 
         // Initialize prover menu lists
         addCurrentlyAvailableProversToMenus();
@@ -312,34 +313,33 @@ public class EditorController implements Initializable {
         model.openFile(selectedFile);
     }
 
-    private void initalizeListOfRecentlyOpenedFiles() {
-        ObservableList recentlyOpenedFiles = model.getRecentlyOpenedFiles();
-        if (recentlyOpenedFiles.isEmpty()) {
+    private void initializeListOfRecentlyOpenedFiles() {
+        model.recentlyOpenedFiles.addListener((ListChangeListener.Change<? extends String> c) -> {
+            while (c.next()) {
+                for (String text : c.getRemoved()) {
+                    System.out.println("remove:" + text);
+                    menubarFileReopenFile.getItems().forEach(i->removeMenuItemByText(i,text));
+                }
+                for (String text : c.getAddedSubList()) {
+                    System.out.println("add:" + text);
+                    MenuItem item = new MenuItem(text);
+                    // TODO: item.setActionOn(onFileOpenFile);
+                    menubarFileReopenFile.getItems().add(item);
+                }
+            }
+        });
+        Config.getRecentlyOpenedFiles().stream().forEach(f->model.recentlyOpenedFiles.add(f));
+        if (model.recentlyOpenedFiles.isEmpty()) {
             MenuItem item = new MenuItem("No recently opened files");
             item.setDisable(true);
             menubarFileReopenFile.getItems().add(item);
-        } else {
-            menubarFileReopenFile.getItems().clear();
-            for (Iterator<String> i = recentlyOpenedFiles.iterator(); i.hasNext();) {
-                MenuItem item = new MenuItem(i.next());
-                // TODO: item.setActionOn(onFileOpenFile);
-                menubarFileReopenFile.getItems().add(item);
-            }
         }
+    }
 
-        recentlyOpenedFiles.addListener(new ListChangeListener() {
-            @Override
-            public void onChanged(ListChangeListener.Change change) {
-                // TODO: add just new recently opened files as menuitems and
-                // remove removed recently opened files
-                // menubarFileReopenFile.getItems().clear();
-                // for (Iterator<String> i = recentlyOpenedFiles.iterator(); i.hasNext();) {
-                //     MenuItem item = new MenuItem(i.next());
-                //     // item.setActionOn(...);
-                //     menubarFileReopenFile.getItems().add(item);
-                // }
-            }
-        });
+    private void removeMenuItemByText(MenuItem i, String textToDelete) {
+        if(Objects.equals(i.getText(),textToDelete)){
+            menubarFileReopenFile.getItems().remove(i);
+        }
     }
 
     @FXML private void onDirectoryOpen(ActionEvent e) {

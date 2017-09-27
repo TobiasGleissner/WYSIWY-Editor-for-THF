@@ -1,11 +1,13 @@
 package gui; /* TODO: Change the package hierarchy, put this one above gui. */
 
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class Config {
     public static Preferences prefs = Preferences.userNodeForPackage(Config.class);
@@ -39,13 +41,13 @@ public class Config {
     }
 
     // user actions
-    public static ArrayList<String> getRecentlyOpenedFiles(){
+    public static ObservableList<String> getRecentlyOpenedFiles(){
         String files = prefs.get("recentlyOpenedFiles","");
-        List<String> list = Arrays.asList(files.split(","));
-        return new ArrayList<>(list);
+        ObservableList<String> list = FXCollections.observableArrayList(Arrays.asList(files.split(",")));
+        return list;
     }
-    public static void setRecentlyOpenedFiles(List<String> files){
-        prefs.put("recentlyOpenedFiles", String.join(",",files.stream().map(n->"prover"+n).collect(Collectors.toList())));
+    public static void setRecentlyOpenedFiles(ObservableList<String> files){
+        prefs.put("recentlyOpenedFiles", String.join(",",files));
         flush();
     }
 

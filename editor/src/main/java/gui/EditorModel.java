@@ -14,11 +14,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.lang.Throwable;
 
-import javafx.collections.ObservableList;
-import javafx.collections.ListChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import javafx.scene.web.WebEngine;
+
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 
@@ -47,7 +47,7 @@ public class EditorModel
 
     private int parserNodeIdCur = 0;
 
-    private ObservableList<String> recentlyOpenedFiles;
+    public ObservableList<String> recentlyOpenedFiles;
 
     private LinkedList<String> css;
     public WebEngine outputEngine;
@@ -56,19 +56,6 @@ public class EditorModel
     {
         tptpInputNodes = new LinkedList<Node>();
         recentlyOpenedFiles = FXCollections.observableArrayList(); // first element = oldest file, last element = latest file
-        recentlyOpenedFiles.addListener(new ListChangeListener() {
-            @Override
-            public void onChanged(ListChangeListener.Change change) {
-                // TODO: add just new recently opened files as menuitems and
-                // remove removed recently opened files
-                // menubarFileReopenFile.getItems().clear();
-                // for (Iterator<String> i = recentlyOpenedFiles.iterator(); i.hasNext();) {
-                //     MenuItem item = new MenuItem(i.next());
-                //     // item.setActionOn(...);
-                //     menubarFileReopenFile.getItems().add(item);
-                // }
-            }
-        });
 
         // Extract css classes for syntax highlighting from our css file.
         this.css = new LinkedList<String>();
@@ -154,10 +141,6 @@ public class EditorModel
         if (recentlyOpenedFiles.size() > Config.maxRecentlyOpenedFiles) recentlyOpenedFiles.remove(0);
         Config.setRecentlyOpenedFiles(recentlyOpenedFiles);
         // TODO reflect in Menu File > recently opened Files
-    }
-
-    public ObservableList getRecentlyOpenedFiles() {
-        return recentlyOpenedFiles;
     }
 
     public void printTPTPTrees()
