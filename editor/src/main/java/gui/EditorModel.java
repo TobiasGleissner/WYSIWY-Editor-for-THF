@@ -294,9 +294,6 @@ public class EditorModel
             int lastParsedToken = 0;
             int nextEnd = -1;
             int startIndex = -1;
-            int endOfHighlightingArea = 0;
-            int startOfHighlightingArea = 0;
-            boolean finishHighlightingFromLastLine = false;
             SpanElement spanElement = null;
             if (spanElements.size() > 0) {
                 spanElement = spanElements.pop();
@@ -325,7 +322,6 @@ public class EditorModel
                 }
                 
                 if (startIndex == lastParsedToken) {
-                    // TODO: For each inner highlighting, add subsection
                     
                     builder.append(part.substring(startIndex, nextEnd+1));
                     lastParsedToken += builder.length();
@@ -353,32 +349,6 @@ public class EditorModel
                     }
                 }
             }
-            
-            /*for (int j = 0; j < part.length(); j++) {
-                if (lastParsedToken == startIndex && builder.length() > 0) {
-                    newNode.appendChild(doc.createTextNode(builder.toString()));
-                    builder.delete(0, builder.length());
-                }
-
-                builder.append(part.charAt(j));
-                lastParsedToken++;
-
-                // Add highlighting.
-                if (lastParsedToken == nextEnd + 1) {
-                    Element newSpan = doc.createElement("subsection");
-                    newSpan.setAttribute("class", spanElement.getTag());
-                    newSpan.appendChild(doc.createTextNode(builder.toString()));
-                    newNode.appendChild(newSpan);
-
-                    builder.delete(0, builder.length());
-
-                    if (spanElements.size() > 0) {
-                        spanElement = spanElements.pop();
-                        nextEnd = spanElement.getEndIndex();
-                        startIndex = spanElement.getStartIndex();
-                    }
-                }
-            }*/
 
             Text textNode = doc.createTextNode(builder.toString());
             builder.delete(0, builder.length());
