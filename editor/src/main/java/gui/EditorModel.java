@@ -80,6 +80,9 @@ public class EditorModel
             Matcher matcher = pattern.matcher(match);
             matcher.find();
             css.add(matcher.group(1).substring(1));
+            css.add("functor"); 
+            css.add("defined_functor");
+            css.add("system_functor");
         }
         scanner.close();
     }
