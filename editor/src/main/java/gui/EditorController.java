@@ -48,6 +48,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
@@ -580,19 +581,37 @@ public class EditorController implements Initializable {
         try {
             List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
             List<String> availableProversRemote = HttpProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
-
             ToggleGroup menubarProvers = new ToggleGroup();
             // add list of local provers to menubar
-            for (Iterator<String> i = availableProversLocal.iterator(); i.hasNext();) {
-                RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
-                item.setToggleGroup(menubarProvers);
-                menubarRunProver.getItems().add(item);
+            MenuItem labelForLocalProvers = new MenuItem("Local provers");
+            labelForLocalProvers.setDisable(true);
+            menubarRunProver.getItems().add(labelForLocalProvers);
+            if (availableProversLocal.isEmpty()) {
+                MenuItem noLocalProvers = new MenuItem("No local provers available");
+                noLocalProvers.setDisable(true);
+                menubarRunProver.getItems().add(noLocalProvers);
+            } else {
+                for (Iterator<String> i = availableProversLocal.iterator(); i.hasNext();) {
+                    RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
+                    item.setToggleGroup(menubarProvers);
+                    menubarRunProver.getItems().add(item);
+                }
             }
+            menubarRunProver.getItems().add(new SeparatorMenuItem());
             // add list of remote provers to menubar
-            for (Iterator<String> i = availableProversRemote.iterator(); i.hasNext();) {
-                RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
-                item.setToggleGroup(menubarProvers);
-                menubarRunProver.getItems().add(item);
+            MenuItem labelForRemoteProvers = new MenuItem("Remote provers");
+            labelForRemoteProvers.setDisable(true);
+            menubarRunProver.getItems().add(labelForRemoteProvers);
+            if (availableProversRemote.isEmpty()) {
+                MenuItem noRemoteProvers = new MenuItem("No remote provers available");
+                noRemoteProvers.setDisable(true);
+                menubarRunProver.getItems().add(noRemoteProvers);
+            } else {
+                for (Iterator<String> i = availableProversRemote.iterator(); i.hasNext();) {
+                    RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
+                    item.setToggleGroup(menubarProvers);
+                    menubarRunProver.getItems().add(item);
+                }
             }
 
             // listener for the toolbar prover menu
