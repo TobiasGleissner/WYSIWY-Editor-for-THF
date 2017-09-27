@@ -6,6 +6,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
@@ -27,6 +28,7 @@
 <?import gui.fileBrowser.FileTreeView?>
 <?import gui.fileStructure.StructureTreeView?>
 
+<?import javafx.scene.web.WebView?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
@@ -38,12 +40,12 @@
                         <!-- menuitem NAME -->
                         <Menu text="NAME">
                             <items>
-                                <MenuItem text="Hide">
+                                <MenuItem text="Hide" onAction="#onNAMEHide">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
-                                <MenuItem text="Preferences" onAction="#onPreferences">
+                                <MenuItem text="Preferences" onAction="#onNAMEPreferences">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
@@ -65,7 +67,7 @@
                                     </accelerator>
                                 </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false" />
-                                <MenuItem onAction="#onFileOpen" text="Open File">
+                                <MenuItem onAction="#onFileOpenFile" text="Open File">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
@@ -81,7 +83,7 @@
                                         <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
-                                <MenuItem text="Save as...">
+                                <MenuItem text="Save as..." onAction="#onFileSaveAs">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="DOWN" shortcut="DOWN" />
                                     </accelerator>
@@ -142,20 +144,12 @@
                         <!-- menuitem view -->
                         <Menu fx:id="menubarView" text="View">
                             <items>
-                                <Menu text="Tool Windows">
-                                    <items>
-                                        <MenuItem text="Project" onAction="#onViewToolWindowProject">
-                                        </MenuItem>
-                                    </items>
-                                </Menu>
-                                <SeparatorMenuItem mnemonicParsing="false" />
                                 <MenuItem text="Increase Font Size" onAction="#onViewIncreaseFontSize">
                                 </MenuItem>
                                 <MenuItem text="Decrease Font Size" onAction="#onViewDecreaseFontSize">
                                 </MenuItem>
                                 <MenuItem text="Enter Presentation mode" onAction="#onViewEnterPresentationMode">
                                 </MenuItem>
-
                             </items>
                         </Menu>
 
@@ -174,8 +168,7 @@
                         <!-- menuitem help -->
                         <Menu text="Help">
                             <items>
-                                <MenuItem text="NAME Help" />
-                                <MenuItem text="About NAME" />
+                                <MenuItem text="About" onAction="#onHelpAbout" />
                             </items>
                         </Menu>
 
@@ -210,7 +203,6 @@
                     </items>
                     <items>
                         <Button mnemonicParsing="false">
-                            PLAY
                             <tooltip><Tooltip text="Run selected Prover" /></tooltip>
                         </Button>
                         <MenuButton fx:id="toolbarRunProver" mnemonicParsing="false">
@@ -244,13 +236,14 @@
                         <!-- tabs left -->
                         <TabPane fx:id="tabPaneLeft" prefHeight="200.0" prefWidth="200.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
+                                <Tab fx:id="tabPaneLeftDummy" />
                                 <Tab fx:id="tabPaneLeftCollapse" styleClass="tab-collapse" />
-                                <Tab text="Project">
+                                <Tab fx:id="tabPaneLeftProject" text="Project">
                                     <content>
                                         <FileTreeView fx:id="fileBrowser"/>
                                     </content>
                                 </Tab>
-                                <Tab text="Structure">
+                                <Tab fx:id="tabPaneLeftStructure" text="Structure">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                     </content>
@@ -291,11 +284,8 @@
                 </SplitPane>
 
                 <!-- prover output -->
-                <TextFlow prefHeight="296.0" prefWidth="1000.0">
-                    <children>
-                        <HBox prefHeight="55.0" />
-                    </children>
-                </TextFlow>
+                <WebView fx:id="outputWebView" prefHeight="296.0" prefWidth="1000.0">
+                </WebView>
 
             </items>
         </SplitPane>
