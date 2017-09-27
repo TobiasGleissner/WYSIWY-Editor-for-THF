@@ -168,7 +168,7 @@ public class EditorModel
         */
     }
 
-    private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, boolean isFirst)
+    private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, int startOffset, boolean isFirst)
     {
         int start = 0;
         int end = 0;
@@ -188,6 +188,8 @@ public class EditorModel
 
                 Element nl = doc.createElement("subsection");
                 nl.setAttribute("class", "new_line");
+                nl.setAttribute("data-start", "" + startOffset + start);
+                nl.setAttribute("data-end", "" + startOffset + start);
                 parent.insertBefore(nl, sibling);
             }
 
@@ -197,25 +199,27 @@ public class EditorModel
             {
                 Element nl = doc.createElement("subsection");
                 nl.setAttribute("class", "new_line");
+                nl.setAttribute("data-start", "" + startOffset + end);
+                nl.setAttribute("data-end", "" + startOffset + end);
                 parent.insertBefore(nl, sibling);
             }
         }
         while(end < text.length());
     }
 
-    private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling)
+    private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, int startOffset)
     {
-        insertNewTextNode(text, parent, sibling, false);
+        insertNewTextNode(text, parent, sibling, startOffset, false);
     }
 
-    private void insertNewTextNode(String text, org.w3c.dom.Node parent)
+    private void insertNewTextNode(String text, org.w3c.dom.Node parent, int startOffset)
     {
-        insertNewTextNode(text, parent, null);
+        insertNewTextNode(text, parent, null, startOffset);
     }
 
-    private void insertNewTextNode(String text, org.w3c.dom.Node parent, boolean isFirst)
+    private void insertNewTextNode(String text, org.w3c.dom.Node parent, int startOffset, boolean isFirst)
     {
-        insertNewTextNode(text, parent, null, isFirst);
+        insertNewTextNode(text, parent, null, startOffset, isFirst);
     }
 
     public int reparseArea(int leftNodeId, int rightNodeId)
@@ -324,10 +328,12 @@ public class EditorModel
                 Element newNode = doc.createElement("section");
                 newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
                 newNode.setAttribute("class", "not_parsed");
+                newNode.setAttribute("data-start", "0");
+                newNode.setAttribute("data-end", "" + part.length());
                 if(ret == -1) ret = parserNodeIdCur;
                 parserNodeIdCur++;
 
-                insertNewTextNode(part, newNode, isFirst);
+                insertNewTextNode(part, newNode, 0, isFirst);
                 if(isFirst) isFirst = false;
 
                 editor.insertBefore(newNode, sibling);
@@ -343,6 +349,8 @@ public class EditorModel
             Element newNode = doc.createElement("section");
             newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
             newNode.setAttribute("class", "hm_node");
+            newNode.setAttribute("data-start", "0");
+            newNode.setAttribute("data-end", "" + part.length());
 
             if(ret == -1) ret = parserNodeIdCur;
             parserNodeIdCur++;
@@ -363,7 +371,7 @@ public class EditorModel
 
                 if (startIndex == -1) {
                     builder.append(part.substring(lastParsedToken));
-                    insertNewTextNode(builder.toString(), newNode, isFirst);
+                    insertNewTextNode(builder.toString(), newNode, lastParsedToken, isFirst);
                     if(isFirst) isFirst = false;
                     builder.delete(0, builder.length());
                     break;
@@ -373,7 +381,7 @@ public class EditorModel
                     builder.append(part.substring(lastParsedToken, startIndex));
                     lastParsedToken += builder.length();
 
-                    insertNewTextNode(builder.toString(), newNode, isFirst);
+                    insertNewTextNode(builder.toString(), newNode, lastParsedToken, isFirst);
                     if(isFirst) isFirst = false;
                     builder.delete(0, builder.length());
                 }
@@ -385,7 +393,9 @@ public class EditorModel
 
                     Element newSpan = doc.createElement("subsection");
                     newSpan.setAttribute("class", spanElement.getTag());
-                    insertNewTextNode(builder.toString(), newSpan, isFirst);
+                    newSpan.setAttribute("data-start", "" + startIndex);
+                    newSpan.setAttribute("data-end", "" + (startIndex + builder.length()));
+                    insertNewTextNode(builder.toString(), newSpan, startIndex, isFirst);
                     if(isFirst) isFirst = false;
                     newNode.appendChild(newSpan);
 
@@ -408,7 +418,7 @@ public class EditorModel
                 }
             }
 
-            insertNewTextNode(builder.toString(), newNode, isFirst);
+            insertNewTextNode(builder.toString(), newNode, lastParsedToken, isFirst);
             if(isFirst) isFirst = false;
             builder.delete(0, builder.length());
             editor.insertBefore(newNode, sibling);

@@ -27,8 +27,14 @@
                             }
                             ret = "[" + ret;
                         }
+                        ret = node.nodeName + ret;
+                        break;
+                    case 3:
+                        ret = node.nodeName + "[text='" + node.textContent + "']" + "/" + ret;
+                        break;
                     default:
                         ret = node.nodeName + "/" + ret;
+                        break;
                 }
 
                 node = node.parentNode;
@@ -83,20 +89,32 @@
 
         function get_range_as_text_offset(node, range)
         {
-            var ret = 0;
-            while(node != null)
+            var node = range.startContainer;
+
+            var offset = range.startOffset;
+            var prev_node = null;
+            while(node && node.nodeType == 3)
             {
-                if(range.intersectsNode(node))
-                {
-                    node = node.firstChild;
-                }
-                else
-                {
-                    ret += node.textContent.length;
-                    node = node.nextSibling;
-                }
+                /* Not for the first node. We use startOffset for text nodes. */
+                if(prev_node)
+                    offset += node.textContent.length;
+                prev_node = node;
+                node = node.previousSibling;
             }
-            return ret + range.startOffset;
+
+            if(node)
+            {
+                // java.debug("0");
+                offset += parseInt(node.getAttribute("data-end"));
+            }
+            else
+            {
+                // java.debug("1");
+                offset += parseInt(prev_node.parentNode.getAttribute("data-start"));
+            }
+
+            // java.debug("offset = " + offset);
+            return offset;
         }
 
         function new_range_by_text_offset(node, offset)
