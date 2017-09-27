@@ -64,6 +64,7 @@ public class EditorModel
             matcher.find();
             css.add(matcher.group(1).substring(1));
         }
+        System.out.println(css.toString());
         scanner.close();
     }
 
@@ -367,7 +368,30 @@ public class EditorModel
             return;
 
         if (css.contains(node.getRule())) {
-            spanElements.add(new SpanElement(node.startIndex, node.stopIndex, node.getRule()));
+            String tag = node.getRule();
+            Node childOfTopBranching = node.getChildBeforeNextTopBranchingNode();
+            if (childOfTopBranching == null || !childOfTopBranching.getRule().equals("thf_unitary_type")) {
+                
+            }
+            if (tag.equals("functor") && (childOfTopBranching == null || !childOfTopBranching.getRule().equals("thf_unitary_type"))) {
+                tag = "constant";
+            }
+            if (tag.equals("defined_functor") && (childOfTopBranching == null || !childOfTopBranching.getRule().equals("thf_unitary_type")) ) {
+                tag = "defined_constant";
+            }
+            if (tag.equals("system_functor") && (childOfTopBranching == null || !childOfTopBranching.getRule().equals("thf_unitary_type"))) {
+                tag = "system_constant";
+            }
+            if (tag.equals("functor") && childOfTopBranching != null && childOfTopBranching.getRule().equals("thf_unitary_type")) {
+                tag = "type";
+            }
+            if (tag.equals("defined_functor") && childOfTopBranching != null && childOfTopBranching.getRule().equals("thf_unitary_type")) {
+                tag = "defined_type";
+            }
+            if (tag.equals("system_functor") && childOfTopBranching != null && childOfTopBranching.getRule().equals("thf_unitary_type")) {
+                tag = "system_type";
+            }
+            spanElements.add(new SpanElement(node.startIndex, node.stopIndex, tag));
         }
 
         for (Node n : node.getChildren()) {
