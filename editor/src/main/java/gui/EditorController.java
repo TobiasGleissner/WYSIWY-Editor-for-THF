@@ -564,6 +564,10 @@ public class EditorController implements Initializable {
         model.onViewDecreaseFontSize();
     }
 
+    @FXML public void onViewDefaultFontSize(ActionEvent actionEvent) {
+        model.onViewDefaultFontSize();
+    }
+
     @FXML public void onViewEnterPresentationMode(ActionEvent actionEvent) {
         model.onViewEnterPresentationMode();
     }

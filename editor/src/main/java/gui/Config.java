@@ -17,6 +17,7 @@ public class Config {
 
     // editor
     public static final double fontSizeIncrementStep = 0.1;
+    public static final double fontSizeDefault = 0.4;
     public static final double fontSizePresentationMode = 1.0;
 
     // prover remote
@@ -50,7 +51,7 @@ public class Config {
 
     // editor
     public static double getFontSize() {
-        return prefs.getDouble("fontSize", 0.4);
+        return prefs.getDouble("fontSize", fontSizeDefault);
     }
     public static void setFontSize(double arg) {
         prefs.putDouble("fontSize", arg);

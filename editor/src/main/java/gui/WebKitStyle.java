@@ -81,17 +81,22 @@ public class WebKitStyle {
 
     public void increaseFontSize(){
         this.setFontSize(this.fontSize + fontSizeIncrementStep);
+        Config.setFontSize(this.fontSize);
     }
 
     public void decreaseFontSize(){
         this.setFontSize(this.fontSize - fontSizeIncrementStep);
+        Config.setFontSize(this.fontSize);
     }
 
     public void setFontSizeToPresentationMode(){
         this.setFontSize(fontSizePresentationMode);
     }
 
-    public void setDefaultFontSize(){ this.setFontSize(Config.getFontSize());}
+    public void setDefaultFontSize(){
+        this.setFontSize(Config.fontSizeDefault);
+        Config.setFontSize(this.fontSize);
+    }
 
 
 

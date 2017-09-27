@@ -480,8 +480,11 @@ public class EditorModel
     }
 
     public void onViewEnterPresentationMode() {
-        style.setFontSize(2.0);
+        style.setFontSize(Config.fontSizePresentationMode);
         // TODO close side drawer, ...
     }
 
+    public void onViewDefaultFontSize() {
+        style.setFontSize(Config.fontSizeDefault);
+    }
 }
