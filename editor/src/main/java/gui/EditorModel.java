@@ -14,6 +14,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.lang.Throwable;
 
+import javafx.collections.ObservableList;
+import javafx.collections.ListChangeListener;
+import javafx.collections.FXCollections;
+
 import javafx.scene.web.WebEngine;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -43,7 +47,7 @@ public class EditorModel
 
     private int parserNodeIdCur = 0;
 
-    private ArrayList<String> recentlyOpenedFiles;
+    private ObservableList<String> recentlyOpenedFiles;
 
     private LinkedList<String> css;
     public WebEngine outputEngine;
@@ -51,7 +55,20 @@ public class EditorModel
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
-        recentlyOpenedFiles = new ArrayList<>(); // first element = oldest file, last element = latest file
+        recentlyOpenedFiles = FXCollections.observableArrayList(); // first element = oldest file, last element = latest file
+        recentlyOpenedFiles.addListener(new ListChangeListener() {
+            @Override
+            public void onChanged(ListChangeListener.Change change) {
+                // TODO: add just new recently opened files as menuitems and
+                // remove removed recently opened files
+                // menubarFileReopenFile.getItems().clear();
+                // for (Iterator<String> i = recentlyOpenedFiles.iterator(); i.hasNext();) {
+                //     MenuItem item = new MenuItem(i.next());
+                //     // item.setActionOn(...);
+                //     menubarFileReopenFile.getItems().add(item);
+                // }
+            }
+        });
 
         // Extract css classes for syntax highlighting from our css file.
         this.css = new LinkedList<String>();
@@ -134,6 +151,10 @@ public class EditorModel
         if (recentlyOpenedFiles.size() > Config.maxRecentlyOpenedFiles) recentlyOpenedFiles.remove(0);
         Config.setRecentlyOpenedFiles(recentlyOpenedFiles);
         // TODO reflect in Menu File > recently opened Files
+    }
+
+    public ObservableList getRecentlyOpenedFiles() {
+        return recentlyOpenedFiles;
     }
 
     public void printTPTPTrees()
@@ -305,37 +326,37 @@ public class EditorModel
             }
 
             StringBuilder builder = new StringBuilder();
-            
+
             while (lastParsedToken < part.length()) {
-                
+
                 if (startIndex == -1) {
                     builder.append(part.substring(lastParsedToken));
                     newNode.appendChild(doc.createTextNode(builder.toString()));
                     builder.delete(0, builder.length());
                     break;
                 }
-                
+
                 if (startIndex > lastParsedToken ) {
                     builder.append(part.substring(lastParsedToken, startIndex));
                     lastParsedToken += builder.length();
-                    
+
                     Text textNode = doc.createTextNode(builder.toString());
                     builder.delete(0, builder.length());
                     newNode.appendChild(textNode);
                 }
-                
+
                 if (startIndex == lastParsedToken) {
-                    
+
                     builder.append(part.substring(startIndex, nextEnd+1));
                     lastParsedToken += builder.length();
-                    
+
                     Element newSpan = doc.createElement("subsection");
                     newSpan.setAttribute("class", spanElement.getTag());
                     newSpan.appendChild(doc.createTextNode(builder.toString()));
                     newNode.appendChild(newSpan);
-                    
+
                     builder.delete(0, builder.length());
-                    
+
                     if (spanElements.size() > 0) {
                         while (spanElements.size() > 0 && (spanElements.peek().getStartIndex() <= startIndex || spanElements.peek().getStartIndex() < lastParsedToken)) {
                             spanElements.pop();
@@ -388,4 +409,5 @@ public class EditorModel
         style.setFontSize(2.0);
         // TODO close side drawer, ...
     }
+
 }

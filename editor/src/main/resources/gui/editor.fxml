@@ -72,6 +72,10 @@
                                         <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
+                                <Menu fx:id="menubarFileReopenFile" text="Reopen File">
+                                    <MenuItem text="Clear File History" />
+                                    <SeparatorMenuItem mnemonicParsing="false" />
+                                </Menu>
                                 <MenuItem onAction="#onDirectoryOpen" text="Open Directory">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="D" control="UP" meta="UP" shift="UP" shortcut="DOWN" />

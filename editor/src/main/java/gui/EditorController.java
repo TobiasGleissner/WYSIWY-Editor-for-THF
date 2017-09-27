@@ -21,12 +21,15 @@ import java.util.ResourceBundle;
 import java.util.List;
 import java.util.Optional;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javafx.concurrent.Worker;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+
+import javafx.collections.ObservableList;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -104,6 +107,9 @@ public class EditorController implements Initializable {
 
     // Menu
     @FXML private Menu menubarRunProver;
+    @FXML private Menu menubarFileReopenFile;
+
+    // Toolbar
     @FXML private MenuButton toolbarRunProver;
 
     // Tabs left
@@ -250,7 +256,10 @@ public class EditorController implements Initializable {
             e.printStackTrace();
         }
 
-        // Initialize prover field in toolbar
+        // Initialize recently opened files
+        initalizeListOfRecentlyOpenedFiles();
+
+        // Initialize prover menu lists
         addCurrentlyAvailableProversToMenus();
 
         // Initialize tabs on the left side
@@ -302,19 +311,20 @@ public class EditorController implements Initializable {
         model.openFile(selectedFile);
     }
 
-    // onFileDirectory open is the last item in this section
-
-    @FXML private void onFileSave(ActionEvent e) {
-        // TODO
-    }
-
-    @FXML private void onFileSaveAs(ActionEvent e) {
-        // TODO
-    }
-
-    @FXML private void onFileClose(ActionEvent e) {
-        // TODO
-        System.exit(0);
+    private void initalizeListOfRecentlyOpenedFiles() {
+        ObservableList recentlyOpenedFiles = model.getRecentlyOpenedFiles();
+        if (recentlyOpenedFiles.isEmpty()) {
+            MenuItem item = new MenuItem("No recently opened files");
+            item.setDisable(true);
+            menubarFileReopenFile.getItems().add(item);
+        } else {
+            menubarFileReopenFile.getItems().clear();
+            for (Iterator<String> i = recentlyOpenedFiles.iterator(); i.hasNext();) {
+                MenuItem item = new MenuItem(i.next());
+                // TODO: item.setActionOn(onFileOpenFile);
+                menubarFileReopenFile.getItems().add(item);
+            }
+        }
     }
 
     @FXML private void onDirectoryOpen(ActionEvent e) {
@@ -460,6 +470,19 @@ public class EditorController implements Initializable {
             contextMenu.hide();
             contextMenuFile.hide();
         });
+    }
+
+    @FXML private void onFileSave(ActionEvent e) {
+        // TODO
+    }
+
+    @FXML private void onFileSaveAs(ActionEvent e) {
+        // TODO
+    }
+
+    @FXML private void onFileClose(ActionEvent e) {
+        // TODO
+        System.exit(0);
     }
 
     /**
