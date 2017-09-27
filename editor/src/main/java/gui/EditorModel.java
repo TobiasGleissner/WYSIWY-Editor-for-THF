@@ -236,8 +236,6 @@ public class EditorModel
     {
         int ret = -1;
 
-        System.out.println("reparseArea(" + leftNodeId + "," + rightNodeId +")");
-
         org.w3c.dom.Node sibling = null;
         org.w3c.dom.Node editor = doc.getElementById("editor");
 
@@ -251,10 +249,6 @@ public class EditorModel
 
         if(rightNodeId >= 0)
             sibling = doc.getElementById("hm_node_" + rightNodeId).getNextSibling();
-
-        System.out.println("sibling = " + sibling);
-        if(sibling instanceof Element)
-            System.out.println("sibling[id] = " + ((Element) sibling).getAttribute("id"));
 
         StringBuilder content = new StringBuilder();
         while(leftNode != null && (sibling == null || !leftNode.isEqualNode(sibling)))
@@ -393,9 +387,9 @@ public class EditorModel
                     builder.append(part.substring(lastParsedToken, startIndex));
                     lastParsedToken += builder.length();
 
-                    Text textNode = doc.createTextNode(builder.toString());
+                    insertNewTextNode(builder.toString(), newNode, isFirst);
+                    if(isFirst) isFirst = false;
                     builder.delete(0, builder.length());
-                    newNode.appendChild(textNode);
                 }
 
                 if (startIndex == lastParsedToken) {

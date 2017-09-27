@@ -16,18 +16,20 @@ html, body
     max-height: 100%;
 
     position: relative;
+
     padding-left: 3.5em;
 }
 
 #numbers {
-    background-color: black;
     float: left;
 
     width: 3em;
     height: 100vh;
 
+    border-right: 1px solid #ddd;
+
     position: absolute;
-    left: 0.5em;
+    left: 5px;
     top: 0;
 }
 
@@ -39,7 +41,7 @@ html, body
 
     float: left;
     position: absolute;
-    left: 0.5em;
+    left: 5px;
     width: 3em;
 }
 
