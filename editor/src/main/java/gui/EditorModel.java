@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.nio.charset.StandardCharsets;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -24,7 +22,6 @@ import org.antlr.v4.runtime.CharStreams;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import org.apache.commons.io.IOUtils;
@@ -473,11 +470,11 @@ public class EditorModel
     }
 
     public void onViewEnterPresentationMode() {
-        style.setFontSize(Config.fontSizePresentationMode);
+        style.setFontSizeEditor(Config.fontSizePresentationMode);
         // TODO close side drawer, ...
     }
 
     public void onViewDefaultFontSize() {
-        style.setFontSize(Config.fontSizeDefault);
+        style.setFontSizeEditor(Config.fontSizeEditorDefault);
     }
 }

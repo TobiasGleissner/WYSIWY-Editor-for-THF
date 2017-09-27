@@ -10,16 +10,29 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 public class Logging {
     public enum LogLevel{DEBUG,PROVER,FINE,INFO,WARNING,SEVERE}
     private static Logging instance;
     private Node tableNode;
     private Document doc;
+    private double fontSizeOutput;
+
+    private static String defaultCss;
+    static {
+        InputStream cssInputStream = WebKitStyle.class.getResourceAsStream("/gui/editorField.css");
+        defaultCss = new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
+    }
+
     private Logging(){}
+
     public WebEngine outputEngine;
 
     public static Logging getInstance(){
@@ -30,10 +43,13 @@ public class Logging {
     public void init(){
         this.doc = outputEngine.getDocument();
         this.tableNode = doc.getElementById("table");
+        this.fontSizeOutput = Config.fontSizeOutputDefault;
+        updateCssOutputDoc();
     }
 
     public void log(String msg,LogLevel logLevel){
         tableNode.appendChild(createRecord(msg,logLevel));
+        printHtml();
     }
 
     public void prover(ProveResult pr){
@@ -83,6 +99,21 @@ public class Logging {
     private String getCurrentTime(){
             SimpleDateFormat date_format = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
             return date_format.format(new Date());
+    }
+
+    private void updateCssOutputDoc() {
+        Element style = doc.getElementById("style");
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("*{\n");
+        sb.append("font-size: ");
+        sb.append(fontSizeOutput);
+        sb.append("cm;\n");
+        sb.append("}\n");
+        sb.append(style.getTextContent());
+
+        String st = sb.toString();
+        style.setTextContent(st);
     }
 
     // for debugging

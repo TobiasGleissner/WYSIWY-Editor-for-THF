@@ -11,8 +11,7 @@ import java.util.stream.Collectors;
 public class WebKitStyle {
 
     private Document doc;
-    private Document outputDoc;
-    private double fontSize;
+    private double fontSizeEditor;
 
     private static final double fontSizeIncrementStep = Config.fontSizeIncrementStep;
     private static final double fontSizePresentationMode = Config.fontSizePresentationMode;
@@ -25,33 +24,12 @@ public class WebKitStyle {
     }
 
     public WebKitStyle(){
-        this.fontSize = Config.getFontSize();
+        this.fontSizeEditor = Config.getFontSize();
     }
 
     public void setDoc(Document doc){
         this.doc = doc;
         updateCss();
-    }
-
-    public void setOutputDoc(Document doc){
-        this.outputDoc = doc;
-        updateCssOutputDoc();
-    }
-
-    private void updateCssOutputDoc() {
-        Element style = outputDoc.getElementById("style");
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("*{\n");
-        sb.append("font-size: ");
-        sb.append(fontSize);
-        sb.append("cm;\n");
-        sb.append("}\n");
-        //sb.append(defaultCss);
-
-        String st = sb.toString();
-        //System.out.println(st);
-        style.setTextContent(st);
     }
 
     private void updateCss(){
@@ -60,7 +38,7 @@ public class WebKitStyle {
 
         sb.append("*{\n");
         sb.append("font-size: ");
-        sb.append(fontSize);
+        sb.append(fontSizeEditor);
         sb.append("cm;\n");
         sb.append("}\n");
         sb.append(defaultCss);
@@ -70,32 +48,32 @@ public class WebKitStyle {
         style.setTextContent(st);
     }
 
-    public void setFontSize(double fontSize){
-        if (fontSize <= 0){
-            System.err.println("Invalid fontSize: " + fontSize);
+    public void setFontSizeEditor(double fontSizeEditor){
+        if (fontSizeEditor <= 0){
+            System.err.println("Invalid fontSizeEditor: " + fontSizeEditor);
             return;
         }
-        this.fontSize = fontSize;
+        this.fontSizeEditor = fontSizeEditor;
         this.updateCss();
     }
 
     public void increaseFontSize(){
-        this.setFontSize(this.fontSize + fontSizeIncrementStep);
-        Config.setFontSize(this.fontSize);
+        this.setFontSizeEditor(this.fontSizeEditor + fontSizeIncrementStep);
+        Config.setFontSize(this.fontSizeEditor);
     }
 
     public void decreaseFontSize(){
-        this.setFontSize(this.fontSize - fontSizeIncrementStep);
-        Config.setFontSize(this.fontSize);
+        this.setFontSizeEditor(this.fontSizeEditor - fontSizeIncrementStep);
+        Config.setFontSize(this.fontSizeEditor);
     }
 
     public void setFontSizeToPresentationMode(){
-        this.setFontSize(fontSizePresentationMode);
+        this.setFontSizeEditor(fontSizePresentationMode);
     }
 
     public void setDefaultFontSize(){
-        this.setFontSize(Config.fontSizeDefault);
-        Config.setFontSize(this.fontSize);
+        this.setFontSizeEditor(Config.fontSizeEditorDefault);
+        Config.setFontSize(this.fontSizeEditor);
     }
 
 

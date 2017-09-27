@@ -16,10 +16,11 @@ public class Config {
     public static final String name = "editor";
     public static final String USER_AGENT = "thf_editor";
     public static int maxRecentlyOpenedFiles = 20;
+    public static final double fontSizeOutputDefault = 0.3;
 
     // editor
     public static final double fontSizeIncrementStep = 0.1;
-    public static final double fontSizeDefault = 0.4;
+    public static final double fontSizeEditorDefault = 0.4;
     public static final double fontSizePresentationMode = 1.0;
 
     // prover remote
@@ -53,7 +54,7 @@ public class Config {
 
     // editor
     public static double getFontSize() {
-        return prefs.getDouble("fontSize", fontSizeDefault);
+        return prefs.getDouble("fontSize", fontSizeEditorDefault);
     }
     public static void setFontSize(double arg) {
         prefs.putDouble("fontSize", arg);

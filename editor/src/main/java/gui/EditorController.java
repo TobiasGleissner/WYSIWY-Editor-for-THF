@@ -244,7 +244,6 @@ public class EditorController implements Initializable {
                     {
                         if(newState == Worker.State.SUCCEEDED) {
                             log.init();
-                            model.style.setOutputDoc(log.outputEngine.getDocument());
                         }
 
                     }});
@@ -673,7 +672,7 @@ public class EditorController implements Initializable {
         System.out.println("selection = " + sel);
 
         StringBuilder content = new StringBuilder();
-        Stack<Node> nodes = new Stack();
+        Stack<Node> nodes = new Stack<>();
         nodes.push(doc.getFirstChild());
 
         while(!nodes.empty())
