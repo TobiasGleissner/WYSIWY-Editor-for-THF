@@ -282,6 +282,25 @@ public class Node {
             current = current.getFirstChild();
         }
     }
+    
+    /*
+     * including THIS node
+     */
+    public Node getChildBeforeNextTopBranchingNode() {
+        if (this.getParent() == null)
+            return null;
+        Node current = this;
+        while(current.getParent() != null) {
+            if (current.getParent().getChildren().size() > 1) {
+                return current;
+            }
+            if (current.getParent().getChildren().isEmpty()) {
+                return null;
+            }
+            current = current.getParent();
+        }
+        return null;
+    }
 
     public String toDot() {
         StringBuilder dot = new StringBuilder();
