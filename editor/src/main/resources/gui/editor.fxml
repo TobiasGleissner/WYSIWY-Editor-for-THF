@@ -150,7 +150,6 @@
                                 </MenuItem>
                                 <MenuItem text="Enter Presentation mode" onAction="#onViewEnterPresentationMode">
                                 </MenuItem>
-
                             </items>
                         </Menu>
 
