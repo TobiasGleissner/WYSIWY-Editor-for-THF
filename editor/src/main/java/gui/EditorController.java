@@ -23,10 +23,6 @@ import java.util.Optional;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import gui.preferences.PreferencesController;
-import gui.preferences.PreferencesModel;
-import gui.fileStructure.StructureTreeView;
-
 import javafx.concurrent.Worker;
 
 import javafx.beans.value.ChangeListener;
@@ -41,24 +37,26 @@ import javafx.event.ActionEvent;
 
 import javafx.scene.Scene;
 import javafx.scene.web.WebView;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
-import javafx.stage.FileChooser;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
-import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tab;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.MouseEvent;
+
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import javafx.stage.FileChooser;
 
 import netscape.javascript.JSObject;
 
@@ -80,11 +78,14 @@ import org.apache.commons.io.IOUtils;
 import jiconfont.icons.FontAwesome;
 import jiconfont.javafx.IconNode;
 
+import gui.fileStructure.StructureTreeView;
 import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
 import prover.TPTPDefinitions;
 import prover.remote.HttpProver;
 import prover.local.LocalProver;
+import gui.preferences.PreferencesController;
+import gui.preferences.PreferencesModel;
 
 public class EditorController implements Initializable {
 

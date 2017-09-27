@@ -6,6 +6,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
@@ -143,13 +144,6 @@
                         <!-- menuitem view -->
                         <Menu fx:id="menubarView" text="View">
                             <items>
-                                <Menu text="Tool Windows">
-                                    <items>
-                                        <MenuItem text="Project" onAction="#onViewToolWindowProject">
-                                        </MenuItem>
-                                    </items>
-                                </Menu>
-                                <SeparatorMenuItem mnemonicParsing="false" />
                                 <MenuItem text="Increase Font Size" onAction="#onViewIncreaseFontSize">
                                 </MenuItem>
                                 <MenuItem text="Decrease Font Size" onAction="#onViewDecreaseFontSize">
