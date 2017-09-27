@@ -1,7 +1,6 @@
 package gui.fileBrowser;
 
 import java.io.File;
-import java.io.InputStream;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
