@@ -326,6 +326,20 @@ public class EditorController implements Initializable {
                 menubarFileReopenFile.getItems().add(item);
             }
         }
+
+        recentlyOpenedFiles.addListener(new ListChangeListener() {
+            @Override
+            public void onChanged(ListChangeListener.Change change) {
+                // TODO: add just new recently opened files as menuitems and
+                // remove removed recently opened files
+                // menubarFileReopenFile.getItems().clear();
+                // for (Iterator<String> i = recentlyOpenedFiles.iterator(); i.hasNext();) {
+                //     MenuItem item = new MenuItem(i.next());
+                //     // item.setActionOn(...);
+                //     menubarFileReopenFile.getItems().add(item);
+                // }
+            }
+        });
     }
 
     @FXML private void onDirectoryOpen(ActionEvent e) {
@@ -597,7 +611,9 @@ public class EditorController implements Initializable {
                     menubarRunProver.getItems().add(item);
                 }
             }
-            menubarRunProver.getItems().add(new SeparatorMenuItem());
+            SeparatorMenuItem separator = new SeparatorMenuItem();
+            separator.setStyle("-fx-border-color: green transparent transparent transparent;");
+            menubarRunProver.getItems().add(separator);
             // add list of remote provers to menubar
             MenuItem labelForRemoteProvers = new MenuItem("Remote provers");
             labelForRemoteProvers.setDisable(true);

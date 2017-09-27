@@ -81,6 +81,10 @@
      -fx-text-fill: -fx-darker-base;
 }
 
+.menu-item:disabled {
+     -fx-opacity: 0.7;
+}
+
 .context-menu {
     -fx-background-insets: -1 0 -1 0;
     -fx-padding: 0;
