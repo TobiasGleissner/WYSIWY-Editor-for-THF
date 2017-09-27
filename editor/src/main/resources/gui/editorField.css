@@ -1,15 +1,48 @@
 /* general */
-html, body {
+html, body
+{
+    height: 100%;
     overflow: hidden;
-    height: 100vh;
 }
 
 #editor {
     font-style: normal;
     font-family: monospace;
     white-space: pre-wrap;
+
+    counter-reset: line;
+
     overflow: auto;
-    max-height: 100vh;
+    max-height: 100%;
+
+    position: relative;
+
+    padding-left: 3.5em;
+}
+
+#numbers {
+    float: left;
+
+    width: 3em;
+    height: 100vh;
+
+    border-right: 1px solid #ddd;
+
+    position: absolute;
+    left: 5px;
+    top: 0;
+}
+
+.new_line:before {
+    color: gray;
+
+    counter-increment: line;
+    content: counter(line);
+
+    float: left;
+    position: absolute;
+    left: 5px;
+    width: 3em;
 }
 
 *:focus {

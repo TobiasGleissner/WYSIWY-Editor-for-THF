@@ -23,8 +23,6 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.web.WebView?>
 
-<?import javafx.scene.text.Font?>
-
 <?import gui.fileBrowser.FileTreeView?>
 <?import gui.fileStructure.StructureTreeView?>
 
@@ -72,6 +70,10 @@
                                         <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
+                                <Menu fx:id="menubarFileReopenFile" text="Reopen File">
+                                    <MenuItem text="Clear File History" />
+                                    <SeparatorMenuItem mnemonicParsing="false" />
+                                </Menu>
                                 <MenuItem onAction="#onDirectoryOpen" text="Open Directory">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="D" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
@@ -179,23 +181,26 @@
                 <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
                         <Button onAction="#onTestPref">
-                            <font><Font name="FontAwesome"/></font>
                             &#xf0fc; <!-- BEER -->
-                            <tooltip><Tooltip text="Button Testing Preferences" /></tooltip>
+                            <tooltip>
+                                <Tooltip text="Button Testing Preferences" />
+                            </tooltip>
                         </Button>
                     </items>
                     <items>
                         <Button onAction="#onReparse">
-                            <font><Font name="FontAwesome"/></font>
                             &#xf236; <!-- BED -->
-                           <tooltip><Tooltip text="Parse again" /></tooltip>
+                           <tooltip>
+                               <Tooltip text="Parse again" />
+                           </tooltip>
                         </Button>
                     </items>
                     <items>
                         <Button onAction="#onPrintTree">
-                            <font><Font name="FontAwesome"/></font>
                             &#xf004; <!-- HEART -->
-                            <tooltip><Tooltip text="Print the THF tree" /></tooltip>
+                            <tooltip>
+                                <Tooltip text="Print the THF tree" />
+                            </tooltip>
                          </Button>
                     </items>
                     <items>
@@ -203,7 +208,10 @@
                     </items>
                     <items>
                         <Button mnemonicParsing="false">
-                            <tooltip><Tooltip text="Run selected Prover" /></tooltip>
+                            &#xf04b; <!-- PLAY -->
+                            <tooltip>
+                                <Tooltip text="Run selected Prover" />
+                            </tooltip>
                         </Button>
                         <MenuButton fx:id="toolbarRunProver" mnemonicParsing="false">
                             <tooltip><Tooltip text="Select and run Prover" /></tooltip>

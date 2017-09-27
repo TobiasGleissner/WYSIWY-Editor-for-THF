@@ -4,6 +4,7 @@ import exceptions.NameAlreadyInUseException;
 import exceptions.ProverNotAvailableException;
 import exceptions.ProverResultNotInterpretableException;
 import gui.Config;
+import gui.Logging;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -24,6 +25,7 @@ public class PreferencesController implements Initializable {
     private PreferencesModel model;
     private Stage stage;
     private LocalProver lp;
+    private static Logging log = Logging.getInstance();
 
     @FXML public Label nameTakenWarning;
     @FXML public TextField proverNameTextField;
@@ -83,6 +85,7 @@ public class PreferencesController implements Initializable {
         for (String p : proverList){
             root.getChildren().add(new TreeItem<>(p));
         }
+        root.setExpanded(true);
     }
 
     private void showLocalProver(String prover){
@@ -112,28 +115,42 @@ public class PreferencesController implements Initializable {
 
     @FXML
     public void onApplyProvers(ActionEvent actionEvent){
-        if (currentProver == null) return;
+        if (currentProver == null) {
+            log.warning("Could not apply: No prover selected.");
+            return;
+        }
         String proverName = proverNameTextField.getText();
         String proverCommand = proverCommandTextField.getText();
-        try {
+        if (lp.getAvailableProvers().contains(proverName) && !currentProver.equals(proverName)){
+            log.warning("Could not apply: A prover with name='" + proverName + "' already exists.");
+            return;
+        }
+            try {
             lp.removeProver(currentProver);
         } catch (ProverNotAvailableException e) {
+            e.printStackTrace(); // TODO remove in production
         }
         try {
             lp.addProver(proverName,proverCommand,true);
-        } catch (NameAlreadyInUseException e) {}
+        } catch (NameAlreadyInUseException e) { // TODO remove in production
+            e.printStackTrace();
+        }
         updateLocalProversTree();
+        log.info("Updated prover with name='" + proverName + "' and command = '" + proverCommand + "'.");
     }
 
     @FXML
     public void onTestProver(ActionEvent actionEvent){
-        String proverCommand = proverCommandTextField.getText();
-        try {
-            ProveResult pr = lp.testTHFProver(proverCommand);
-            System.out.println("Prover working!");
-        } catch (ProverNotAvailableException|IOException|ProverResultNotInterpretableException e) {
-            System.err.println("Prover not working!");
-            System.err.println(e);
+        if (currentProver != null){
+            String proverCommand = proverCommandTextField.getText();
+            try {
+                ProveResult pr = lp.testTHFProver(proverCommand);
+                log.info("Prover command not working. Command='" + proverCommand + "'.");
+            } catch (ProverNotAvailableException|IOException|ProverResultNotInterpretableException e) {
+                log.warning("Prover command not working. Command='" + proverCommand + "'.");
+            }
+        } else {
+            log.warning("Could not test prover: No prover selected.");
         }
     }
 
@@ -151,6 +168,7 @@ public class PreferencesController implements Initializable {
             // does not happen due to while loop
         }
         updateLocalProversTree();
+        log.info("Created new prover with name='" + proverName + "'.");
     }
 
     @FXML
@@ -158,8 +176,14 @@ public class PreferencesController implements Initializable {
         try {
             lp.removeProver(localProverTree.getSelectionModel().getSelectedItem().getValue());
         } catch (ProverNotAvailableException e) {
+            log.warning("Could not remove prover: No prover selected.");
         }
+        String oldName = proverNameTextField.getText();
+        String oldCommand = proverCommandTextField.getText();
+        proverNameTextField.setText("");
+        proverCommandTextField.setText("");
+        currentProver = null;
         updateLocalProversTree();
-        showFirstProver();
+        log.info("Removed prover with name='" + oldName + "' and command='" + oldCommand + "'.");
     }
 }

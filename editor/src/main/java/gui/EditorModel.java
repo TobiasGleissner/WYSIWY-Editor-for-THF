@@ -14,6 +14,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.lang.Throwable;
 
+import javafx.collections.ObservableList;
+import javafx.collections.ListChangeListener;
+import javafx.collections.FXCollections;
+
 import javafx.scene.web.WebEngine;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -43,7 +47,7 @@ public class EditorModel
 
     private int parserNodeIdCur = 0;
 
-    private ArrayList<String> recentlyOpenedFiles;
+    private ObservableList<String> recentlyOpenedFiles;
 
     private LinkedList<String> css;
     public WebEngine outputEngine;
@@ -51,7 +55,20 @@ public class EditorModel
     public EditorModel()
     {
         tptpInputNodes = new LinkedList<Node>();
-        recentlyOpenedFiles = new ArrayList<>(); // first element = oldest file, last element = latest file
+        recentlyOpenedFiles = FXCollections.observableArrayList(); // first element = oldest file, last element = latest file
+        recentlyOpenedFiles.addListener(new ListChangeListener() {
+            @Override
+            public void onChanged(ListChangeListener.Change change) {
+                // TODO: add just new recently opened files as menuitems and
+                // remove removed recently opened files
+                // menubarFileReopenFile.getItems().clear();
+                // for (Iterator<String> i = recentlyOpenedFiles.iterator(); i.hasNext();) {
+                //     MenuItem item = new MenuItem(i.next());
+                //     // item.setActionOn(...);
+                //     menubarFileReopenFile.getItems().add(item);
+                // }
+            }
+        });
 
         // Extract css classes for syntax highlighting from our css file.
         this.css = new LinkedList<String>();
@@ -137,6 +154,10 @@ public class EditorModel
         // TODO reflect in Menu File > recently opened Files
     }
 
+    public ObservableList getRecentlyOpenedFiles() {
+        return recentlyOpenedFiles;
+    }
+
     public void printTPTPTrees()
     {
         System.out.println("------------------------");
@@ -162,11 +183,59 @@ public class EditorModel
         */
     }
 
+    private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, boolean isFirst)
+    {
+        int start = 0;
+        int end = 0;
+        do
+        {
+            start = end;
+            end = text.indexOf('\n', start);
+
+            if(end == -1)
+                end = text.length();
+            else
+                end++;
+
+            if(isFirst)
+            {
+                isFirst = false;
+
+                Element nl = doc.createElement("subsection");
+                nl.setAttribute("class", "new_line");
+                parent.insertBefore(nl, sibling);
+            }
+
+            String s = text.substring(start, end);
+            parent.insertBefore(doc.createTextNode(s), sibling);
+            if(s.endsWith("\n"))
+            {
+                Element nl = doc.createElement("subsection");
+                nl.setAttribute("class", "new_line");
+                parent.insertBefore(nl, sibling);
+            }
+        }
+        while(end < text.length());
+    }
+
+    private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling)
+    {
+        insertNewTextNode(text, parent, sibling, false);
+    }
+
+    private void insertNewTextNode(String text, org.w3c.dom.Node parent)
+    {
+        insertNewTextNode(text, parent, null);
+    }
+
+    private void insertNewTextNode(String text, org.w3c.dom.Node parent, boolean isFirst)
+    {
+        insertNewTextNode(text, parent, null, isFirst);
+    }
+
     public int reparseArea(int leftNodeId, int rightNodeId)
     {
         int ret = -1;
-
-        System.out.println("reparseArea(" + leftNodeId + "," + rightNodeId +")");
 
         org.w3c.dom.Node sibling = null;
         org.w3c.dom.Node editor = doc.getElementById("editor");
@@ -177,12 +246,10 @@ public class EditorModel
         else
             leftNode = editor.getFirstChild();
 
+        boolean isFirst = leftNode.getPreviousSibling() == null;
+
         if(rightNodeId >= 0)
             sibling = doc.getElementById("hm_node_" + rightNodeId).getNextSibling();
-
-        System.out.println("sibling = " + sibling);
-        if(sibling instanceof Element)
-            System.out.println("sibling[id] = " + ((Element) sibling).getAttribute("id"));
 
         StringBuilder content = new StringBuilder();
         while(leftNode != null && (sibling == null || !leftNode.isEqualNode(sibling)))
@@ -275,8 +342,8 @@ public class EditorModel
                 if(ret == -1) ret = parserNodeIdCur;
                 parserNodeIdCur++;
 
-                Text textNode = doc.createTextNode(part);
-                newNode.appendChild(textNode);
+                insertNewTextNode(part, newNode, isFirst);
+                if(isFirst) isFirst = false;
 
                 editor.insertBefore(newNode, sibling);
 
@@ -306,37 +373,39 @@ public class EditorModel
             }
 
             StringBuilder builder = new StringBuilder();
-            
+
             while (lastParsedToken < part.length()) {
-                
+
                 if (startIndex == -1) {
                     builder.append(part.substring(lastParsedToken));
-                    newNode.appendChild(doc.createTextNode(builder.toString()));
+                    insertNewTextNode(builder.toString(), newNode, isFirst);
+                    if(isFirst) isFirst = false;
                     builder.delete(0, builder.length());
                     break;
                 }
-                
+
                 if (startIndex > lastParsedToken ) {
                     builder.append(part.substring(lastParsedToken, startIndex));
                     lastParsedToken += builder.length();
-                    
-                    Text textNode = doc.createTextNode(builder.toString());
+
+                    insertNewTextNode(builder.toString(), newNode, isFirst);
+                    if(isFirst) isFirst = false;
                     builder.delete(0, builder.length());
-                    newNode.appendChild(textNode);
                 }
-                
+
                 if (startIndex == lastParsedToken) {
-                    
+
                     builder.append(part.substring(startIndex, nextEnd+1));
                     lastParsedToken += builder.length();
-                    
+
                     Element newSpan = doc.createElement("subsection");
                     newSpan.setAttribute("class", spanElement.getTag());
-                    newSpan.appendChild(doc.createTextNode(builder.toString()));
+                    insertNewTextNode(builder.toString(), newSpan, isFirst);
+                    if(isFirst) isFirst = false;
                     newNode.appendChild(newSpan);
-                    
+
                     builder.delete(0, builder.length());
-                    
+
                     if (spanElements.size() > 0) {
                         while (spanElements.size() > 0 && (spanElements.peek().getStartIndex() <= startIndex || spanElements.peek().getStartIndex() < lastParsedToken)) {
                             spanElements.pop();
@@ -354,9 +423,9 @@ public class EditorModel
                 }
             }
 
-            Text textNode = doc.createTextNode(builder.toString());
+            insertNewTextNode(builder.toString(), newNode, isFirst);
+            if(isFirst) isFirst = false;
             builder.delete(0, builder.length());
-            newNode.appendChild(textNode);
             editor.insertBefore(newNode, sibling);
         }
 
@@ -412,4 +481,5 @@ public class EditorModel
         style.setFontSize(2.0);
         // TODO close side drawer, ...
     }
+
 }
