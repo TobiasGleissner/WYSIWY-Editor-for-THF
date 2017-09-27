@@ -3,13 +3,59 @@
 <head>
     <style id="style"></style>
     <script>
+        /* DEBUG FUNCTIONS! */
+        function stringify_path(node)
+        {
+            var ret = "";
+
+            while(node != null)
+            {
+                switch(node.nodeType)
+                {
+                    case 1:
+                        var attrs = node.attributes;
+                        if(attrs.length != 0)
+                        {
+                            ret = "]/" + ret;
+                            for(i = 0; i < attrs.length; ++i)
+                            {
+                                if(i != 0)
+                                    ret = "," + ret;
+
+                                var attr = attrs.item(i);
+                                ret = attr.name + "='" + attr.value + "'" + ret;
+                            }
+                            ret = "[" + ret;
+                        }
+                    default:
+                        ret = node.nodeName + "/" + ret;
+                }
+
+                node = node.parentNode;
+            }
+
+            return ret;
+        }
+
+        function stringify_range(range)
+        {
+            var ret = "";
+            ret += "start = " + stringify_path(range.startContainer) + "[" + range.startOffset + "]";
+            ret += "end   = " + stringify_path(range.endContainer) + "[" + range.endOffset + "]";
+            return ret;
+        }
+
         function make_selection_valid(e)
         {
             var selection = window.getSelection();
             var editor = document.getElementById("editor");
 
-            if(selection.rangeCount == 0)
+            if(selection.rangeCount < 1 ||
+               !editor.contains(selection.anchorNode) ||
+               !editor.contains(selection.focusNode))
             {
+                selection.removeAllRanges();
+
                 var range = document.createRange();
                 range.setStart(editor, 0);
                 range.setEnd(editor, 0);
@@ -19,12 +65,27 @@
         document.addEventListener("click", make_selection_valid);
         document.addEventListener("keypress", make_selection_valid);
 
+        function get_selected_range()
+        {
+            var selection = window.getSelection();
+            if(selection.rangeCount < 1)
+            {
+                var range = document.createRange();
+                range.setStart(editor, 0);
+                range.setEnd(editor, 0);
+                return range;
+            }
+            else
+            {
+                return selection.getRangeAt(0);
+            }
+        }
+
         function get_range_as_text_offset(node, range)
         {
             var ret = 0;
             while(node != null)
             {
-
                 if(range.intersectsNode(node))
                 {
                     node = node.firstChild;
@@ -74,14 +135,11 @@
             hidden.textContent = ".";
             range.insertNode(hidden);
             hidden.scrollIntoViewIfNeeded(false);
-            java.debug("offsetTop = " + hidden.offsetTop);
             hidden.parentNode.removeChild(hidden);
         }
 
-        function start_incremental_parsing(selection)
+        function start_incremental_parsing(range)
         {
-            var range = selection.getRangeAt(0);
-
             var start_node = -1;
             var end_node = -1;
 
@@ -186,6 +244,7 @@
                     end_node = id;
             }
 
+            var range = get_selected_range();
             if(start_node >= 0)
                 node = document.getElementById("hm_node_" + start_node);
             else
@@ -195,14 +254,19 @@
             var id = java.start_parsing(start_node, end_node);
 
             node = document.getElementById("hm_node_" + id);
-            selection.removeAllRanges();
+
             var range = new_range_by_text_offset(node, offset);
+
+            var selection = window.getSelection();
+            selection.removeAllRanges();
             selection.addRange(range);
         }
 
         document.addEventListener("keydown",
             function(e)
             {
+                make_selection_valid(e);
+
                 if(e.keyCode == 8)
                 {
                     e.stopPropagation();
@@ -214,8 +278,9 @@
 
                     selection.deleteFromDocument();
 
-                    maybe_scroll_to_range(selection.getRangeAt(0));
-                    start_incremental_parsing(selection);
+                    make_selection_valid(e);
+                    maybe_scroll_to_range(get_selected_range());
+                    start_incremental_parsing(get_selected_range());
                 }
                 else if(e.keyCode == 46)
                 {
@@ -228,8 +293,9 @@
 
                     selection.deleteFromDocument();
 
-                    maybe_scroll_to_range(selection.getRangeAt(0));
-                    start_incremental_parsing(selection);
+                    make_selection_valid(e);
+                    maybe_scroll_to_range(get_selected_range());
+                    start_incremental_parsing(get_selected_range());
                 }
             }
         );
@@ -237,11 +303,12 @@
         document.addEventListener("keypress",
             function(e)
             {
+                make_selection_valid(e);
+
                 e.stopPropagation();
                 e.preventDefault();
 
-                var selection = window.getSelection();
-                var range = selection.getRangeAt(0).cloneRange();
+                var range = get_selected_range().cloneRange();
                 range.deleteContents();
 
                 var new_text = String.fromCharCode(e.charCode);
@@ -255,17 +322,21 @@
                 range.selectNode(text);
                 range.collapse(false);
 
+                var selection = window.getSelection();
                 selection.removeAllRanges();
                 selection.addRange(range);
 
+                make_selection_valid(e);
                 maybe_scroll_to_range(range);
-                start_incremental_parsing(selection);
+                start_incremental_parsing(range);
             }
         );
 
         document.addEventListener("paste",
             function(e)
             {
+                make_selection_valid(e);
+
                 e.stopPropagation();
                 e.preventDefault();
 
@@ -275,23 +346,25 @@
                 var clipboard_data = e.clipboardData;
                 var text = clipboard_data.getData('text/plain');
 
-                var selection = window.getSelection();
-                var range = selection.getRangeAt(0).cloneRange();
+                var range = get_selected_range().cloneRange();
                 range.deleteContents();
                 var text_node = document.createTextNode(text);
                 range.insertNode(text_node);
                 range.selectNode(text_node);
                 range.collapse(false);
 
+                var selection = window.getSelection();
                 selection.removeAllRanges();
                 selection.addRange(range);
 
-                start_incremental_parsing(selection);
+                maybe_scroll_to_range(range);
+                start_incremental_parsing(range);
             }
         );
     </script>
 </head>
 <body>
-    <div id="editor" contenteditable="true"/>
+    <div id="numbers"></div>
+    <div id="editor" contenteditable="true"></div>
 </body>
 </html>
