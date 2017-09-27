@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.List;
 import java.util.Optional;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javafx.concurrent.Worker;
@@ -48,7 +47,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ToggleGroup;
