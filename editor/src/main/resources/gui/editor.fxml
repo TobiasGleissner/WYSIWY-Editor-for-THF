@@ -39,12 +39,12 @@
                         <!-- menuitem NAME -->
                         <Menu text="NAME">
                             <items>
-                                <MenuItem text="Hide">
+                                <MenuItem text="Hide" onAction="#onNAMEHide">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
-                                <MenuItem text="Preferences" onAction="#onPreferences">
+                                <MenuItem text="Preferences" onAction="#onNAMEPreferences">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
@@ -66,7 +66,7 @@
                                     </accelerator>
                                 </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false" />
-                                <MenuItem onAction="#onFileOpen" text="Open File">
+                                <MenuItem onAction="#onFileOpenFile" text="Open File">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
@@ -82,7 +82,7 @@
                                         <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
-                                <MenuItem text="Save as...">
+                                <MenuItem text="Save as..." onAction="#onFileSaveAs">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="DOWN" shortcut="DOWN" />
                                     </accelerator>
@@ -175,8 +175,7 @@
                         <!-- menuitem help -->
                         <Menu text="Help">
                             <items>
-                                <MenuItem text="NAME Help" />
-                                <MenuItem text="About NAME" />
+                                <MenuItem text="About" onAction="#onHelpAbout" />
                             </items>
                         </Menu>
 
@@ -211,7 +210,6 @@
                     </items>
                     <items>
                         <Button mnemonicParsing="false">
-                            PLAY
                             <tooltip><Tooltip text="Run selected Prover" /></tooltip>
                         </Button>
                         <MenuButton fx:id="toolbarRunProver" mnemonicParsing="false">
