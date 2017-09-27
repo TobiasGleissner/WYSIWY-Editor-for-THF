@@ -24,6 +24,7 @@ public class AstGen {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CommonTokenStream comments = new CommonTokenStream(lexer,1);
         tokens.fill();
+        comments.fill();
 
         parser.TptpParser parser = new parser.TptpParser(tokens);
         parser.removeErrorListeners(); // only for production
@@ -60,7 +61,6 @@ public class AstGen {
 
         // misc
         parseContext.setComments(comments.getTokens());
-        parseContext.getComments().forEach(n-> System.out.println(n));
 
         // create and return ParseContext
         parseContext.setParserRuleContext(parserRuleContext);
