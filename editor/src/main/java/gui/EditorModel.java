@@ -81,7 +81,6 @@ public class EditorModel
             matcher.find();
             css.add(matcher.group(1).substring(1));
         }
-        System.out.println(css.toString());
         scanner.close();
     }
 
