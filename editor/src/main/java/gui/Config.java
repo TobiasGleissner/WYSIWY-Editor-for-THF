@@ -1,5 +1,6 @@
 package gui; /* TODO: Change the package hierarchy, put this one above gui. */
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Arrays;
 import java.util.List;
@@ -44,15 +45,21 @@ public class Config {
 
     // user actions
     public static ObservableList<String> getRecentlyOpenedFiles(){
-        ObservableList<String> list = FXCollections.observableArrayList();
-        String files = prefs.get("recentlyOpenedFiles","");
-        if (!files.isEmpty()) {
-            list = FXCollections.observableArrayList(Arrays.asList(files.split(",")));
+        int numFiles = Integer.parseInt(prefs.get("recentlyOpenedFilesLen","0"));
+        List<String> files = new ArrayList<>();
+        for (int i = 0; i < numFiles; i++){
+            String fileName = prefs.get("recentlyOpenedFile" + i,null);
+            if (fileName != null){
+                files.add(fileName);
+            }
         }
-        return list;
+        return FXCollections.observableArrayList(files);
     }
     public static void setRecentlyOpenedFiles(ObservableList<String> files){
-        prefs.put("recentlyOpenedFiles", String.join(",",files));
+        prefs.put("recentlyOpenedFilesLen", String.valueOf(files.size()));
+        for (int i = 0; i < files.size(); i++){
+            prefs.put("recentlyOpenedFile" + i, files.get(i));
+        }
         flush();
     }
 
