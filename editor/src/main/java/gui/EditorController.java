@@ -82,6 +82,7 @@ import jiconfont.icons.FontAwesome;
 import jiconfont.javafx.IconNode;
 
 import gui.fileStructure.StructureTreeView;
+import gui.fileBrowser.FileTreeItem;
 import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
 import prover.TPTPDefinitions;
@@ -403,6 +404,7 @@ public class EditorController implements Initializable {
                 
                 String error = "";
                 String name = null;
+                Path directory = null;
                 
                 while (true) {
                     TextInputDialog dialog = new TextInputDialog();
@@ -423,12 +425,16 @@ public class EditorController implements Initializable {
                         error = "\n\nERROR: Please enter a valid file name!";
                         continue;
                     }
-                    Path directory = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false);
+                    directory = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false);
                     Path newFile = directory.resolve(name);
                     File file = new File(newFile.toString());
                     try {
                         System.out.println(file.getPath().toString());
                         if (file.createNewFile()) {
+                            FileTreeItem item = new FileTreeItem(new FileWrapper(file));
+                            item.setGraphic(item.getIconNodeByFile(file));
+                            fileBrowser.getSelectionModel().getSelectedItem().getChildren().add(item);
+                            //FileTreeView.updateTree(fileBrowser.getSelectionModel().getSelectedItem(), fileBrowser.getRoot(), new File(directory.toString()));
                             break;
                         } else {
                             continue;
@@ -438,7 +444,6 @@ public class EditorController implements Initializable {
                         continue;
                     }
                 }
-                // TODO: Refresh filebrowser
             }
         });
         cut.setOnAction(new EventHandler<ActionEvent>() {

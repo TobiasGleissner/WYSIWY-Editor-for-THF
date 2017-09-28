@@ -106,7 +106,7 @@ public class FileTreeItem extends TreeItem<FileWrapper> {
         return FXCollections.emptyObservableList();
     }
 
-    private IconNode getIconNodeByFile(File f){
+    public IconNode getIconNodeByFile(File f){
         IconNode iconNode;
         if (f.isDirectory()) {
             iconNode = new IconNode(iconDirectory);

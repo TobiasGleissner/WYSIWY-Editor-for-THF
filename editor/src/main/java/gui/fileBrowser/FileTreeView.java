@@ -24,4 +24,33 @@ public class FileTreeView extends TreeView<FileWrapper> {
         root.setGraphic(icon);
         this.setRoot(root);
     }
+    
+    /**
+     *  Not yet used and tested!
+     *  This method updates the complete subtree with item as root and replaces item by the new tree.
+     * @param item
+     * @param root
+     * @param f: The directory which shall be updated
+     */
+    public static void updateTree(TreeItem<FileWrapper> item, TreeItem<FileWrapper> root, File f) {
+        if (item == root) {
+            return;
+        }
+        
+        FileTreeView temp = new FileTreeView();
+        temp.openDirectory(f);
+        TreeItem<FileWrapper> tempRoot = temp.getRoot();
+        temp.setRoot(root);
+        TreeItem<FileWrapper> parent = item.getParent();
+        int i = 0;
+        for (TreeItem<FileWrapper> child : parent.getChildren()) {
+            if (child == item) {
+                parent.getChildren().set(i, tempRoot);
+                break;
+            }
+            i++;
+        }
+        
+    }
+    
 }
