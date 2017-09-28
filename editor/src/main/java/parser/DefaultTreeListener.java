@@ -1,15 +1,15 @@
 package parser;
 
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import util.tree.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -25,19 +25,27 @@ public class DefaultTreeListener implements ParseTreeListener {
     private Node root = null;
     private Predicate<String> filter = null;
 
+    private CommonTokenStream tokens;
+
+    public List<Token> getHiddenTokens() {
+        return hiddenTokens;
+    }
+
+    private List<Token> hiddenTokens;
+
 
     /**
      * constructor
      */
-    public DefaultTreeListener() {
-        this(x -> !x.isEmpty());
+    public DefaultTreeListener(CommonTokenStream tokens) {
+        this(x -> !x.isEmpty(),tokens);
     }
 
     /**
      * construtor
      * @param filter condition that has to hold for every node
      */
-    public DefaultTreeListener(Predicate<String> filter) {
+    public DefaultTreeListener(Predicate<String> filter, CommonTokenStream tokens) {
         this.sctx.add("S");
         Node root = new Node("root","root");
         this.root = root;
@@ -45,6 +53,10 @@ public class DefaultTreeListener implements ParseTreeListener {
         this.filter = filter;
         this.parser = null;
         this.rmap = null;
+        this.tokens = tokens;
+        this.hiddenTokens = new ArrayList<>();
+        List<Token> ht = tokens.getHiddenTokensToRight(0);
+        if (ht != null) this.hiddenTokens.addAll(ht);
     }
 
     public String getRuleByKey(int key) {
@@ -69,6 +81,8 @@ public class DefaultTreeListener implements ParseTreeListener {
         n.startIndex = terminalNode.getSymbol().getStartIndex();
         n.stopIndex = terminalNode.getSymbol().getStopIndex();
         nodeptr.addChild(n);
+        List<Token> ht = tokens.getHiddenTokensToRight(terminalNode.getSymbol().getTokenIndex());
+        if (ht != null) this.hiddenTokens.addAll(ht);
     }
 
     @Override
@@ -96,6 +110,8 @@ public class DefaultTreeListener implements ParseTreeListener {
         if (this.filter.test(rule)) {
             this.nodeptr = this.nodeptr.getParent();
         }
+
+
     }
 
     public Node getRootNode() {

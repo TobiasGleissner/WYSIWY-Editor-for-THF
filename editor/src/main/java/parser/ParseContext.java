@@ -11,15 +11,24 @@ public class ParseContext {
     private String parseError;
     private Node root;
     private ParserRuleContext parserRuleContext;
+    private List<Token> hiddenTokens;
 
-    public List<Token> getComments() {
-        return comments;
+    public ParseContext() {
+        parseError = null;
+        root = null;
+        parserRuleContext = null;
+        hiddenTokens = null;
     }
 
-    public void setComments(List<Token> comments) {
-        this.comments = comments;
+    public List<Token> getHiddenTokens() {
+        return hiddenTokens;
+    }
+
+    public void setHiddenTokens(List<Token> hiddenTokens) {
+        this.hiddenTokens = hiddenTokens;
+        //this.hiddenTokens.forEach(System.out::println);
         /*
-        comments.stream().forEach(c->{
+        hiddenTokens.stream().forEach(c->{
             System.out.println("toString:"+c);
             System.out.println("getLine:"+c.getLine());
             System.out.println("getStartIndex:" + c.getStartIndex());
@@ -28,15 +37,6 @@ public class ParseContext {
             System.out.println("============================================");
         });
         */
-    }
-
-    private List<Token> comments;
-
-    public ParseContext() {
-        parseError = null;
-        root = null;
-        parserRuleContext = null;
-        comments = null;
     }
 
     public void setParseError(String parseError) {
