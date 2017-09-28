@@ -16,7 +16,6 @@
 
     <modules>
         <module>editor</module>
-        <module>richtextplayground</module>
     </modules>
 
 </project>
