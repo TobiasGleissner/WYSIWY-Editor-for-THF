@@ -30,7 +30,10 @@
                         ret = node.nodeName + ret;
                         break;
                     case 3:
-                        ret = node.nodeName + "[text='" + node.textContent + "']" + "/" + ret;
+                        var content = node.textContent;
+                        if(content.length > 32)
+                            content = content.substring(0, 29) + "...";
+                        ret = node.nodeName + "[text='" + content + "']" + "/" + ret;
                         break;
                     default:
                         ret = node.nodeName + "/" + ret;
@@ -280,6 +283,41 @@
             selection.addRange(range);
         }
 
+        function update_line_numbers()
+        {
+            var editor = document.getElementById("editor");
+            var elements = document.getElementsByClassName("new_line");
+            var line_numbers = document.getElementById("numbers");
+
+            while(line_numbers.hasChildNodes())
+                line_numbers.removeChild(line_numbers.firstChild);
+
+            var editor_rect = editor.getBoundingClientRect();
+            line_numbers.style.height = "" + editor.offsetHeight + "px";
+
+            for(var i = 0; i < elements.length; i++)
+            {
+                var element = elements.item(i);
+
+                element.textContent = ".";
+                var rect = element.getBoundingClientRect();
+                element.textContent = "";
+
+                var bottom = editor_rect.bottom - rect.bottom;
+
+                number = document.createElement("div");
+                number.setAttribute("class", "line_number");
+                number.textContent = "" + i;
+                number.style.position = "absolute";
+                number.style.bottom = "" + bottom + "px";
+                number.style.width = "0px";
+                number.style.overflow = "visible";
+                number.style.color = "gray";
+
+                line_numbers.appendChild(number);
+            }
+        }
+
         document.addEventListener("keydown",
             function(e)
             {
@@ -299,6 +337,7 @@
                     make_selection_valid(e);
                     maybe_scroll_to_range(get_selected_range());
                     start_incremental_parsing(get_selected_range());
+                    update_line_numbers();
                 }
                 else if(e.keyCode == 46)
                 {
@@ -314,6 +353,7 @@
                     make_selection_valid(e);
                     maybe_scroll_to_range(get_selected_range());
                     start_incremental_parsing(get_selected_range());
+                    update_line_numbers();
                 }
             }
         );
@@ -347,6 +387,7 @@
                 make_selection_valid(e);
                 maybe_scroll_to_range(range);
                 start_incremental_parsing(range);
+                update_line_numbers();
             }
         );
 
@@ -377,8 +418,30 @@
 
                 maybe_scroll_to_range(range);
                 start_incremental_parsing(range);
+                update_line_numbers();
             }
         );
+
+        /* If we don't throttle this resizing gets _really_ slow. */
+        var resize_timeout = null;
+        window.addEventListener("resize", resize_throttled);
+        function resize_throttled()
+        {
+            if(!resize_timeout)
+                resize_timeout = setTimeout(
+                    function()
+                    {
+                        resize_timeout = null;
+                        resize_handler();
+                    },
+                    100
+                );
+        }
+
+        function resize_handler()
+        {
+            update_line_numbers();
+        }
     </script>
 </head>
 <body>

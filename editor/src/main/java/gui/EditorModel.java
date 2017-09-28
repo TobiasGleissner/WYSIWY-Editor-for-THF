@@ -98,6 +98,7 @@ public class EditorModel
             editor.appendChild(textNode);
 
             reparse();
+            engine.executeScript("update_line_numbers()");
         }
         catch(IOException e)
         {
@@ -463,18 +464,22 @@ public class EditorModel
 
     public void onViewIncreaseFontSize() {
         style.increaseFontSize();
+        engine.executeScript("update_line_numbers()");
     }
 
     public void onViewDecreaseFontSize() {
         style.decreaseFontSize();
+        engine.executeScript("update_line_numbers()");
     }
 
     public void onViewEnterPresentationMode() {
         style.setFontSizeEditor(Config.fontSizePresentationMode);
+        engine.executeScript("update_line_numbers()");
         // TODO close side drawer, ...
     }
 
     public void onViewDefaultFontSize() {
         style.setFontSizeEditor(Config.fontSizeEditorDefault);
+        engine.executeScript("update_line_numbers()");
     }
 }
