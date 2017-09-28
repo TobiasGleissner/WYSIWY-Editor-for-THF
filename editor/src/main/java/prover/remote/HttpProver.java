@@ -17,7 +17,7 @@ import java.util.*;
 public class HttpProver implements Prover {
 
     private static HttpProver instance;
-    private Map<TPTPDefinitions.TPTPDialect,ArrayList<String>> availableProvers;
+    private Map<TPTPDefinitions.TPTPSubDialect,List<String>> availableProvers;
 
     // for testing purposes only
     /*
@@ -50,7 +50,29 @@ public class HttpProver implements Prover {
      * @return SystemOnTPTP provers for the specified dialect as a list of strings
      */
     public List<String> getAvailableProvers(TPTPDefinitions.TPTPDialect dialect){
-        return availableProvers.get(dialect);
+        return getAvailableProvers(TPTPDefinitions.getTPTPSubDialectsFromTPTPDialect(dialect));
+    }
+
+    /**
+     * Retrieves a list of available remote provers of a certain TPTP subDialect.
+     * @param subDialect
+     * @return SystemOnTPTP provers for the specified sub-dialect as a list of strings
+     */
+    public List<String> getAvailableProvers(TPTPDefinitions.TPTPSubDialect subDialect){
+        return availableProvers.get(subDialect);
+    }
+
+    /**
+     * Retrieves a list of available remote provers of certain TPTP subDialects.
+     * @param subDialectList
+     * @return SystemOnTPTP provers for the specified sub-dialects as a list of strings
+     */
+    public List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subDialectList){
+        List<String> provers = new ArrayList<>();
+        for (TPTPDefinitions.TPTPSubDialect d : subDialectList){
+            provers.addAll(getAvailableProvers(d));
+        }
+        return provers;
     }
 
     /**
@@ -110,25 +132,26 @@ public class HttpProver implements Prover {
      */
     private void loadProvers() throws IOException {
         availableProvers = new HashMap<>();
-        Arrays.stream(TPTPDefinitions.TPTPDialect.values()).forEach(dialect -> availableProvers.put(dialect,new ArrayList<>()));
+        Arrays.stream(TPTPDefinitions.TPTPSubDialect.values()).forEach(dialect -> availableProvers.put(dialect,new ArrayList<>()));
         Document doc = Jsoup.connect(Config.getUrlSystemOnTPTP()).get();
         Elements checkboxes = doc.select("input[type=checkbox]");
         for (Element e : checkboxes){
             if (e.attr("name").startsWith("System___")){
                 String description = e.parent().parent().child(e.parent().parent().children().size()-1).text();
-                List<TPTPDefinitions.TPTPDialect> dialects = parseDialects(description);
-                for (TPTPDefinitions.TPTPDialect d: dialects)availableProvers.get(d).add(e.attr("value"));
+                List<TPTPDefinitions.TPTPSubDialect> dialects = parseDialects(description);
+                for (TPTPDefinitions.TPTPSubDialect d: dialects)availableProvers.get(d).add(e.attr("value"));
             }
         }
     }
 
     /*
-     * Parses a String containing TPTPDefinitions.TPTPSubdialect names
+     * Parses a String containing TPTPDefinitions.TPTPSubDialect names
      * and returns a List of TPTPDefinitions.TPTPDialect names containing no duplicates
      */
-    private List<TPTPDefinitions.TPTPDialect> parseDialects(String input){
-        HashSet<TPTPDefinitions.TPTPDialect> ret = new HashSet<>();
-        Arrays.stream(TPTPDefinitions.TPTPSubdialect.values()).forEach(dialect -> {if (input.contains(dialect.name())) ret.add(TPTPDefinitions.subDialectToDialect(dialect));});
+    private List<TPTPDefinitions.TPTPSubDialect> parseDialects(String input){
+        HashSet<TPTPDefinitions.TPTPSubDialect> ret = new HashSet<>();
+        Arrays.stream(TPTPDefinitions.TPTPSubDialect.values()).forEach(dialect ->
+        {if (input.contains(dialect.name())) ret.add(dialect);});
         return new ArrayList<>(ret);
     }
 }

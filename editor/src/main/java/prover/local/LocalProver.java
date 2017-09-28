@@ -10,10 +10,12 @@ import prover.TPTPDefinitions;
 import util.RandomString;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class LocalProver implements Prover {
-    private static List<String> availableProvers;
+    private Map<TPTPDefinitions.TPTPSubDialect,List<LocalProverConfiguration>> availableProvers;
+    private Map<String,LocalProverConfiguration> allProvers;
     private static LocalProver instance;
 
     private LocalProver(){
@@ -31,34 +33,96 @@ public class LocalProver implements Prover {
     }
     */
 
+    /**
+     * Retrieves a list of available local provers of a certain TPTP dialect.
+     * @param dialect
+     * @return SystemOnTPTP provers for the specified dialect as a list of strings
+     */
     public List<String> getAvailableProvers(TPTPDefinitions.TPTPDialect dialect){
-        return availableProvers;
-    }
-    public List<String> getAvailableProvers(){
-        return availableProvers;
+        return getAvailableProvers(TPTPDefinitions.getTPTPSubDialectsFromTPTPDialect(dialect));
     }
 
+    /**
+     * Retrieves a list of available local provers of a certain TPTP subDialect.
+     * @param subDialect
+     * @return SystemOnTPTP provers for the specified sub-dialect as a list of strings
+     */
+    public List<String> getAvailableProvers(TPTPDefinitions.TPTPSubDialect subDialect){
+        List<String> ret = new ArrayList<>();
+        availableProvers.get(subDialect).forEach(c->ret.add(c.proverName));
+        return ret;
+    }
+
+    /**
+     * Retrieves a list of available local provers of certain TPTP subDialects.
+     * @param subDialectList
+     * @return SystemOnTPTP provers for the specified sub-dialects as a list of strings
+     */
+    public List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subDialectList){
+        List<String> provers = new ArrayList<>();
+        for (TPTPDefinitions.TPTPSubDialect d : subDialectList){
+            provers.addAll(getAvailableProvers(d));
+        }
+        return provers;
+    }
 
     public static LocalProver getInstance(){
         if (instance == null){
             instance = new LocalProver();
+            instance.loadProvers();
         }
-        availableProvers = Config.getLocalProvers();
         return instance;
     }
+    private void loadProvers(){
+        availableProvers = new HashMap<>();
+        allProvers = new HashMap<>();
+        Arrays.stream(TPTPDefinitions.TPTPSubDialect.values()).forEach(sd -> availableProvers.put(sd,new ArrayList<>()));
+        for (LocalProverConfiguration c : Config.getLocalProvers()){
+            allProvers.put(c.proverName,c);
+            for (TPTPDefinitions.TPTPSubDialect sd : c.subDialects){
+                availableProvers.get(sd).add(c);
+            }
+        }
+    }
 
-    public void addProver(String proverName, String command, boolean override) throws NameAlreadyInUseException {
-        if (!override && availableProvers.contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + Config.getLocalProverCommand(proverName));
-        Config.setLocalProverCommand(proverName, command);
-        if (!availableProvers.contains(proverName)) availableProvers.add(proverName);
-        Config.setLocalProvers(availableProvers);
+    /**
+     *
+     * @return A list of all local prover names supporting any TPTPSubDialect
+     */
+    public List<String> getAllProverNames(){
+        Set<String> ret = new HashSet<>();
+        return new ArrayList<>(allProvers.values().stream().map(n->n.proverName).collect(Collectors.toList()));
+    }
+
+    public String getLocalProverCommand(String prover){
+        return allProvers.get(prover).proverCommand;
+    }
+
+    public void addProver(String proverName, String command, List<TPTPDefinitions.TPTPSubDialect> subDialectList, boolean override) throws NameAlreadyInUseException {
+        if (!override && getAllProverNames().contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + getLocalProverCommand(proverName));
+        if (!getAllProverNames().contains(proverName)) {
+            LocalProverConfiguration pc = new LocalProverConfiguration();
+            pc.proverName = proverName;
+            pc.proverCommand = command;
+            pc.subDialects = subDialectList;
+            allProvers.put(proverName,pc);
+            for (TPTPDefinitions.TPTPSubDialect sd : subDialectList){
+                availableProvers.get(sd).add(pc);
+            }
+        }
+        Config.setLocalProvers(new ArrayList<>(allProvers.values()));
     }
 
     public void removeProver(String proverName) throws ProverNotAvailableException {
-        if (!availableProvers.contains(proverName)) throw new ProverNotAvailableException("prover not available");
-        Config.removePreference("prover" + proverName);
-        availableProvers.remove(proverName);
-        Config.setLocalProvers(availableProvers);
+        if (!getAllProverNames().contains(proverName)) throw new ProverNotAvailableException("prover not available");
+        Config.removePreference("localProverName" + (allProvers.size()-1));
+        Config.removePreference("localProverCommand" + (allProvers.size()-1));
+        Config.removePreference("localProverSubDialects" + (allProvers.size()-1));
+        for (TPTPDefinitions.TPTPSubDialect sd : allProvers.get(proverName).subDialects){
+            availableProvers.get(sd).remove(allProvers.get(proverName));
+        }
+        allProvers.remove(proverName);
+        Config.setLocalProvers(new ArrayList<>(allProvers.values()));
     }
 
     public ProveResult testTHFProver(String proverCommand) throws ProverNotAvailableException, IOException, ProverResultNotInterpretableException {
@@ -119,7 +183,7 @@ public class LocalProver implements Prover {
 
     @Override
     public ProveResult prove(String problem, String source, String prover, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
-        String cmdProver = Config.getLocalProverCommand(prover);
+        String cmdProver = getLocalProverCommand(prover);
         ProveResult r = prove(problem,cmdProver,timeLimit);
         return new ProveResult(problem, source, prover, r.stdout, r.stderr, r.status, r.elapsedTime, timeLimit);
     }

@@ -49,7 +49,7 @@ public class Logging {
 
     public void log(String msg,LogLevel logLevel){
         tableNode.appendChild(createRecord(msg,logLevel));
-        printHtml();
+        //printHtml();
     }
 
     public void prover(ProveResult pr){

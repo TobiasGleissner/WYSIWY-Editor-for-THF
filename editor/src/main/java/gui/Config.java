@@ -1,8 +1,6 @@
 package gui; /* TODO: Change the package hierarchy, put this one above gui. */
 
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -10,6 +8,8 @@ import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import prover.TPTPDefinitions;
+import prover.local.LocalProverConfiguration;
 
 public class Config {
     public static Preferences prefs = Preferences.userNodeForPackage(Config.class);
@@ -45,7 +45,7 @@ public class Config {
 
     // user actions
     public static ObservableList<String> getRecentlyOpenedFiles(){
-        int numFiles = Integer.parseInt(prefs.get("recentlyOpenedFilesLen","0"));
+        int numFiles = prefs.getInt("recentlyOpenedFilesLen",0);
         List<String> files = new ArrayList<>();
         for (int i = 0; i < numFiles; i++){
             String fileName = prefs.get("recentlyOpenedFile" + i,null);
@@ -56,7 +56,7 @@ public class Config {
         return FXCollections.observableArrayList(files);
     }
     public static void setRecentlyOpenedFiles(ObservableList<String> files){
-        prefs.put("recentlyOpenedFilesLen", String.valueOf(files.size()));
+        prefs.putInt("recentlyOpenedFilesLen", files.size());
         for (int i = 0; i < files.size(); i++){
             prefs.put("recentlyOpenedFile" + i, files.get(i));
         }
@@ -89,23 +89,38 @@ public class Config {
     }
 
     // prover local
-    public static List<String> getLocalProvers(){
-        String provers = prefs.get("localProverList","");
-        List<String>  list = Arrays.asList(provers.split(","));
-        return list.stream()
-                .filter(n->n.length() >= 6).filter(n-> n.substring(0,6).equals("prover"))
-                .map(n -> n.substring(6)).collect(Collectors.toList());
+    public static List<LocalProverConfiguration> getLocalProvers(){
+        int numProvers = prefs.getInt("localProversLen",0);
+        List<LocalProverConfiguration> provers = new ArrayList<>();
+        for (int i = 0; i < numProvers; i++){
+            LocalProverConfiguration pc = new LocalProverConfiguration();
+            pc.proverName = prefs.get("localProverName" + i,null);
+            pc.proverCommand = prefs.get("localProverCommand" + i,null);
+            String subdialects = prefs.get("localProverSubDialects" + i,null);
+            List<TPTPDefinitions.TPTPSubDialect> subDialectList = new ArrayList<>();
+            for (String subdialectString : subdialects.split(",")){
+                try {
+                    if (!subdialectString.equals("")) subDialectList.add(TPTPDefinitions.TPTPSubDialect.valueOf(subdialectString));
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                    // does not happen
+                }
+            }
+            pc.subDialects = subDialectList;
+            provers.add(pc);
+        }
+        return provers;
     }
-    public static void setLocalProvers(List<String> provers){
-        prefs.put("localProverList", String.join(",",provers.stream().map(n->"prover"+n).collect(Collectors.toList())));
-        flush();
-    }
-
-    public static String getLocalProverCommand(String prover) {
-        return prefs.get("prover" + prover,null);
-    }
-    public static void setLocalProverCommand(String prover, String command) {
-        prefs.put("prover" + prover, command);
+    public static void setLocalProvers(List<LocalProverConfiguration> provers){
+        prefs.putInt("localProversLen",provers.size());
+        for (int i = 0; i < provers.size(); i++){
+            prefs.put("localProverName" + i, provers.get(i).proverName);
+            prefs.put("localProverCommand" + i, provers.get(i).proverCommand);
+            String subDialects = String.join(",",
+                    provers.get(i).subDialects.stream().map(d->d.name()).collect(Collectors.toList())
+            );
+            prefs.put("localProverSubDialects" + i, subDialects);
+        }
         flush();
     }
 
