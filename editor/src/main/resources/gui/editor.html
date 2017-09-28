@@ -189,7 +189,50 @@
             hidden.parentNode.removeChild(hidden);
         }
 
-        function start_incremental_parsing(range)
+        var parse_timeout = null;
+        var parse_ranges = [];
+        function start_incremental_parsing_throttled(range)
+        {
+            parse_ranges.push(range.cloneRange());
+            if(!parse_timeout)
+            {
+                parse_timeout = setTimeout(
+                    function()
+                    {
+                        parse_timeout = null;
+                        start_incremental_parsing_from_ranges();
+                        parse_ranges = [];
+                    },
+                    100
+                );
+            }
+        }
+
+        function start_incremental_parsing_from_ranges()
+        {
+            var start_node = Infinity;
+            var end_node = -Infinity;
+
+            for(range in parse_ranges)
+            {
+                ids = get_range_start_end(range);
+                range.detach();
+
+                if(ids[0] == -1)
+                    start_node = -1;
+                else
+                    start_node = Math.min(start_node, ids[0]);
+
+                if(ids[1] == -1)
+                    end_node = -1;
+                else
+                    end_node = Math.max(end_node, ids[1]);
+            }
+
+            start_inremental_parsing(start_node, end_node);
+        }
+
+        function get_range_start_end(range)
         {
             var start_node = -1;
             var end_node = -1;
@@ -295,6 +338,11 @@
                     end_node = id;
             }
 
+            return [start_node, end_node];
+        }
+
+        function start_inremental_parsing(start_node, end_node)
+        {
             var range = get_selected_range();
             if(start_node >= 0)
                 node = document.getElementById("hm_node_" + start_node);
@@ -311,6 +359,7 @@
             var selection = window.getSelection();
             selection.removeAllRanges();
             selection.addRange(range);
+            update_line_numbers();
         }
 
         function update_line_numbers()
@@ -402,8 +451,7 @@
 
                     make_selection_valid(e);
                     maybe_scroll_to_range(get_selected_range());
-                    start_incremental_parsing(get_selected_range());
-                    update_line_numbers();
+                    start_incremental_parsing_throttled(get_selected_range());
                 }
                 else if(e.keyCode == 46)
                 {
@@ -418,8 +466,7 @@
 
                     make_selection_valid(e);
                     maybe_scroll_to_range(get_selected_range());
-                    start_incremental_parsing(get_selected_range());
-                    update_line_numbers();
+                    start_incremental_parsing_throttled(get_selected_range());
                 }
             }
         );
@@ -452,8 +499,7 @@
 
                 make_selection_valid(e);
                 maybe_scroll_to_range(range);
-                start_incremental_parsing(range);
-                update_line_numbers();
+                start_incremental_parsing_throttled(range);
             }
         );
 
@@ -483,8 +529,7 @@
                 selection.addRange(range);
 
                 maybe_scroll_to_range(range);
-                start_incremental_parsing(range);
-                update_line_numbers();
+                start_incremental_parsing_throttled(range);
             }
         );
 
