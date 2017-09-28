@@ -44,18 +44,10 @@ public class Config {
 
     // user actions
     public static ObservableList<String> getRecentlyOpenedFiles(){
-        // public static ObservableList<String> getRecentlyOpenedFiles(){
-        //     ObservableList<String> list = FXCollections.observableArrayList();
-        //     String files = prefs.get("recentlyOpenedFiles","");
-        //     if (!files.isEmpty()) {
-        //         list = FXCollections.observableArrayList(Arrays.asList(files.split(",")));
-        //     }
-        //     return list;
-        // }
-        List<String> files = Arrays.asList(prefs.get("recentlyOpenedFiles","").split(","));
         ObservableList<String> list = FXCollections.observableArrayList();
-        if (!Objects.equals(files.get(0),"")) {
-            list = FXCollections.observableArrayList(files);
+        String files = prefs.get("recentlyOpenedFiles","");
+        if (!files.isEmpty()) {
+            list = FXCollections.observableArrayList(Arrays.asList(files.split(",")));
         }
         return list;
     }
