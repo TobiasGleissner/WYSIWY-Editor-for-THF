@@ -1,5 +1,6 @@
 package gui; /* TODO: Change the package hierarchy, put this one above gui. */
 
+import java.util.Objects;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -15,7 +16,7 @@ public class Config {
     // misc
     public static final String name = "editor";
     public static final String USER_AGENT = "thf_editor";
-    public static int maxRecentlyOpenedFiles = 20;
+    public static int maxRecentlyOpenedFiles = 5;
     public static final double fontSizeOutputDefault = 0.3;
 
     // editor
@@ -43,8 +44,19 @@ public class Config {
 
     // user actions
     public static ObservableList<String> getRecentlyOpenedFiles(){
-        String files = prefs.get("recentlyOpenedFiles","");
-        ObservableList<String> list = FXCollections.observableArrayList(Arrays.asList(files.split(",")));
+        // public static ObservableList<String> getRecentlyOpenedFiles(){
+        //     ObservableList<String> list = FXCollections.observableArrayList();
+        //     String files = prefs.get("recentlyOpenedFiles","");
+        //     if (!files.isEmpty()) {
+        //         list = FXCollections.observableArrayList(Arrays.asList(files.split(",")));
+        //     }
+        //     return list;
+        // }
+        List<String> files = Arrays.asList(prefs.get("recentlyOpenedFiles","").split(","));
+        ObservableList<String> list = FXCollections.observableArrayList();
+        if (!Objects.equals(files.get(0),"")) {
+            list = FXCollections.observableArrayList(files);
+        }
         return list;
     }
     public static void setRecentlyOpenedFiles(ObservableList<String> files){

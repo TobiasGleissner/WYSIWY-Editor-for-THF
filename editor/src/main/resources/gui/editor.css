@@ -88,10 +88,13 @@
 .context-menu {
     -fx-background-insets: -1 0 -1 0;
     -fx-padding: 0;
+    /* -fx-pref-width: 200px;
+    -fx-min-width: 200px;
+    -fx-max-width: 400px; */
 }
 
 .context-menu .accelerator-text {
-    -fx-padding: 0 0 0 9;
+    -fx-padding: 0 0 0 -9;
 }
 
 

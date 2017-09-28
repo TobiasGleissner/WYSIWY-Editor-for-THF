@@ -108,6 +108,7 @@ public class EditorController implements Initializable {
     // Menu
     @FXML private Menu menubarRunProver;
     @FXML private Menu menubarFileReopenFile;
+    @FXML private MenuItem menubarFileReopenFileNoFiles;
 
     // Toolbar
     @FXML private MenuButton toolbarRunProver;
@@ -302,6 +303,7 @@ public class EditorController implements Initializable {
     }
 
     @FXML private void onFileOpenFile(ActionEvent e) {
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open thf file");
         File selectedFile = fileChooser.showOpenDialog(mainStage);
@@ -313,30 +315,37 @@ public class EditorController implements Initializable {
     private void initializeListOfRecentlyOpenedFiles() {
         model.recentlyOpenedFiles.addListener((ListChangeListener.Change<? extends String> c) -> {
             while (c.next()) {
-                for (String text : c.getRemoved()) {
-                    System.out.println("remove:" + text);
-                    menubarFileReopenFile.getItems().forEach(i->removeMenuItemByText(i,text));
+                for (String fileToRemove : c.getRemoved()) {
+                    Iterator<MenuItem> i = menubarFileReopenFile.getItems().iterator();
+                    while (i.hasNext()) {
+                        MenuItem item = i.next();
+                        if (Objects.equals(item.getText(),fileToRemove)) {
+                            i.remove();
+                        }
+                    }
                 }
-                for (String text : c.getAddedSubList()) {
-                    System.out.println("add:" + text);
-                    MenuItem item = new MenuItem(text);
-                    // TODO: item.setActionOn(onFileOpenFile);
-                    menubarFileReopenFile.getItems().add(item);
+                for (String fileToAdd : c.getAddedSubList()) {
+                    MenuItem item = new MenuItem(fileToAdd);
+                    item.setOnAction(e->model.openFile(new File(fileToAdd)));
+                    menubarFileReopenFile.getItems().add(2,item);
+                }
+            }
+            // Add or remove "No recently opened files available" item as needed
+            if (!menubarFileReopenFile.getItems().contains(menubarFileReopenFileNoFiles)) {
+                if (model.recentlyOpenedFiles.isEmpty()) {
+                    menubarFileReopenFile.getItems().add(menubarFileReopenFileNoFiles);
+                }
+            } else {
+                if (!model.recentlyOpenedFiles.isEmpty()) {
+                    menubarFileReopenFile.getItems().remove(menubarFileReopenFileNoFiles);
                 }
             }
         });
         Config.getRecentlyOpenedFiles().stream().forEach(f->model.recentlyOpenedFiles.add(f));
-        if (model.recentlyOpenedFiles.isEmpty()) {
-            MenuItem item = new MenuItem("No recently opened files");
-            item.setDisable(true);
-            menubarFileReopenFile.getItems().add(item);
-        }
     }
 
-    private void removeMenuItemByText(MenuItem i, String textToDelete) {
-        if(Objects.equals(i.getText(),textToDelete)){
-            menubarFileReopenFile.getItems().remove(i);
-        }
+    @FXML private void clearRecentlyOpenedFilesList(ActionEvent e) {
+        model.clearRecentlyOpenedFilesList();
     }
 
     @FXML private void onDirectoryOpen(ActionEvent e) {
@@ -679,7 +688,6 @@ public class EditorController implements Initializable {
                 }
             }
             SeparatorMenuItem separator = new SeparatorMenuItem();
-            separator.setStyle("-fx-border-color: green transparent transparent transparent;");
             menubarRunProver.getItems().add(separator);
             // add list of remote provers to menubar
             MenuItem labelForRemoteProvers = new MenuItem("Remote provers");

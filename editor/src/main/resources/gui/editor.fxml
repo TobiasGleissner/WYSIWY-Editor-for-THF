@@ -71,8 +71,9 @@
                                     </accelerator>
                                 </MenuItem>
                                 <Menu fx:id="menubarFileReopenFile" text="Reopen File">
-                                    <MenuItem text="Clear File History" />
+                                    <MenuItem onAction="#clearRecentlyOpenedFilesList" text="Clear File History" />
                                     <SeparatorMenuItem mnemonicParsing="false" />
+                                    <MenuItem fx:id="menubarFileReopenFileNoFiles" disable="true" text="No recently opened files" />
                                 </Menu>
                                 <MenuItem onAction="#onDirectoryOpen" text="Open Directory">
                                     <accelerator>

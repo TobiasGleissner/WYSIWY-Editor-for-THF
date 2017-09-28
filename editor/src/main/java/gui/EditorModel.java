@@ -64,7 +64,7 @@ public class EditorModel
             Matcher matcher = pattern.matcher(match);
             matcher.find();
             css.add(matcher.group(1).substring(1));
-            css.add("functor"); 
+            css.add("functor");
             css.add("defined_functor");
             css.add("system_functor");
         }
@@ -138,7 +138,11 @@ public class EditorModel
         recentlyOpenedFiles.add(file.getAbsolutePath());
         if (recentlyOpenedFiles.size() > Config.maxRecentlyOpenedFiles) recentlyOpenedFiles.remove(0);
         Config.setRecentlyOpenedFiles(recentlyOpenedFiles);
-        // TODO reflect in Menu File > recently opened Files
+    }
+
+    public void clearRecentlyOpenedFilesList(){
+        recentlyOpenedFiles.clear();
+        Config.setRecentlyOpenedFiles(recentlyOpenedFiles);
     }
 
     public void printTPTPTrees()
@@ -433,7 +437,7 @@ public class EditorModel
             String tag = node.getRule();
             Node childOfTopBranching = node.getChildBeforeNextTopBranchingNode();
             if (childOfTopBranching == null || !childOfTopBranching.getRule().equals("thf_unitary_type")) {
-                
+
             }
             if (tag.equals("functor") && (childOfTopBranching == null || !childOfTopBranching.getRule().equals("thf_unitary_type"))) {
                 tag = "constant";
