@@ -379,12 +379,13 @@ public class EditorController implements Initializable {
 
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem newFile = new MenuItem("New file");
+        MenuItem newDirectory = new MenuItem("New directory");
         MenuItem copyDirName = new MenuItem("Copy directory name");
         MenuItem copyPath = new MenuItem("Copy path to clipboard");
         MenuItem copyRelPath = new MenuItem("Copy relative path to clipboard");
         MenuItem cut = new MenuItem("Cut");
         MenuItem paste = new MenuItem("Paste");
-        contextMenu.getItems().addAll(newFile, copyDirName, copyPath, copyRelPath, cut, paste);
+        contextMenu.getItems().addAll(newFile, newDirectory, copyDirName, copyPath, copyRelPath, cut, paste);
 
         final ContextMenu contextMenuFile = new ContextMenu();
         MenuItem copyFile = new MenuItem("Copy");
@@ -410,7 +411,7 @@ public class EditorController implements Initializable {
                     TextInputDialog dialog = new TextInputDialog();
                     dialog.setTitle("New file");
                     dialog.setHeaderText("New file name"+error);
-                    dialog.setContentText("Please enter the new file name:");
+                    dialog.setContentText("Please enter the file name:");
                     
                     Optional<String> result = dialog.showAndWait();
                     if (!result.isPresent())
@@ -429,7 +430,6 @@ public class EditorController implements Initializable {
                     Path newFile = directory.resolve(name);
                     File file = new File(newFile.toString());
                     try {
-                        System.out.println(file.getPath().toString());
                         if (file.createNewFile()) {
                             FileTreeItem item = new FileTreeItem(new FileWrapper(file));
                             item.setGraphic(item.getIconNodeByFile(file));
@@ -446,6 +446,49 @@ public class EditorController implements Initializable {
                 }
             }
         });
+        newDirectory.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                
+                String error = "";
+                String name = null;
+                Path directory = null;
+                
+                while (true) {
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("New directory");
+                    dialog.setHeaderText("New directory name"+error);
+                    dialog.setContentText("Please enter the directory name:");
+                    
+                    Optional<String> result = dialog.showAndWait();
+                    if (!result.isPresent())
+                        break;
+                    name = result.get();
+                    if (name.equals("") || name == null) {
+                        error = "\n\nERROR: Please enter a directory name!";
+                        System.out.println("A");
+                        continue;
+                    }
+                    if (name.contains("/") || name.contains("\\")) {
+                        error = "\n\nERROR: Please enter a valid directory name!";
+                        continue;
+                    }
+                    directory = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false);
+                    Path newDir = directory.resolve(name);
+                    File file = new File(newDir.toString());
+                    
+                    if (file.mkdir()) {
+                        FileTreeItem item = new FileTreeItem(new FileWrapper(file));
+                        item.setGraphic(item.getIconNodeByFile(file));
+                        fileBrowser.getSelectionModel().getSelectedItem().getChildren().add(item);
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+            }
+        });
+        
         cut.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
