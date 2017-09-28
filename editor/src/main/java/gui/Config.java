@@ -100,9 +100,9 @@ public class Config {
             List<TPTPDefinitions.TPTPSubDialect> subDialectList = new ArrayList<>();
             for (String subdialectString : subdialects.split(",")){
                 try {
-                    if (!subdialectString.equals("")) subDialectList.add(TPTPDefinitions.TPTPSubDialect.valueOf(subdialectString));
+                    if (!subdialectString.equals(""))
+                        subDialectList.add(TPTPDefinitions.TPTPSubDialect.valueOf(subdialectString));
                 } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
                     // does not happen
                 }
             }
@@ -117,7 +117,9 @@ public class Config {
             prefs.put("localProverName" + i, provers.get(i).proverName);
             prefs.put("localProverCommand" + i, provers.get(i).proverCommand);
             String subDialects = String.join(",",
-                    provers.get(i).subDialects.stream().map(d->d.name()).collect(Collectors.toList())
+                    provers.get(i).subDialects.stream()
+                            .map(Enum::name)
+                            .collect(Collectors.toList())
             );
             prefs.put("localProverSubDialects" + i, subDialects);
         }

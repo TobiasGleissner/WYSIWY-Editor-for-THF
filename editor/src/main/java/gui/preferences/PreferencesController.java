@@ -4,6 +4,7 @@ import exceptions.NameAlreadyInUseException;
 import exceptions.ProverNotAvailableException;
 import exceptions.ProverResultNotInterpretableException;
 import gui.Logging;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -21,6 +22,7 @@ import util.RandomString;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PreferencesController implements Initializable {
     private PreferencesModel model;
@@ -32,6 +34,7 @@ public class PreferencesController implements Initializable {
     @FXML public TextField proverNameTextField;
     @FXML public TextField proverCommandTextField;
     @FXML public TreeView<String> localProverTree;
+    @FXML public ListView<String> subDialectListView;
 
     private TreeItem<String> root;
     private String currentProver;
@@ -45,13 +48,20 @@ public class PreferencesController implements Initializable {
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // TPTP SubDialects
+        subDialectListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        List<String> subDialects = Arrays.stream(TPTPDefinitions.TPTPSubDialect.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+        subDialectListView.setItems(FXCollections.observableArrayList(subDialects));
+
         // Tree
         localProverTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         root = new TreeItem<>("Provers");
         localProverTree.setRoot(root);
         updateLocalProversTree();
 
-        // current prover
+        // select current prover
         showFirstProver();
 
         // misc
@@ -67,9 +77,44 @@ public class PreferencesController implements Initializable {
                     Node node = mouseEvent.getPickResult().getIntersectedNode();
                     // Accept clicks only on node cells, and not on empty spaces of the TreeView
                     if (node instanceof Text || (node instanceof TreeCell && ((TreeCell) node).getText() != null)) {
-                        currentItem = localProverTree.getSelectionModel().getSelectedItem();
+                        TreeItem<String> tempCurrentItem = localProverTree.getSelectionModel().getSelectedItem();
+                        if (tempCurrentItem.equals(root)) {
+                            subDialectListView.getSelectionModel().clearSelection();
+                            localProverTree.getSelectionModel().clearSelection();
+                            proverNameTextField.setText("");
+                            proverCommandTextField.setText("");
+                            currentItem = null;
+                            currentProver = null;
+                            return;
+                        }
+                        currentItem = tempCurrentItem;
                         currentProver = currentItem.getValue();
-                        showLocalProver(currentProver);
+                        showProver(currentProver);
+                    }
+                }
+            }
+        });
+
+        subDialectListView.addEventFilter(MouseEvent.MOUSE_PRESSED, evt -> {
+            Node node = evt.getPickResult().getIntersectedNode();
+            // go up from the target node until a list cell is found or it's clear
+            // it was not a cell that was clicked
+            while (node != null && node != subDialectListView && !(node instanceof ListCell)) {
+                node = node.getParent();
+            }
+            // if is part of a cell or the cell,
+            // handle event instead of using standard handling
+            if (node instanceof ListCell) {
+                evt.consume(); // prevent further handling
+                ListCell cell = (ListCell) node;
+                ListView lv = cell.getListView();
+                lv.requestFocus(); // focus on list view
+                if (!cell.isEmpty()) {
+                    int index = cell.getIndex();
+                    if (cell.isSelected()) {
+                        lv.getSelectionModel().clearSelection(index);
+                    } else {
+                        lv.getSelectionModel().select(index);
                     }
                 }
             }
@@ -96,23 +141,33 @@ public class PreferencesController implements Initializable {
         root.setExpanded(true);
     }
 
-    private void showLocalProver(String prover){
+    private void showProver(String prover){
         proverNameTextField.setText(prover);
-        String proverCmd = lp.getLocalProverCommand(prover);
-        if (proverCmd == null) proverCmd = "";
+        String proverCmd = lp.getProverCommand(prover);
         proverCommandTextField.setText(proverCmd);
+        subDialectListView.getSelectionModel().clearSelection();
+        lp.getProverSubDialects(currentProver).forEach(sd -> subDialectListView.getSelectionModel().select(sd.name()));
     }
 
     private void showFirstProver(){
         if (root.getChildren().size() == 0){ // tree is empty
             currentProver = null;
+            currentItem = null;
             proverCommandTextField.setText("");
             proverNameTextField.setText("");
+            subDialectListView.getSelectionModel().clearSelection();
             return;
         }
-        currentProver = root.getChildren().get(0).getValue(); // set first element in tree as current
+        currentItem = root.getChildren().get(0);
+        currentProver = currentItem.getValue();
         localProverTree.getSelectionModel().select(localProverTree.getRow(root.getChildren().get(0))); // select first element in tree
-        showLocalProver(currentProver);
+        showProver(currentProver);
+    }
+
+    private List<TPTPDefinitions.TPTPSubDialect> getSelectedTPTPSubDialects(){
+        return subDialectListView.getSelectionModel().getSelectedItems().stream()
+                .map(TPTPDefinitions.TPTPSubDialect::valueOf)
+                .collect(Collectors.toList());
     }
 
     @FXML
@@ -127,20 +182,30 @@ public class PreferencesController implements Initializable {
             log.warning("Could not apply: A prover with name='" + proverName + "' already exists.");
             return;
         }
-            try {
+        try {
+            lp.updateProver(currentProver,proverName,proverCommand, getSelectedTPTPSubDialects());
+        } catch (ProverNotAvailableException e) {
+            e.printStackTrace();
+            // does not happen
+        }
+        /*
+        try {
             lp.removeProver(currentProver);
         } catch (ProverNotAvailableException e) {
             // does not happen
         }
         try {
-            // TODO input field for subdialect
-            lp.addProver(proverName,proverCommand, TPTPDefinitions.getTPTPSubDialectsFromTPTPDialect(TPTPDefinitions.TPTPDialect.THF),true);
+            lp.addProver(proverName,proverCommand, getSelectedTPTPSubDialects(),true);
         } catch (NameAlreadyInUseException e) {
             // does not happen
-        }
+        }*/
         currentItem.setValue(proverName);
         currentProver = proverName;
-        log.info("Updated prover with name='" + proverName + "' and command = '" + proverCommand + "'.");
+        String dialectString = String.join(",", lp.getProverSubDialects(proverName).stream()
+                .map(Enum::name)
+                .collect(Collectors.toList()));
+        log.info("Updated prover with name='" + proverName + "' and command = '" + proverCommand
+                + "' and TPTP dialects='" + dialectString + "'.");
     }
 
     @FXML
@@ -162,35 +227,39 @@ public class PreferencesController implements Initializable {
     public void onNewProver(ActionEvent actionEvent) {
         String proverName = "unnamed_" + RandomString.getRandomString();
         while (lp.getAllProverNames().contains(proverName)) proverName = "unnamed_" + RandomString.getRandomString();
-        String proverCommand = "";
         currentProver = proverName;
-        proverNameTextField.setText(proverName);
-        proverCommandTextField.setText(proverCommand);
         try {
-            lp.addProver(proverName,proverCommand,new ArrayList<>(),true);
+            lp.addProver(proverName,"",new ArrayList<>(),true);
         } catch (NameAlreadyInUseException e) {
             // does not happen due to while loop
         }
         currentItem = new TreeItem<>(proverName);
         localProverTree.getRoot().getChildren().add(currentItem);
         localProverTree.getSelectionModel().select(currentItem);
+        showProver(currentProver);
         log.info("Created new prover with name='" + proverName + "'.");
     }
 
     @FXML
     public void onDeleteProver(ActionEvent actionEvent) {
+        String oldName = proverNameTextField.getText();
+        String oldCommand = proverCommandTextField.getText();
+        String oldDialectString = String.join(",", lp.getProverSubDialects(oldName).stream()
+                .map(Enum::name)
+                .collect(Collectors.toList()));
         try {
-            lp.removeProver(localProverTree.getSelectionModel().getSelectedItem().getValue());
+            lp.removeProver(currentProver);
         } catch (ProverNotAvailableException e) {
             log.warning("Could not remove prover: No prover selected.");
         }
-        String oldName = proverNameTextField.getText();
-        String oldCommand = proverCommandTextField.getText();
         proverNameTextField.setText("");
         proverCommandTextField.setText("");
         localProverTree.getRoot().getChildren().remove(currentItem);
+        localProverTree.getSelectionModel().clearSelection();
+        subDialectListView.getSelectionModel().clearSelection();
         currentProver = null;
         currentItem = null;
-        log.info("Removed prover with name='" + oldName + "' and command='" + oldCommand + "'.");
+        log.info("Removed prover with name='" + oldName + "' and command='" + oldCommand
+                + "' and TPTP dialects='" + oldDialectString + "'.");
     }
 }

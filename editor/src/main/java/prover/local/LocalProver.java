@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class LocalProver implements Prover {
     private Map<TPTPDefinitions.TPTPSubDialect,List<LocalProverConfiguration>> availableProvers;
     private Map<String,LocalProverConfiguration> allProvers;
+    private List<LocalProverConfiguration> allProversListed;
     private static LocalProver instance;
 
     private LocalProver(){
@@ -26,7 +27,7 @@ public class LocalProver implements Prover {
     public static void main(String[] args) throws Exception {
         LocalProver p = LocalProver.getInstance();
         //p.getAvailableProvers().stream().forEach(System.out::println);
-        //p.getAvailableProvers().stream().map(s->Config.getLocalProverCommand(s)).forEach(System.out::println);
+        //p.getAvailableProvers().stream().map(s->Config.getProverCommand(s)).forEach(System.out::println);
         String myproblem = "thf(a1,conjecture,$true).";
         String prover = "satallax";
         System.out.println(LocalProver.getInstance().prove(myproblem, "asd",prover,5).toString());
@@ -73,12 +74,15 @@ public class LocalProver implements Prover {
         }
         return instance;
     }
+
     private void loadProvers(){
         availableProvers = new HashMap<>();
         allProvers = new HashMap<>();
+        allProversListed = new ArrayList<>();
         Arrays.stream(TPTPDefinitions.TPTPSubDialect.values()).forEach(sd -> availableProvers.put(sd,new ArrayList<>()));
         for (LocalProverConfiguration c : Config.getLocalProvers()){
             allProvers.put(c.proverName,c);
+            allProversListed.add(c);
             for (TPTPDefinitions.TPTPSubDialect sd : c.subDialects){
                 availableProvers.get(sd).add(c);
             }
@@ -90,27 +94,42 @@ public class LocalProver implements Prover {
      * @return A list of all local prover names supporting any TPTPSubDialect
      */
     public List<String> getAllProverNames(){
-        Set<String> ret = new HashSet<>();
-        return new ArrayList<>(allProvers.values().stream().map(n->n.proverName).collect(Collectors.toList()));
+        return allProversListed.stream().map(c->c.proverName).collect(Collectors.toList());
     }
 
-    public String getLocalProverCommand(String prover){
+    public String getProverCommand(String prover){
         return allProvers.get(prover).proverCommand;
     }
 
+    public List<TPTPDefinitions.TPTPSubDialect> getProverSubDialects(String prover){
+        return allProvers.get(prover).subDialects;
+    }
+
     public void addProver(String proverName, String command, List<TPTPDefinitions.TPTPSubDialect> subDialectList, boolean override) throws NameAlreadyInUseException {
-        if (!override && getAllProverNames().contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + getLocalProverCommand(proverName));
-        if (!getAllProverNames().contains(proverName)) {
-            LocalProverConfiguration pc = new LocalProverConfiguration();
-            pc.proverName = proverName;
-            pc.proverCommand = command;
-            pc.subDialects = subDialectList;
-            allProvers.put(proverName,pc);
-            for (TPTPDefinitions.TPTPSubDialect sd : subDialectList){
-                availableProvers.get(sd).add(pc);
-            }
+        if (!override && getAllProverNames().contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + getProverCommand(proverName));
+        LocalProverConfiguration pc = new LocalProverConfiguration();
+        pc.proverName = proverName;
+        pc.proverCommand = command;
+        pc.subDialects = subDialectList;
+        allProvers.put(proverName,pc);
+        allProversListed.add(pc);
+        for (TPTPDefinitions.TPTPSubDialect sd : subDialectList){
+            availableProvers.get(sd).add(pc);
         }
-        Config.setLocalProvers(new ArrayList<>(allProvers.values()));
+        Config.setLocalProvers(allProversListed);
+    }
+
+    public void updateProver(String oldProverName, String newProverName, String command, List<TPTPDefinitions.TPTPSubDialect> subDialectList) throws ProverNotAvailableException {
+        if (!getAllProverNames().contains(oldProverName)) throw new ProverNotAvailableException("The prover with name='" + oldProverName + "' does not exist.");
+        LocalProverConfiguration pc = allProvers.get(oldProverName);
+        for (TPTPDefinitions.TPTPSubDialect sd : pc.subDialects) availableProvers.get(sd).remove(pc);
+        pc.proverName = newProverName;
+        pc.proverCommand = command;
+        pc.subDialects = subDialectList;
+        allProvers.remove(oldProverName);
+        allProvers.put(newProverName,pc);
+        for (TPTPDefinitions.TPTPSubDialect sd : subDialectList) availableProvers.get(sd).add(pc);
+        Config.setLocalProvers(allProversListed);
     }
 
     public void removeProver(String proverName) throws ProverNotAvailableException {
@@ -121,8 +140,9 @@ public class LocalProver implements Prover {
         for (TPTPDefinitions.TPTPSubDialect sd : allProvers.get(proverName).subDialects){
             availableProvers.get(sd).remove(allProvers.get(proverName));
         }
+        allProversListed.remove(allProvers.get(proverName));
         allProvers.remove(proverName);
-        Config.setLocalProvers(new ArrayList<>(allProvers.values()));
+        Config.setLocalProvers(allProversListed);
     }
 
     public ProveResult testTHFProver(String proverCommand) throws ProverNotAvailableException, IOException, ProverResultNotInterpretableException {
@@ -183,7 +203,7 @@ public class LocalProver implements Prover {
 
     @Override
     public ProveResult prove(String problem, String source, String prover, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
-        String cmdProver = getLocalProverCommand(prover);
+        String cmdProver = getProverCommand(prover);
         ProveResult r = prove(problem,cmdProver,timeLimit);
         return new ProveResult(problem, source, prover, r.stdout, r.stderr, r.status, r.elapsedTime, timeLimit);
     }
