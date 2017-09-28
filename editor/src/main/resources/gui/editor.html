@@ -403,7 +403,7 @@
                     make_selection_valid(e);
                     maybe_scroll_to_range(get_selected_range());
                     start_incremental_parsing(get_selected_range());
-                    update_line_numbers();
+                    line_number_update_throttled();
                 }
                 else if(e.keyCode == 46)
                 {
@@ -419,7 +419,7 @@
                     make_selection_valid(e);
                     maybe_scroll_to_range(get_selected_range());
                     start_incremental_parsing(get_selected_range());
-                    update_line_numbers();
+                    line_number_update_throttled();
                 }
             }
         );
@@ -453,7 +453,7 @@
                 make_selection_valid(e);
                 maybe_scroll_to_range(range);
                 start_incremental_parsing(range);
-                update_line_numbers();
+                line_number_update_throttled();
             }
         );
 
@@ -484,48 +484,41 @@
 
                 maybe_scroll_to_range(range);
                 start_incremental_parsing(range);
-                update_line_numbers();
+                line_number_update_throttled();
             }
         );
 
-        /* If we don't throttle this resizing gets _really_ slow. */
-        var resize_timeout = null;
-        window.addEventListener("resize", resize_throttled);
-        function resize_throttled()
+        window.addEventListener("resize",
+            function(e)
+            {
+                line_number_update_throttled();
+            }
+        );
+
+        window.addEventListener("scroll",
+            function(e)
+            {
+                line_number_update_throttled();
+            }
+        );
+
+        var line_number_timeout = null;
+        function line_number_update_throttled()
         {
-            if(!resize_timeout)
-                resize_timeout = setTimeout(
-                    function()
-                    {
-                        resize_timeout = null;
-                        resize_handler();
-                    },
-                    100
-                );
+            if(line_number_timeout)
+                clearTimeout(line_number_timeout);
+
+            line_number_timeout = setTimeout(
+                function()
+                {
+                    line_number_timeout = null;
+                    line_number_handler();
+                },
+                200
+            );
         }
 
-        function resize_handler()
-        {
-            update_line_numbers();
-        }
-
-        /* If we don't throttle this resizing gets _really_ slow. */
-        var scroll_timeout = null;
-        window.addEventListener("scroll", scroll_throttled);
-        function scroll_throttled()
-        {
-            if(!scroll_timeout)
-                scroll_timeout = setTimeout(
-                    function()
-                    {
-                        scroll_timeout = null;
-                        scroll_handler();
-                    },
-                    100
-                );
-        }
-
-        function scroll_handler()
+        function line_number_handler()
         {
             update_line_numbers();
         }
