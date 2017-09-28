@@ -51,6 +51,6 @@ public class SpanElement implements Comparator<SpanElement>, Comparable<SpanElem
     }
     
     public String toString() {
-        return "["+tag+", "+startIndex+", "+endIndex+"]";
+        return "("+tag+", "+startIndex+", "+endIndex+")";
     }
 }

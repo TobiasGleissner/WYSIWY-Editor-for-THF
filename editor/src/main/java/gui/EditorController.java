@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
+//import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 
 import java.util.Stack;
@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 import java.util.Objects;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -54,6 +55,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tab;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 
@@ -376,6 +379,7 @@ public class EditorController implements Initializable {
         contextMenu.getItems().addAll(copyDirName, copyPath, copyRelPath, cut, paste);
 
         final ContextMenu contextMenuFile = new ContextMenu();
+        MenuItem copyFile = new MenuItem("Copy");
         MenuItem copyFileName = new MenuItem("Copy file name");
         MenuItem copyPathFile = new MenuItem("Copy path to clipboard");
         MenuItem copyRelPathFile = new MenuItem("Copy relative path to clipboard");
@@ -383,12 +387,29 @@ public class EditorController implements Initializable {
         MenuItem cutFile = new MenuItem("Cut");
         MenuItem pasteFile = new MenuItem("Paste");
         MenuItem deleteFile = new MenuItem("Delete");
-        contextMenuFile.getItems().addAll(copyFileName, copyPathFile, copyRelPathFile, copyContent, cutFile, pasteFile, deleteFile);
+        contextMenuFile.getItems().addAll(copyFile, copyFileName, copyPathFile, copyRelPathFile, copyContent, cutFile, pasteFile, deleteFile);
 
         cut.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Cut...");
+            }
+        });
+        
+        // Copy file to clipboard.
+        // TODO: File is only available within our application!
+        copyFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false);
+                
+                final Clipboard clipboard = Clipboard.getSystemClipboard();
+                
+                final ClipboardContent content = new ClipboardContent();
+                ArrayList<File> fileList = new ArrayList<File>();
+                fileList.add(new File(path.toString()));
+                content.putFiles(fileList);
+                clipboard.setContent(content);
             }
         });
         copyFileName.setOnAction(new EventHandler<ActionEvent>() {
@@ -541,9 +562,12 @@ public class EditorController implements Initializable {
      * Copy @param string to system clipboard.
      */
     private void copyStringToClipboard(String string) {
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        StringSelection selection = new StringSelection(string);
-        clipboard.setContents(selection, selection);
+        ClipboardContent content = new ClipboardContent();
+        content.putString(string);
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        //StringSelection selection = new StringSelection(string);
+        //clipboard.setContents(selection, selection);
+        clipboard.setContent(content);
     }
 
     /**
