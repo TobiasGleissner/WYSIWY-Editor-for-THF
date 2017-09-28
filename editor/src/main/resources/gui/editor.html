@@ -325,20 +325,47 @@
             line_numbers.style.height = "" + editor.offsetHeight + "px";
 
             var elements = document.getElementsByClassName("new_line");
+            var height = window.innerHeight || document.documentElement.clientHeight;
 
-            for(var i = 0; i < elements.length; i++)
+            /* Don't recalculate them if they are more than 2 windows out of the screen. */
+
+            /* Search for the element with the smallest rect.top that is bigger than -height. */
+            var min = 0;
+            var max = elements.length;
+            var index;
+            do
+            {
+                index = ((max + min)/2) >> 0; /* Integer maths! */
+
+                if(min+1 >= max)
+                    break;
+
+                var element = elements.item(index);
+                var rect = element.getBoundingClientRect();
+
+                if(rect.top < -height)
+                {
+                    min = index;
+                }
+                else if(rect.top > -height)
+                {
+                    max = index;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            while(min != max);
+
+            /* Now iterate through the elements until the first one has a bottom that is further down than 2*height */;
+            for(var i = index; i < elements.length; i++)
             {
                 var element = elements.item(i);
 
                 var rect = element.getBoundingClientRect();
-
-                var height = window.innerHeight || document.documentElement.clientHeight;
-                /* Don't recalculate them if they are more than 2 windows out of the screen. */
-                if(
-                    rect.top    + height < 0 ||
-                    rect.bottom - height > height
-                )
-                    continue;
+                if(rect.bottom - height > height)
+                    break;
 
                 var top = rect.top - editor_rect.top;
 
