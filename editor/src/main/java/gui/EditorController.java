@@ -12,10 +12,6 @@ import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import java.awt.Toolkit;
-//import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-
 import java.util.Stack;
 import java.util.ResourceBundle;
 import java.util.Objects;
@@ -54,6 +50,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Tab;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -371,12 +368,13 @@ public class EditorController implements Initializable {
         });
 
         final ContextMenu contextMenu = new ContextMenu();
+        MenuItem newFile = new MenuItem("New file");
         MenuItem copyDirName = new MenuItem("Copy directory name");
         MenuItem copyPath = new MenuItem("Copy path to clipboard");
         MenuItem copyRelPath = new MenuItem("Copy relative path to clipboard");
         MenuItem cut = new MenuItem("Cut");
         MenuItem paste = new MenuItem("Paste");
-        contextMenu.getItems().addAll(copyDirName, copyPath, copyRelPath, cut, paste);
+        contextMenu.getItems().addAll(newFile, copyDirName, copyPath, copyRelPath, cut, paste);
 
         final ContextMenu contextMenuFile = new ContextMenu();
         MenuItem copyFile = new MenuItem("Copy");
@@ -389,6 +387,51 @@ public class EditorController implements Initializable {
         MenuItem deleteFile = new MenuItem("Delete");
         contextMenuFile.getItems().addAll(copyFile, copyFileName, copyPathFile, copyRelPathFile, copyContent, cutFile, pasteFile, deleteFile);
 
+        
+        newFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                
+                String error = "";
+                String name = null;
+                
+                while (true) {
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("New file");
+                    dialog.setHeaderText("New file name"+error);
+                    dialog.setContentText("Please enter the new file name:");
+                    
+                    Optional<String> result = dialog.showAndWait();
+                    if (!result.isPresent())
+                        break;
+                    name = result.get();
+                    if (name.equals("") || name == null) {
+                        error = "\n\nERROR: Please enter a file name!";
+                        System.out.println("A");
+                        continue;
+                    }
+                    if (name.contains("../") || name.contains("..\\")) {
+                        error = "\n\nERROR: Please enter a valid file name!";
+                        continue;
+                    }
+                    Path directory = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false);
+                    Path newFile = directory.resolve(name);
+                    File file = new File(newFile.toString());
+                    try {
+                        System.out.println(file.getPath().toString());
+                        if (file.createNewFile()) {
+                            break;
+                        } else {
+                            continue;
+                        }
+                    } catch (IOException e) {
+                        error = "\n\nA file with this name already exists or the file name is invalid";
+                        continue;
+                    }
+                }
+                // TODO: Refresh filebrowser
+            }
+        });
         cut.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -528,6 +571,9 @@ public class EditorController implements Initializable {
     private Path getPathToSelectedItem(TreeItem<FileWrapper> selectedItem, Boolean onlyLeavesAllowed, Boolean relativePath) {
         if ( selectedItem == null || onlyLeavesAllowed && !selectedItem.isLeaf()) {
             return null;
+        }
+        if (selectedItem.getParent() == null) {
+            return dir.toPath();
         }
         Path root;
         if (relativePath) {
