@@ -201,8 +201,8 @@ public class EditorModel
             {
                 Element nl = doc.createElement("subsection");
                 nl.setAttribute("class", "new_line");
-                nl.setAttribute("data-start", "" + startOffset + end);
-                nl.setAttribute("data-end", "" + startOffset + end);
+                nl.setAttribute("data-start", "" + (startOffset + end));
+                nl.setAttribute("data-end", "" + (startOffset + end));
                 parent.insertBefore(nl, sibling);
             }
         }
@@ -327,7 +327,7 @@ public class EditorModel
             {
                 node = new Node("not_parsed");
 
-                Element newNode = doc.createElement("section");
+                Element newNode = doc.createElement("subsection");
                 newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
                 newNode.setAttribute("class", "not_parsed");
                 newNode.setAttribute("data-start", "0");
@@ -348,7 +348,7 @@ public class EditorModel
             addSpanElements(node, spanElements);
             Collections.sort((List<SpanElement>) spanElements);
 
-            Element newNode = doc.createElement("section");
+            Element newNode = doc.createElement("subsection");
             newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
             newNode.setAttribute("class", "hm_node");
             newNode.setAttribute("data-start", "0");

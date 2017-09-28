@@ -22,6 +22,12 @@ html, body
     position: relative;
 }
 
+.new_line {
+    width: 1px;
+    height: 1em;
+    display: inline-block;
+}
+
 *:focus {
     outline: none;
 }
