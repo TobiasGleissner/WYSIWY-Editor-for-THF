@@ -332,11 +332,11 @@
 
                 var rect = element.getBoundingClientRect();
 
+                var height = window.innerHeight || document.documentElement.clientHeight;
+                /* Don't recalculate them if they are more than 2 windows out of the screen. */
                 if(
-                    rect.top < 0 ||
-                    rect.left < 0 ||
-                    rect.bottom > (window.innerHeight || document.documentElement.clientHeight) ||
-                    rect.right > (window.innerWidth || document.documentElement.clientWidth)
+                    rect.top    + height < 0 ||
+                    rect.bottom - height > height
                 )
                     continue;
 
