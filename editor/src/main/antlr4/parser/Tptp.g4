@@ -161,9 +161,9 @@ Distinct_object : '"' Do_char+ '"';
 
 // Comments
 
-WS : [ \r\t\n]+ -> skip;
 Line_comment : '%' ~[\r\n]* -> channel(1);
 Block_comment : '/*' .*? '*/' -> skip;
+WS : [ \r\t\n]+ -> skip;
 
 
 // %----Files. Empty file is OK.

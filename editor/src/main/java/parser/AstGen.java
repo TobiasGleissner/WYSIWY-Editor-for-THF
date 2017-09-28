@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class AstGen {
 
@@ -22,9 +23,11 @@ public class AstGen {
         parser.TptpLexer lexer = new parser.TptpLexer(inputStream);
         lexer.removeErrorListeners(); // only for production
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        CommonTokenStream comments = new CommonTokenStream(lexer,1);
         tokens.fill();
-        comments.fill();
+
+        // get all non-default channel tokens as list
+        List<Token> hiddenTokens = tokens.getHiddenTokensToRight(0);
+        if (hiddenTokens != null) hiddenTokens.forEach(System.out::println);
 
         parser.TptpParser parser = new parser.TptpParser(tokens);
         parser.removeErrorListeners(); // only for production
@@ -60,7 +63,7 @@ public class AstGen {
         walker.walk(treeListener, parserRuleContext);
 
         // misc
-        parseContext.setComments(comments.getTokens());
+        parseContext.setComments(hiddenTokens);
 
         // create and return ParseContext
         parseContext.setParserRuleContext(parserRuleContext);

@@ -18,6 +18,16 @@ public class ParseContext {
 
     public void setComments(List<Token> comments) {
         this.comments = comments;
+        /*
+        comments.stream().forEach(c->{
+            System.out.println("toString:"+c);
+            System.out.println("getLine:"+c.getLine());
+            System.out.println("getStartIndex:" + c.getStartIndex());
+            System.out.println("getStopIndex:" + c.getStopIndex());
+            System.out.println("getText:"+c.getText());
+            System.out.println("============================================");
+        });
+        */
     }
 
     private List<Token> comments;
