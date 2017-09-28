@@ -90,33 +90,63 @@
             }
         }
 
-        function get_range_as_text_offset(node, range)
+        function get_range_as_text_offset(tgt_node, range)
         {
-            var node = range.startContainer;
+            var search_node = range.startContainer;
 
             var offset = range.startOffset;
+
+            /* Sum up all text nodes until the first non-text (annotated) one. */
             var prev_node = null;
-            while(node && node.nodeType == 3)
+            while(search_node && search_node.nodeType == 3)
             {
                 /* Not for the first node. We use startOffset for text nodes. */
                 if(prev_node)
-                    offset += node.textContent.length;
-                prev_node = node;
-                node = node.previousSibling;
+                    offset += search_node.textContent.length;
+                prev_node = search_node;
+                search_node = search_node.previousSibling;
             }
 
-            if(node)
+            if(search_node)
             {
-                // java.debug("0");
-                offset += parseInt(node.getAttribute("data-end"));
+                /* If we found a non-text node (annotated!)  on the same level we can use its data-end annotation to calculate our offset. */
+                offset += parseInt(search_node.getAttribute("data-end"));
             }
             else
             {
-                // java.debug("1");
-                offset += parseInt(prev_node.parentNode.getAttribute("data-start"));
+                /* Otherwise we can use the parent's (annotated!) data-start annotation. */
+                search_node = prev_node.parentNode;
+                offset += parseInt(search_node.getAttribute("data-start"));
             }
 
-            // java.debug("offset = " + offset);
+            /* Now we need to find the offset from tgt_node to our parent hm_node. */
+
+            /* First we find our parent hm_node. */
+            while(
+                search_node &&
+                (
+                    !search_node.getAttribute('id') ||
+                    !search_node.getAttribute('id').startsWith('hm_node_')
+                )
+            )
+            {
+                search_node = search_node.parentElement;
+            }
+
+            /* No containing hm_node_*. We must be the first text element in editor. */
+            if(!search_node)
+                return offset;
+
+            /* And sum up all lengths until our target node. */
+            while(search_node && !search_node.isSameNode(tgt_node))
+            {
+                search_node = search_node.previousSibling;
+                if(search_node)
+                {
+                    offset += parseInt(search_node.getAttribute("data-end"));
+                }
+            }
+
             return offset;
         }
 
