@@ -23,7 +23,7 @@ html, body
 }
 
 .new_line {
-    width: 1px;
+    width: 0px;
     height: 1em;
     display: inline-block;
 }
