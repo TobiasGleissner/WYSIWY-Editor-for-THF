@@ -137,12 +137,13 @@ public class SystemOnTPTPProver implements Prover {
         return allProvers.get(prover).subDialects;
     }
 
-    public void addProver(String proverName, String command, List<TPTPDefinitions.TPTPSubDialect> subDialectList, boolean override) throws NameAlreadyInUseException {
+    public void addProver(String proverName, String command, String systemOnTPTPName, List<TPTPDefinitions.TPTPSubDialect> subDialectList, boolean override) throws NameAlreadyInUseException {
         if (!override && getAllCustomProverNames().contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + getCustomProverCommand(proverName));
         ProverConfiguration pc = new ProverConfiguration();
         pc.proverName = proverName;
         pc.proverCommand = command;
         pc.subDialects = subDialectList;
+        pc.remoteName = systemOnTPTPName;
         allProvers.put(proverName,pc);
         allProversListed.add(pc);
         for (TPTPDefinitions.TPTPSubDialect sd : subDialectList){
@@ -151,13 +152,14 @@ public class SystemOnTPTPProver implements Prover {
         Config.setCustomRemoteProvers(allProversListed);
     }
 
-    public void updateProver(String oldProverName, String newProverName, String command, List<TPTPDefinitions.TPTPSubDialect> subDialectList) throws ProverNotAvailableException {
+    public void updateProver(String oldProverName, String newProverName, String command, String systemOnTPTPName, List<TPTPDefinitions.TPTPSubDialect> subDialectList) throws ProverNotAvailableException {
         if (!getAllCustomProverNames().contains(oldProverName)) throw new ProverNotAvailableException("The prover with name='" + oldProverName + "' does not exist.");
         ProverConfiguration pc = allProvers.get(oldProverName);
         for (TPTPDefinitions.TPTPSubDialect sd : pc.subDialects) availableCustomProvers.get(sd).remove(pc);
         pc.proverName = newProverName;
         pc.proverCommand = command;
         pc.subDialects = subDialectList;
+        pc.remoteName = systemOnTPTPName;
         allProvers.remove(oldProverName);
         allProvers.put(newProverName,pc);
         for (TPTPDefinitions.TPTPSubDialect sd : subDialectList) availableCustomProvers.get(sd).add(pc);
@@ -168,6 +170,7 @@ public class SystemOnTPTPProver implements Prover {
         if (!getAllCustomProverNames().contains(proverName)) throw new ProverNotAvailableException("prover not available");
         Config.removePreference("remoteProverName" + (allProvers.size()-1));
         Config.removePreference("remoteProverCommand" + (allProvers.size()-1));
+        Config.removePreference("remoteProverSystemOnTPTPName" + (allProvers.size()-1));
         Config.removePreference("remoteProverSubDialects" + (allProvers.size()-1));
         for (TPTPDefinitions.TPTPSubDialect sd : allProvers.get(proverName).subDialects){
             availableCustomProvers.get(sd).remove(allProvers.get(proverName));
