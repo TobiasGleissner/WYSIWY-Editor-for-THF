@@ -5,6 +5,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import prover.ProveResult;
+import prover.ProvingEntry;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -19,7 +20,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 public class Logging {
-    public enum LogLevel{DEBUG,PROVER,FINE,INFO,WARNING,SEVERE}
+    public enum LogLevel{DEBUG,PROVER,FINE,INFO,WARNING,ERROR}
     private static Logging instance;
     private Node tableNode;
     private Document doc;
@@ -49,11 +50,16 @@ public class Logging {
 
     public void log(String msg,LogLevel logLevel){
         tableNode.appendChild(createRecord(msg,logLevel));
-        //printHtml();
     }
 
-    public void prover(ProveResult pr){
+    public void prover(ProvingEntry p){
+        // TODO
+        this.prover(p.proveResult);
+    }
 
+    public void prover(ProveResult p){
+        // TODO
+        this.prover(p.toString());
     }
 
     public void prover(String msg){
@@ -76,8 +82,8 @@ public class Logging {
         log(msg,LogLevel.WARNING);
     }
 
-    public void severe(String msg){
-        log(msg,LogLevel.SEVERE);
+    public void error(String msg){
+        log(msg,LogLevel.ERROR);
     }
 
     private Node createRecord(String msg, LogLevel logLevel){
