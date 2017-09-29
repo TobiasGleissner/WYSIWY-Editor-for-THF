@@ -720,6 +720,10 @@ public class EditorController implements Initializable {
         }
     }
     
+    /**
+     * Copy file from clipboard to the selected position in the file browser.
+     * @param selectedItemIsDirectory
+     */
     private void copyFile(boolean selectedItemIsDirectory) {
         final Clipboard clipboard = Clipboard.getSystemClipboard();
         List<File> files = clipboard.getFiles();
@@ -742,6 +746,8 @@ public class EditorController implements Initializable {
         
         for (File file : files) {
             try {
+                if (file.isDirectory())
+                    continue;
                 File destination = new File (f.toPath().resolve(file.getName()).toString());
                 if (destination.exists() && !destination.isDirectory()) {
                     String error = "";
