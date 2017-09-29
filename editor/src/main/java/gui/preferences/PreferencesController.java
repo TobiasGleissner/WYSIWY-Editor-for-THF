@@ -5,6 +5,7 @@ import exceptions.ProverNotAvailableException;
 import exceptions.ProverResultNotInterpretableException;
 import gui.Logging;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -35,7 +36,7 @@ public class PreferencesController implements Initializable {
     @FXML public Label nameTakenWarning;
     @FXML public TextField proverNameTextField;
     @FXML public TextField proverCommandTextField;
-    @FXML public TextField proverSystemOnTPTPNameTextField;
+    @FXML public ComboBox<String> proverSystemOnTPTPNameComboBox;
     @FXML public Label proverSystemOnTPTPNameLabel;
     @FXML public TreeView<String> proverTree;
     @FXML public ListView<String> subDialectListView;
@@ -85,7 +86,7 @@ public class PreferencesController implements Initializable {
 
         // misc
         nameTakenWarning.setVisible(false);
-        proverSystemOnTPTPNameTextField.setVisible(false);
+        proverSystemOnTPTPNameComboBox.setVisible(false);
         proverSystemOnTPTPNameLabel.setVisible(false);
 
         // double click on tree item
@@ -145,7 +146,7 @@ public class PreferencesController implements Initializable {
         proverNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (currentProver == null) {
                 nameTakenWarning.setVisible(false);
-            } else if (currentProver != null && currentProver.equals(newValue))
+            } else if (currentProver.equals(newValue))
                 nameTakenWarning.setVisible(false);
             else {
                 if (currentItem.getParent().equals(rootLocalProvers)){
@@ -160,6 +161,11 @@ public class PreferencesController implements Initializable {
                 }
             }
         });
+
+        // remote prover combobox
+        ObservableList<String> ol = FXCollections.observableArrayList(rp.getAvailableDefaultProvers());
+        Collections.sort(ol);
+        proverSystemOnTPTPNameComboBox.setItems(ol);
     }
 
     private void updateLocalProversTree(){
@@ -184,13 +190,14 @@ public class PreferencesController implements Initializable {
         if (currentItem.getParent().equals(rootLocalProvers)) {
             proverCmd = lp.getProverCommand(prover);
             lp.getProverSubDialects(currentProver).forEach(sd -> subDialectListView.getSelectionModel().select(sd.name()));
-            proverSystemOnTPTPNameTextField.setVisible(false);
+            proverSystemOnTPTPNameComboBox.setVisible(false);
             proverSystemOnTPTPNameLabel.setVisible(false);
         }
         else if (currentItem.getParent().equals(rootRemoteProvers)) {
             proverCmd = rp.getCustomProverCommand(prover);
             rp.getCustomProverSubDialects(currentProver).forEach(sd -> subDialectListView.getSelectionModel().select(sd.name()));
-            proverSystemOnTPTPNameTextField.setVisible(true);
+            proverSystemOnTPTPNameComboBox.setVisible(true);
+            proverSystemOnTPTPNameComboBox.getSelectionModel().select(rp.getCustomProverSystemOnTPTPName(prover));
             proverSystemOnTPTPNameLabel.setVisible(true);
         }
         proverCommandTextField.setText(proverCmd);
@@ -245,7 +252,7 @@ public class PreferencesController implements Initializable {
                 return;
             }
             try {
-                String systemOnTPTPName = proverSystemOnTPTPNameTextField.getText();
+                String systemOnTPTPName = proverSystemOnTPTPNameComboBox.getValue();
                 rp.updateProver(currentProver, proverName, proverCommand, systemOnTPTPName, getSelectedTPTPSubDialects());
                 dialectString = String.join(",", rp.getCustomProverSubDialects(proverName).stream()
                         .map(Enum::name)
@@ -278,20 +285,16 @@ public class PreferencesController implements Initializable {
         if (currentProver != null){
             String proverCommand = proverCommandTextField.getText();
             if (currentItem.getParent().equals(rootLocalProvers)) {
-                System.out.println("LOCAL!");
                 try {
                     ProveResult pr = lp.testLocalProver(proverCommand);
-                    System.out.println(pr.stdout);
                     log.info("Prover command working. Command='" + proverCommand + "'.");
                 } catch (ProverNotAvailableException | IOException | ProverResultNotInterpretableException e) {
                     log.warning("Prover command not working. Command='" + proverCommand + "'.");
                 }
             } else if (currentItem.getParent().equals(rootRemoteProvers)) {
-                System.out.println("REMOTE!");
                 try {
-                    String systemOnTPTPName = proverSystemOnTPTPNameTextField.getText();
+                    String systemOnTPTPName = proverSystemOnTPTPNameComboBox.getValue();
                     ProveResult pr = rp.testRemoteProver(systemOnTPTPName,proverCommand);
-                    System.out.println(pr.stdout);
                     log.info("Prover command working. Command='" + proverCommand + "'.");
                 } catch (ProverNotAvailableException | IOException | ProverResultNotInterpretableException e) {
                     log.warning("Prover command not working. Command='" + proverCommand + "'.");
@@ -324,12 +327,18 @@ public class PreferencesController implements Initializable {
     public void onNewRemoteProver(ActionEvent actionEvent) {
         String proverName = "unnamed_" + RandomString.getRandomString();
         while (rp.getAllCustomProverNames().contains(proverName)) proverName = "unnamed_" + RandomString.getRandomString();
-        currentProver = proverName;
+        if (rp.getAvailableDefaultProvers().size() == 0) {
+            log.error("Could not connect to SystemOnTPTP. Please restart the application for the use of SystemOnTPTP provers.");
+            return;
+        }
         try {
-            rp.addProver(proverName,"","",new ArrayList<>(),true);
+            proverSystemOnTPTPNameComboBox.setValue("asd");
+            String systemOnTPTPName = proverSystemOnTPTPNameComboBox.getValue();
+            rp.addProver(proverName,"",systemOnTPTPName,new ArrayList<>(),true);
         } catch (NameAlreadyInUseException e) {
             // does not happen due to while loop
         }
+        currentProver = proverName;
         currentItem = new TreeItem<>(proverName);
         rootRemoteProvers.getChildren().add(currentItem);
         proverTree.getSelectionModel().select(currentItem);
@@ -363,8 +372,7 @@ public class PreferencesController implements Initializable {
                     .collect(Collectors.toList()));
             try {
                 rp.removeProver(currentProver);
-                proverSystemOnTPTPNameTextField.setText("");
-                proverSystemOnTPTPNameTextField.setVisible(false);
+                proverSystemOnTPTPNameComboBox.setVisible(false);
                 proverSystemOnTPTPNameLabel.setVisible(false);
             } catch (ProverNotAvailableException e) {
                 // does not happen

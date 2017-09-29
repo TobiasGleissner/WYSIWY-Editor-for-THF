@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SystemOnTPTPProver implements Prover {
+public class SystemOnTPTPProver {
     private Map<TPTPDefinitions.TPTPSubDialect,List<ProverConfiguration>> availableCustomProvers;
     private Map<String,ProverConfiguration> allProvers;
     private List<ProverConfiguration> allProversListed;
@@ -85,38 +85,38 @@ public class SystemOnTPTPProver implements Prover {
     public List<String> getAvailableCustomProvers(List<TPTPDefinitions.TPTPSubDialect> subDialectList){
         List<String> provers = new ArrayList<>();
         for (TPTPDefinitions.TPTPSubDialect d : subDialectList){
-            provers.addAll(getAvailableProvers(d));
+            provers.addAll(getAvailableDefaultProvers(d));
         }
         return provers;
     }
 
     /**
-     * Retrieves a list of available remote provers of a certain TPTP dialect.
+     * Retrieves a list of available remote default provers of a certain TPTP dialect.
      * @param dialect
      * @return SystemOnTPTP provers for the specified dialect as a list of strings
      */
-    public List<String> getAvailableProvers(TPTPDefinitions.TPTPDialect dialect){
-        return getAvailableProvers(TPTPDefinitions.getTPTPSubDialectsFromTPTPDialect(dialect));
+    public List<String> getAvailableDefaultProvers(TPTPDefinitions.TPTPDialect dialect){
+        return getAvailableDefaultProvers(TPTPDefinitions.getTPTPSubDialectsFromTPTPDialect(dialect));
     }
 
     /**
-     * Retrieves a list of available remote provers of a certain TPTP subDialect.
+     * Retrieves a list of available remote default provers of a certain TPTP subDialect.
      * @param subDialect
      * @return SystemOnTPTP provers for the specified sub-dialect as a list of strings
      */
-    public List<String> getAvailableProvers(TPTPDefinitions.TPTPSubDialect subDialect){
+    public List<String> getAvailableDefaultProvers(TPTPDefinitions.TPTPSubDialect subDialect){
         return availableDefaultProvers.get(subDialect);
     }
 
     /**
-     * Retrieves a list of available remote provers of certain TPTP subDialects.
+     * Retrieves a list of available remote default provers of certain TPTP subDialects.
      * @param subDialectList
      * @return SystemOnTPTP provers for the specified sub-dialects as a list of strings
      */
-    public List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subDialectList){
+    public List<String> getAvailableDefaultProvers(List<TPTPDefinitions.TPTPSubDialect> subDialectList){
         List<String> provers = new ArrayList<>();
         for (TPTPDefinitions.TPTPSubDialect d : subDialectList){
-            provers.addAll(getAvailableProvers(d));
+            provers.addAll(getAvailableDefaultProvers(d));
         }
         return provers;
     }
@@ -129,8 +129,18 @@ public class SystemOnTPTPProver implements Prover {
         return allProversListed.stream().map(c->c.proverName).collect(Collectors.toList());
     }
 
+    public List<String> getAvailableDefaultProvers(){
+        Set<String> ret = new HashSet<>();
+        availableDefaultProvers.keySet().forEach(k->availableDefaultProvers.get(k).forEach(ret::add));
+        return new ArrayList<>(ret);
+    }
+
     public String getCustomProverCommand(String prover){
         return allProvers.get(prover).proverCommand;
+    }
+
+    public String getCustomProverSystemOnTPTPName(String prover){
+        return allProvers.get(prover).remoteName;
     }
 
     public List<TPTPDefinitions.TPTPSubDialect> getCustomProverSubDialects(String prover){
@@ -238,10 +248,9 @@ public class SystemOnTPTPProver implements Prover {
             nextWhitespace = cpuString.indexOf(" ");
             cpuString = cpuString.substring(0,nextWhitespace);
             double elapsedTime = Double.parseDouble(cpuString);
-            return new ProveResult(problem, ProverType.SYSTEMONTPTP_PROVER, prover, r, "",status, elapsedTime, timeLimit);
+            return new ProveResult(problem, Prover.ProverType.SYSTEMONTPTP_PROVER, prover, r, "",status, elapsedTime, timeLimit);
         }
         catch (Exception e){
-            System.out.println(r);
             throw new ProverResultNotInterpretableException(e.toString(),r);
         }
     }

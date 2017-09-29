@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class LocalProver implements Prover {
+public class LocalProver {
     private Map<TPTPDefinitions.TPTPSubDialect,List<ProverConfiguration>> availableProvers;
     private Map<String,ProverConfiguration> allProvers;
     private List<ProverConfiguration> allProversListed;
@@ -188,7 +188,6 @@ public class LocalProver implements Prover {
         if (stdout.contains("Usage:")) throw new ProverNotAvailableException("Prover could not be started");
 
         TPTPDefinitions.SZSDeductiveStatus status = parseSZSStatus(stdout);
-        System.out.println(stdout);
         double elapsedTime = parseWC(stdout);
         ProveResult ret = new ProveResult();
         ret.elapsedTime = elapsedTime;
@@ -208,11 +207,10 @@ public class LocalProver implements Prover {
      * @throws ProverNotAvailableException prover command does not exist or does not work
      * @throws ProverResultNotInterpretableException the return result of the local prover could not be interpreted
      */
-    @Override
     public ProveResult prove(String problem, String prover, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
         String cmdProver = getProverCommand(prover);
         ProveResult r = proveHelper(problem,cmdProver,timeLimit);
-        return new ProveResult(problem, ProverType.LOCAL_PROVER, prover, r.stdout, r.stderr, r.status, r.elapsedTime, timeLimit);
+        return new ProveResult(problem, Prover.ProverType.LOCAL_PROVER, prover, r.stdout, r.stderr, r.status, r.elapsedTime, timeLimit);
     }
 
     private double parseCPU(String s){

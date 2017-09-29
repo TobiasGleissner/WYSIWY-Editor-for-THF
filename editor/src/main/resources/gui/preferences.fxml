@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ComboBox?>
 <AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.preferences.PreferencesController">
    <children>
       <TabPane prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE">
@@ -34,7 +35,7 @@
                                  <Label layoutX="484.0" layoutY="123.0" text="Indicate filename with %s and timeout with %d" />
 
                                  <Label fx:id="proverSystemOnTPTPNameLabel" layoutX="363.0" layoutY="170.0" text="SystemOnTPTP Name:" />
-                                 <TextField fx:id="proverSystemOnTPTPNameTextField" layoutX="484.0" layoutY="170.0" prefHeight="30.0" prefWidth="303.0" />
+                                 <ComboBox fx:id="proverSystemOnTPTPNameComboBox" layoutX="484.0" layoutY="170.0" prefHeight="30.0" prefWidth="303.0" />
 
                                  <Button fx:id="newLocalProverButton" layoutX="10.0" layoutY="20.0" mnemonicParsing="false" onAction="#onNewLocalProver" text="New local prover" />
                                  <Button fx:id="newRemoteProverButton" layoutX="10.0" layoutY="60.0" mnemonicParsing="false" onAction="#onNewRemoteProver" text="New remote prover" />

@@ -943,7 +943,7 @@ public class EditorController implements Initializable {
     private void addCurrentlyAvailableProversToMenus() {
         try {
             List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
-            List<String> availableProversRemote = SystemOnTPTPProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
+            List<String> availableProversRemote = SystemOnTPTPProver.getInstance().getAvailableDefaultProvers(TPTPDefinitions.TPTPDialect.THF);
             ToggleGroup menubarProvers = new ToggleGroup();
             // addDocument list of local provers to menubar
             MenuItem labelForLocalProvers = new MenuItem("Local provers");
