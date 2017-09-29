@@ -516,10 +516,38 @@ public class EditorController implements Initializable {
                 
                 for (File file : files) {
                     try {
-                        //TODO: Check if file already exists!
-                        Files.copy(file.toPath(), f.toPath().resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
-                        FileTreeItem item = new FileTreeItem(new FileWrapper(file));
-                        item.setGraphic(item.getIconNodeByFile(file));
+                        File destination = new File (f.toPath().resolve(file.getName()).toString());
+                        while (destination.exists() && !destination.isDirectory()) {
+                            String error = "";
+                            String name = file.getName();
+                            while (true) {
+                                TextInputDialog dialog = new TextInputDialog(name);
+                                dialog.setTitle("Copy file");
+                                dialog.setHeaderText("Copy file"+error);
+                                dialog.setContentText("The file "+name+" already exists. Please enter a new file name:");
+                                
+                                Optional<String> result = dialog.showAndWait();
+                                if (!result.isPresent())
+                                    return;
+                                name = result.get();
+                                if (name.equals("") || name == null) {
+                                    error = "\n\nERROR: Please enter a file name!";
+                                    System.out.println("A");
+                                    continue;
+                                }
+                                if (name.contains("../") || name.contains("..\\")) {
+                                    error = "\n\nERROR: Please enter a valid file name!";
+                                    continue;
+                                }
+                                destination = new File(f.toPath().resolve(name).toString());
+                                break;
+                            }
+                            
+                        }
+                        
+                        Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        FileTreeItem item = new FileTreeItem(new FileWrapper(destination));
+                        item.setGraphic(item.getIconNodeByFile(destination));
                         fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
                     } catch (IOException e) {
                         Alert alert = new Alert(AlertType.ERROR);
