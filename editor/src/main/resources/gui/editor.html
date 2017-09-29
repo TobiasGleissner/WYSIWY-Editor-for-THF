@@ -213,8 +213,9 @@
             var start_node = Infinity;
             var end_node = -Infinity;
 
-            for(range in parse_ranges)
+            for(var i = 0; i < parse_ranges.length; ++i)
             {
+                var range = parse_ranges[i];
                 ids = get_range_start_end(range);
                 range.detach();
 
