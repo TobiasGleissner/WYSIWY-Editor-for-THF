@@ -253,68 +253,56 @@
 
                 if(node.nodeType == 3)
                 {
-                    if(range.startOffset-1 != 0)
+                    if(range.startOffset > 1)
                         is_first = false;
-                    if(range.endOffset-1 == node.textContent.length-1)
+                    if(range.endOffset < node.textContent.length-1)
                         is_last = false;
+                }
+                else
+                {
+                    /* For determining is_first and is_last in the next
+                       part we need to start with the pointed-to child note
+                       instead of the container. */
+                    if(i == 0)
+                        node = node.childNodes.item(range.startOffset);
+                    else
+                        node = node.childNodes.item(range.endOffset);
+                }
 
-                    node = node.parentElement;
-                };
-
-                var prev_node = node;
-                /* Find the parent hm_node_ _OR_ go all the way back up to the
-                 * editor node. */
+                var prev_node = null;
+                var is_prev_first = is_first;
+                var is_prev_last  = is_last;
+                /* Find the node one before the editor node. */
                 while(
+                    node.nodeType != 1 ||
                     !node.getAttribute('id') ||
-                    (
-                        !node.getAttribute('id').toLowerCase() == "editor" &&
-                        !node.getAttribute('id').startsWith('hm_node_')
-                    )
+                    node.getAttribute('id').toLowerCase() != "editor"
                 )
                 {
+                    is_prev_first = is_first;
+                    is_prev_last  = is_last;
+
                     if(node.previousSibling)
                         is_first = false;
                     if(node.nextSibling)
                         is_last = false;
 
                     prev_node = node;
-                    node = node.parentElement;
+                    node = node.parentNode;
                 }
 
+                node = prev_node;
+                is_first = is_prev_first;
+                is_last = is_prev_last;
 
-                if(node.getAttribute('id').toLowerCase() == "editor")
+                /* We found only the editor node. */
+                if(!node)
                 {
-                    /* Start with our parent one below the editor node. */
-                    node = prev_node;
-
-                    while(
-                        node.nodeType != 1 ||
-                        !node.getAttribute('id') ||
-                        !node.getAttribute('id').startsWith('hm_node_')
-                    )
-                    {
-                        if(i == 0)
-                            node = node.previousSibling;
-                        else
-                            node = node.nextSibling;
-
-                        /* If we didn't find any we need to start to reparse
-                         * from the edges. */
-                        if(!node)
-                            break;
-                    }
-
-                    /* If we know we need to reparse from the edges we already
-                       found our bounds. */
-                    if(!node)
-                    {
-                        if(i == 0)
-                            start_node = -1;
-                        else
-                            end_node = -1;
-
-                        break;
-                    }
+                    if(i == 0)
+                        start_node = -1;
+                    else
+                        end_node = -1;
+                    continue;
                 }
 
                 if(is_first && i == 0)
