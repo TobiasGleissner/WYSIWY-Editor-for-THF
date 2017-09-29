@@ -150,11 +150,11 @@ public class PreferencesController implements Initializable {
                 nameTakenWarning.setVisible(false);
             else {
                 if (currentItem.getParent().equals(rootLocalProvers)){
-                    if (lp.getAllProverNames().contains(newValue))
+                    if (lp.getAvailableProvers().contains(newValue))
                         nameTakenWarning.setVisible(true);
                 }
                 else if (currentItem.getParent().equals(rootRemoteProvers)){
-                    if (rp.getAllCustomProverNames().contains(newValue))
+                    if (rp.getAvailableCustomProvers().contains(newValue))
                         nameTakenWarning.setVisible(true);
                 } else {
                     nameTakenWarning.setVisible(false);
@@ -163,20 +163,22 @@ public class PreferencesController implements Initializable {
         });
 
         // remote prover combobox
-        ObservableList<String> ol = FXCollections.observableArrayList(rp.getAvailableDefaultProvers());
-        Collections.sort(ol);
+        List<String> l = rp.getAvailableDefaultProvers().stream()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
+        ObservableList<String> ol = FXCollections.observableArrayList(l);
         proverSystemOnTPTPNameComboBox.setItems(ol);
     }
 
     private void updateLocalProversTree(){
         rootLocalProvers.getChildren().removeAll(rootLocalProvers.getChildren());
-        List<String> proverList = lp.getAllProverNames();
+        List<String> proverList = lp.getAvailableProvers();
         for (String p : proverList){
             rootLocalProvers.getChildren().add(new TreeItem<>(p));
         }
         rootLocalProvers.setExpanded(true);
         rootRemoteProvers.getChildren().removeAll(rootRemoteProvers.getChildren());
-        List<String> proverList2 = rp.getAllCustomProverNames();
+        List<String> proverList2 = rp.getAvailableCustomProvers();
         for (String p : proverList2){
             rootRemoteProvers.getChildren().add(new TreeItem<>(p));
         }
@@ -234,7 +236,7 @@ public class PreferencesController implements Initializable {
         String proverCommand = proverCommandTextField.getText();
         String dialectString = null;
         if (currentItem.getParent().equals(rootLocalProvers)) {
-            if (lp.getAllProverNames().contains(proverName) && !currentProver.equals(proverName)) {
+            if (lp.getAvailableProvers().contains(proverName) && !currentProver.equals(proverName)) {
                 log.warning("Could not apply: A local prover with name='" + proverName + "' already exists.");
                 return;
             }
@@ -247,7 +249,7 @@ public class PreferencesController implements Initializable {
                 // does not happen
             }
         } else if (currentItem.getParent().equals(rootRemoteProvers)){
-            if (rp.getAllCustomProverNames().contains(proverName) && !currentProver.equals(proverName)) {
+            if (rp.getAvailableCustomProvers().contains(proverName) && !currentProver.equals(proverName)) {
                 log.warning("Could not apply: A remote prover with name='" + proverName + "' already exists.");
                 return;
             }
@@ -309,7 +311,7 @@ public class PreferencesController implements Initializable {
     @FXML
     public void onNewLocalProver(ActionEvent actionEvent) {
         String proverName = "unnamed_" + RandomString.getRandomString();
-        while (lp.getAllProverNames().contains(proverName)) proverName = "unnamed_" + RandomString.getRandomString();
+        while (lp.getAvailableProvers().contains(proverName)) proverName = "unnamed_" + RandomString.getRandomString();
         currentProver = proverName;
         try {
             lp.addProver(proverName,"",new ArrayList<>(),true);
@@ -326,7 +328,7 @@ public class PreferencesController implements Initializable {
     @FXML
     public void onNewRemoteProver(ActionEvent actionEvent) {
         String proverName = "unnamed_" + RandomString.getRandomString();
-        while (rp.getAllCustomProverNames().contains(proverName)) proverName = "unnamed_" + RandomString.getRandomString();
+        while (rp.getAvailableCustomProvers().contains(proverName)) proverName = "unnamed_" + RandomString.getRandomString();
         if (rp.getAvailableDefaultProvers().size() == 0) {
             log.error("Could not connect to SystemOnTPTP. Please restart the application for the use of SystemOnTPTP provers.");
             return;

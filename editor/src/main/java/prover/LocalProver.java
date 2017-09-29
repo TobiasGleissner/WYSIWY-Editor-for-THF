@@ -90,7 +90,7 @@ public class LocalProver {
      *
      * @return A list of all local prover names supporting any TPTPSubDialect
      */
-    public List<String> getAllProverNames(){
+    public List<String> getAvailableProvers(){
         return allProversListed.stream().map(c->c.proverName).collect(Collectors.toList());
     }
 
@@ -103,7 +103,7 @@ public class LocalProver {
     }
 
     public void addProver(String proverName, String command, List<TPTPDefinitions.TPTPSubDialect> subDialectList, boolean override) throws NameAlreadyInUseException {
-        if (!override && getAllProverNames().contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + getProverCommand(proverName));
+        if (!override && getAvailableProvers().contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + getProverCommand(proverName));
         ProverConfiguration pc = new ProverConfiguration();
         pc.proverName = proverName;
         pc.proverCommand = command;
@@ -117,7 +117,7 @@ public class LocalProver {
     }
 
     public void updateProver(String oldProverName, String newProverName, String command, List<TPTPDefinitions.TPTPSubDialect> subDialectList) throws ProverNotAvailableException {
-        if (!getAllProverNames().contains(oldProverName)) throw new ProverNotAvailableException("The prover with name='" + oldProverName + "' does not exist.");
+        if (!getAvailableProvers().contains(oldProverName)) throw new ProverNotAvailableException("The prover with name='" + oldProverName + "' does not exist.");
         ProverConfiguration pc = allProvers.get(oldProverName);
         for (TPTPDefinitions.TPTPSubDialect sd : pc.subDialects) availableProvers.get(sd).remove(pc);
         pc.proverName = newProverName;
@@ -130,7 +130,7 @@ public class LocalProver {
     }
 
     public void removeProver(String proverName) throws ProverNotAvailableException {
-        if (!getAllProverNames().contains(proverName)) throw new ProverNotAvailableException("prover not available");
+        if (!getAvailableProvers().contains(proverName)) throw new ProverNotAvailableException("prover not available");
         Config.removePreference("localProverName" + (allProvers.size()-1));
         Config.removePreference("localProverCommand" + (allProvers.size()-1));
         Config.removePreference("localProverSubDialects" + (allProvers.size()-1));
