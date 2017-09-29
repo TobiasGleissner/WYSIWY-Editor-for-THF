@@ -291,8 +291,6 @@ public class EditorModel
      */
     public int reparseArea(int leftNodeId, int rightNodeId)
     {
-        int ret = -1;
-
         org.w3c.dom.Node sibling = null;
         org.w3c.dom.Node editor = doc.getElementById("editor");
 
@@ -317,7 +315,7 @@ public class EditorModel
         }
 
         String text = content.toString();
-        return reparseString(text, parent, sibling);
+        return reparseString(text, editor, sibling, isFirst);
     }
 
     /**
@@ -330,10 +328,15 @@ public class EditorModel
      * @param sibling   The child node before which the results are
      *                  inserted. If this is null the results are inserted
      *                  at the end.
+     * @param isFirst   Whether this if the first entry of the file. If
+     *                  true a newline marker is inserted at the beginning
+     *                  of the first line.
      * @return          The ID of the first inserted node.
      */
-    public int reparseString(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling)
+    public int reparseString(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, boolean isFirst)
     {
+        int ret = -1;
+
         /* NOTE: We hardcode knowledge of the grammar here. This is ugly
         and may fail at any point. I'm sorry. :/ This is also incorrect
         because it fixes errors occuring during parsing before this. But
@@ -422,7 +425,7 @@ public class EditorModel
                 insertNewTextNode(part, newNode, 0, isFirst);
                 if(isFirst) isFirst = false;
 
-                editor.insertBefore(newNode, sibling);
+                parent.insertBefore(newNode, sibling);
 
                 continue;
             }
@@ -507,7 +510,7 @@ public class EditorModel
             insertNewTextNode(builder.toString(), newNode, lastParsedToken, isFirst);
             if(isFirst) isFirst = false;
             builder.delete(0, builder.length());
-            editor.insertBefore(newNode, sibling);
+            parent.insertBefore(newNode, sibling);
         }
 
         return ret;
