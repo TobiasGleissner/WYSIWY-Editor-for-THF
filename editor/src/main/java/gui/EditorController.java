@@ -8,10 +8,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.StringWriter;
-
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+import java.nio.file.StandardCopyOption;
 import java.util.Stack;
 import java.util.ResourceBundle;
 import java.util.Objects;
@@ -498,6 +498,42 @@ public class EditorController implements Initializable {
             }
         });
         
+        pasteFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                final Clipboard clipboard = Clipboard.getSystemClipboard();
+                List<File> files = clipboard.getFiles();
+                if (files == null || files.size() == 0) {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("No file to paste");
+                    alert.setHeaderText("No file to paste");
+                    alert.setContentText("There is no file in the clipboard!");
+                    alert.showAndWait();
+                    return;
+                }
+                
+                File f = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem().getParent(), false, false).toString());
+                
+                for (File file : files) {
+                    try {
+                        //TODO: Check if file already exists!
+                        Files.copy(file.toPath(), f.toPath().resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
+                        FileTreeItem item = new FileTreeItem(new FileWrapper(file));
+                        item.setGraphic(item.getIconNodeByFile(file));
+                        fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
+                    } catch (IOException e) {
+                        Alert alert = new Alert(AlertType.ERROR);
+                        alert.setTitle("ERROR");
+                        alert.setHeaderText("Error");
+                        alert.setContentText("There was an error pasting the file "+file.getName()+"!");
+                        alert.showAndWait();
+                    } finally {
+                        ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem().getParent()).sortChildren(false);
+                    }
+                }
+            }
+        });
+        
         // Copy file to clipboard.
         // TODO: File is only available within our application!
         copyFile.setOnAction(new EventHandler<ActionEvent>() {
@@ -593,7 +629,9 @@ public class EditorController implements Initializable {
         });
 
         fileBrowser.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
-            if (fileBrowser.getSelectionModel().getSelectedItem().isLeaf()) {
+            if (fileBrowser.getSelectionModel().getSelectedItem() == null) {
+                // Do nothing if nothing is selected.
+            } else if (fileBrowser.getSelectionModel().getSelectedItem().isLeaf()) {
                 contextMenuFile.show(fileBrowser, event.getScreenX(), event.getScreenY());
             }
             else {
