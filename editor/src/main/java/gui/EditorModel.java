@@ -253,7 +253,10 @@ public class EditorModel
 
         String text = content.toString();
 
-        /* NOTE: We hardcode knowledge of the grammar here. This is ugly and may fail at any point. I'm sorry. :/ */
+        /* NOTE: We hardcode knowledge of the grammar here. This is ugly
+        and may fail at any point. I'm sorry. :/ This is also incorrect
+        because it fixes errors occuring during parsing before this. But
+        it should be fine for an editor. */
         Pattern pattern = Pattern.compile("(\\A|\\s|\\.)(thf|tff|fof|cnf|include)\\(");
         Matcher matcher = pattern.matcher(text);
 
