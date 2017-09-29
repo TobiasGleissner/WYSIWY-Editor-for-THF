@@ -404,7 +404,8 @@ public class EditorController implements Initializable {
         MenuItem copyRelPath = new MenuItem("Copy relative path to clipboard");
         MenuItem cut = new MenuItem("Cut");
         MenuItem paste = new MenuItem("Paste");
-        contextMenu.getItems().addAll(newFile, newDirectory, copy, copyDirName, copyPath, copyRelPath, cut, paste);
+        MenuItem delete = new MenuItem("Delete");
+        contextMenu.getItems().addAll(newFile, newDirectory, copy, copyDirName, copyPath, copyRelPath, cut, paste, delete);
 
         final ContextMenu contextMenuFile = new ContextMenu();
         MenuItem copyFile = new MenuItem("Copy");
@@ -621,6 +622,35 @@ public class EditorController implements Initializable {
                 }
             }
         });
+        
+        delete.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                TreeItem<FileWrapper> item = fileBrowser.getSelectionModel().getSelectedItem();
+                File file = new File(getPathToSelectedItem(item, false, false).toString());
+
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Delete folder");
+                alert.setHeaderText("Delete folder?");
+                alert.setContentText("Do you really want to delete the folder "+item.getValue().toString()+"?");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK){
+
+
+                    try {
+                        org.apache.commons.io.FileUtils.deleteDirectory(file);
+                        item.getParent().getChildren().remove(item);
+                    } catch (IOException e) {
+                        Alert alert1 = new Alert(AlertType.ERROR);
+                        alert1.setTitle("ERROR");
+                        alert1.setHeaderText("Error");
+                        alert1.setContentText("There was an error deleting the folder "+file.getName()+"!");
+                        alert1.showAndWait();
+                    }
+                }
+            }
+        });
 
         fileBrowser.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
             if (fileBrowser.getSelectionModel().getSelectedItem() == null) {
@@ -755,8 +785,6 @@ public class EditorController implements Initializable {
         
         for (File file : files) {
             try {
-                /*if (file.isDirectory())
-                    continue;*/
                 File destination = new File (f.toPath().resolve(file.getName()).toString());
                 
                 if (!file.isDirectory() && destination.exists() && !destination.isDirectory()) {
