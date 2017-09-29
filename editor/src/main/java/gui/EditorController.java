@@ -402,9 +402,10 @@ public class EditorController implements Initializable {
         MenuItem copyDirName = new MenuItem("Copy directory name");
         MenuItem copyPath = new MenuItem("Copy path to clipboard");
         MenuItem copyRelPath = new MenuItem("Copy relative path to clipboard");
+        MenuItem rename = new MenuItem("Rename");
         MenuItem paste = new MenuItem("Paste");
         MenuItem delete = new MenuItem("Delete");
-        contextMenu.getItems().addAll(newFile, newDirectory, copy, copyDirName, copyPath, copyRelPath, paste, delete);
+        contextMenu.getItems().addAll(newFile, newDirectory, copy, copyDirName, copyPath, copyRelPath, rename, paste, delete);
 
         final ContextMenu contextMenuFile = new ContextMenu();
         MenuItem copyFile = new MenuItem("Copy");
@@ -546,6 +547,53 @@ public class EditorController implements Initializable {
                         item.setGraphic(item.getIconNodeByFile(file));
                         fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
                         ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);
+                        //FileTreeView.updateTree(fileBrowser.getSelectionModel().getSelectedItem(), fileBrowser.getRoot(), new File(directory.toString()));
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+            }
+        });
+        rename.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                File source = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false).toString());
+                String error = "";
+                String name = null;
+                Path directory = null;
+                
+                if (fileBrowser.getSelectionModel().getSelectedItem().getParent() == null)
+                    return;
+                
+                while (true) {
+                    TextInputDialog dialog = new TextInputDialog(source.getName());
+                    dialog.setTitle("Rename file");
+                    dialog.setHeaderText("New file name"+error);
+                    dialog.setContentText("Please enter the new file name:");
+                    
+                    Optional<String> result = dialog.showAndWait();
+                    if (!result.isPresent())
+                        break;
+                    name = result.get();
+                    if (name.equals("") || name == null) {
+                        error = "\n\nERROR: Please enter a file name!";
+                        continue;
+                    }
+                    if (name.contains("../") || name.contains("..\\")) {
+                        error = "\n\nERROR: Please enter a valid file name!";
+                        continue;
+                    }
+                    directory = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem().getParent(), false, false);
+                    Path newFile = directory.resolve(name);
+                    File file = new File(newFile.toString());
+                    if (source.renameTo(file)) {
+                        FileTreeItem item = new FileTreeItem(new FileWrapper(file));
+                        TreeItem<FileWrapper> sourceItem = fileBrowser.getSelectionModel().getSelectedItem();
+                        sourceItem.getParent().getChildren().remove(sourceItem);
+                        item.setGraphic(item.getIconNodeByFile(file));
+                        fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
+                        ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem().getParent()).sortChildren(false);
                         //FileTreeView.updateTree(fileBrowser.getSelectionModel().getSelectedItem(), fileBrowser.getRoot(), new File(directory.toString()));
                         break;
                     } else {
