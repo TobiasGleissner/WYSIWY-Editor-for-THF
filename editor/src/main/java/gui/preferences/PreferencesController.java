@@ -35,6 +35,8 @@ public class PreferencesController implements Initializable {
     @FXML public Label nameTakenWarning;
     @FXML public TextField proverNameTextField;
     @FXML public TextField proverCommandTextField;
+    @FXML public TextField proverSystemOnTPTPNameTextField;
+    @FXML public Label proverSystemOnTPTPNameLabel;
     @FXML public TreeView<String> proverTree;
     @FXML public ListView<String> subDialectListView;
 
@@ -83,6 +85,8 @@ public class PreferencesController implements Initializable {
 
         // misc
         nameTakenWarning.setVisible(false);
+        proverSystemOnTPTPNameTextField.setVisible(false);
+        proverSystemOnTPTPNameLabel.setVisible(false);
 
         // double click on tree item
         proverTree.setOnMouseClicked(new EventHandler<MouseEvent>()
@@ -139,7 +143,9 @@ public class PreferencesController implements Initializable {
 
         // type in prover name text field
         proverNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (currentProver != null && currentProver.equals(newValue))
+            if (currentProver == null) {
+                nameTakenWarning.setVisible(false);
+            } else if (currentProver != null && currentProver.equals(newValue))
                 nameTakenWarning.setVisible(false);
             else {
                 if (currentItem.getParent().equals(rootLocalProvers)){
@@ -178,10 +184,14 @@ public class PreferencesController implements Initializable {
         if (currentItem.getParent().equals(rootLocalProvers)) {
             proverCmd = lp.getProverCommand(prover);
             lp.getProverSubDialects(currentProver).forEach(sd -> subDialectListView.getSelectionModel().select(sd.name()));
+            proverSystemOnTPTPNameTextField.setVisible(false);
+            proverSystemOnTPTPNameLabel.setVisible(false);
         }
         else if (currentItem.getParent().equals(rootRemoteProvers)) {
             proverCmd = rp.getCustomProverCommand(prover);
             rp.getCustomProverSubDialects(currentProver).forEach(sd -> subDialectListView.getSelectionModel().select(sd.name()));
+            proverSystemOnTPTPNameTextField.setVisible(true);
+            proverSystemOnTPTPNameLabel.setVisible(true);
         }
         proverCommandTextField.setText(proverCmd);
     }
@@ -235,7 +245,8 @@ public class PreferencesController implements Initializable {
                 return;
             }
             try {
-                rp.updateProver(currentProver, proverName, proverCommand, getSelectedTPTPSubDialects());
+                String systemOnTPTPName = proverSystemOnTPTPNameTextField.getText();
+                rp.updateProver(currentProver, proverName, proverCommand, systemOnTPTPName, getSelectedTPTPSubDialects());
                 dialectString = String.join(",", rp.getCustomProverSubDialects(proverName).stream()
                         .map(Enum::name)
                         .collect(Collectors.toList()));
@@ -278,8 +289,8 @@ public class PreferencesController implements Initializable {
             } else if (currentItem.getParent().equals(rootRemoteProvers)) {
                 System.out.println("REMOTE!");
                 try {
-                    // TODO this must be the actual name instead of currentProver
-                    ProveResult pr = rp.testRemoteProver(currentProver,proverCommand);
+                    String systemOnTPTPName = proverSystemOnTPTPNameTextField.getText();
+                    ProveResult pr = rp.testRemoteProver(systemOnTPTPName,proverCommand);
                     System.out.println(pr.stdout);
                     log.info("Prover command working. Command='" + proverCommand + "'.");
                 } catch (ProverNotAvailableException | IOException | ProverResultNotInterpretableException e) {
@@ -315,7 +326,7 @@ public class PreferencesController implements Initializable {
         while (rp.getAllCustomProverNames().contains(proverName)) proverName = "unnamed_" + RandomString.getRandomString();
         currentProver = proverName;
         try {
-            rp.addProver(proverName,"",new ArrayList<>(),true);
+            rp.addProver(proverName,"","",new ArrayList<>(),true);
         } catch (NameAlreadyInUseException e) {
             // does not happen due to while loop
         }
@@ -352,18 +363,21 @@ public class PreferencesController implements Initializable {
                     .collect(Collectors.toList()));
             try {
                 rp.removeProver(currentProver);
+                proverSystemOnTPTPNameTextField.setText("");
+                proverSystemOnTPTPNameTextField.setVisible(false);
+                proverSystemOnTPTPNameLabel.setVisible(false);
             } catch (ProverNotAvailableException e) {
                 // does not happen
                 e.printStackTrace();
             }
             rootRemoteProvers.getChildren().remove(currentItem);
         }
+        currentProver = null;
+        currentItem = null;
         proverNameTextField.setText("");
         proverCommandTextField.setText("");
         proverTree.getSelectionModel().clearSelection();
         subDialectListView.getSelectionModel().clearSelection();
-        currentProver = null;
-        currentItem = null;
         log.info("Removed prover with name='" + oldName + "' and command='" + oldCommand
                 + "' and TPTP dialects='" + oldDialectString + "'.");
     }

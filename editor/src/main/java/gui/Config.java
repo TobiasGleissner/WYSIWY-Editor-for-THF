@@ -94,6 +94,7 @@ public class Config {
             ProverConfiguration pc = new ProverConfiguration();
             pc.proverName = prefs.get("remoteProverName" + i,null);
             pc.proverCommand = prefs.get("remoteProverCommand" + i,null);
+            pc.remoteName = prefs.get("remoteProverSystemOnTPTPName" + i,null);
             String subdialects = prefs.get("remoteProverSubDialects" + i,null);
             List<TPTPDefinitions.TPTPSubDialect> subDialectList = new ArrayList<>();
             for (String subdialectString : subdialects.split(",")){
@@ -114,6 +115,7 @@ public class Config {
         for (int i = 0; i < provers.size(); i++){
             prefs.put("remoteProverName" + i, provers.get(i).proverName);
             prefs.put("remoteProverCommand" + i, provers.get(i).proverCommand);
+            prefs.put("remoteProverSystemOnTPTPName" + i, provers.get(i).remoteName);
             String subDialects = String.join(",",
                     provers.get(i).subDialects.stream()
                             .map(Enum::name)
