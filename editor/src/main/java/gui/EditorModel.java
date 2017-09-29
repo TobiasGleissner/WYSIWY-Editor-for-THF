@@ -170,6 +170,23 @@ public class EditorModel
         */
     }
 
+    /**
+     * Inserts a text node as child of parent and before sibling,
+     * inserting the appropriate newline markers.
+     *
+     * @param text      The text content of the new text node.
+     * @param parent    The parent node of the new text node.
+     * @param sibling   The next sibling of the new text node. If this
+     *                  argument is null the node is inserted as last
+     *                  child of parent.
+     * @param startOffset The offset from the start of the node. Used
+     *                    for data-start and data-end annotations,
+     *                    which are optimizations for position queries
+     *                    in javascript.
+     * @param isFirst   Whether this if the first entry of the file. If
+     *                  true a newline marker is inserted at the beginning
+     *                  of the first line.
+     */
     private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, int startOffset, boolean isFirst)
     {
         int start = 0;
@@ -209,21 +226,69 @@ public class EditorModel
         while(end < text.length());
     }
 
+    /**
+     * Inserts a text node as child of parent and before sibling,
+     * inserting the appropriate newline markers.
+     *
+     * @param text      The text content of the new text node.
+     * @param parent    The parent node of the new text node.
+     * @param sibling   The next sibling of the new text node. If this
+     *                  argument is null the node is inserted as last
+     *                  child of parent.
+     * @param startOffset The offset from the start of the node. Used
+     *                    for data-start and data-end annotations,
+     *                    which are optimizations for position queries
+     *                    in javascript.
+     */
     private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, int startOffset)
     {
         insertNewTextNode(text, parent, sibling, startOffset, false);
     }
 
+    /**
+     * Inserts a text node as child of parent and before sibling,
+     * inserting the appropriate newline markers.
+     *
+     * @param text      The text content of the new text node.
+     * @param parent    The parent node of the new text node.
+     * @param startOffset The offset from the start of the node. Used
+     *                    for data-start and data-end annotations,
+     *                    which are optimizations for position queries
+     *                    in javascript.
+     */
     private void insertNewTextNode(String text, org.w3c.dom.Node parent, int startOffset)
     {
         insertNewTextNode(text, parent, null, startOffset);
     }
 
+    /**
+     * Inserts a text node as child of parent and before sibling,
+     * inserting the appropriate newline markers.
+     *
+     * @param text      The text content of the new text node.
+     * @param parent    The parent node of the new text node.
+     * @param startOffset The offset from the start of the node. Used
+     *                    for data-start and data-end annotations,
+     *                    which are optimizations for position queries
+     *                    in javascript.
+     * @param isFirst   Whether this if the first entry of the file. If
+     *                  true a newline marker is inserted at the beginning
+     *                  of the first line.
+     */
     private void insertNewTextNode(String text, org.w3c.dom.Node parent, int startOffset, boolean isFirst)
     {
         insertNewTextNode(text, parent, null, startOffset, isFirst);
     }
 
+    /**
+     * Reparse an area as indicated by the surrounding node ids.
+     *
+     * @param leftNodeId    The leftmost node ID to be reparsed. If it is
+     *                      -1 parsing starts from the start.
+     * @param richtNodeId   The rightmost node ID to be reparsed. If it
+     *                      is -1 parsing ends with the end of the file.
+     * @return              The ID of the first inserted node.
+     */
     public int reparseArea(int leftNodeId, int rightNodeId)
     {
         int ret = -1;
@@ -252,7 +317,23 @@ public class EditorModel
         }
 
         String text = content.toString();
+        return reparseString(text, parent, sibling);
+    }
 
+    /**
+     * Reparse a string as TPTP file and insert the resulting nodes into
+     * the document as children of parent before sibling.
+     *
+     * @param text      The text to parse again.
+     * @param parent    The parent node the highlighted results is
+     *                  inserted as child of.
+     * @param sibling   The child node before which the results are
+     *                  inserted. If this is null the results are inserted
+     *                  at the end.
+     * @return          The ID of the first inserted node.
+     */
+    public int reparseString(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling)
+    {
         /* NOTE: We hardcode knowledge of the grammar here. This is ugly
         and may fail at any point. I'm sorry. :/ This is also incorrect
         because it fixes errors occuring during parsing before this. But
