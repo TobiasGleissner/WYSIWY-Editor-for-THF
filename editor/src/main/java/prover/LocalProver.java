@@ -1,12 +1,9 @@
-package prover.local;
+package prover;
 
 import exceptions.NameAlreadyInUseException;
 import exceptions.ProverNotAvailableException;
 import exceptions.ProverResultNotInterpretableException;
 import gui.Config;
-import prover.ProveResult;
-import prover.Prover;
-import prover.TPTPDefinitions;
 import util.RandomString;
 
 import java.io.*;
@@ -14,9 +11,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class LocalProver implements Prover {
-    private Map<TPTPDefinitions.TPTPSubDialect,List<LocalProverConfiguration>> availableProvers;
-    private Map<String,LocalProverConfiguration> allProvers;
-    private List<LocalProverConfiguration> allProversListed;
+    private Map<TPTPDefinitions.TPTPSubDialect,List<ProverConfiguration>> availableProvers;
+    private Map<String,ProverConfiguration> allProvers;
+    private List<ProverConfiguration> allProversListed;
     private static LocalProver instance;
 
     private LocalProver(){
@@ -80,7 +77,7 @@ public class LocalProver implements Prover {
         allProvers = new HashMap<>();
         allProversListed = new ArrayList<>();
         Arrays.stream(TPTPDefinitions.TPTPSubDialect.values()).forEach(sd -> availableProvers.put(sd,new ArrayList<>()));
-        for (LocalProverConfiguration c : Config.getLocalProvers()){
+        for (ProverConfiguration c : Config.getLocalProvers()){
             allProvers.put(c.proverName,c);
             allProversListed.add(c);
             for (TPTPDefinitions.TPTPSubDialect sd : c.subDialects){
@@ -107,7 +104,7 @@ public class LocalProver implements Prover {
 
     public void addProver(String proverName, String command, List<TPTPDefinitions.TPTPSubDialect> subDialectList, boolean override) throws NameAlreadyInUseException {
         if (!override && getAllProverNames().contains(proverName)) throw new NameAlreadyInUseException("Name " + proverName + " is already in use with command " + getProverCommand(proverName));
-        LocalProverConfiguration pc = new LocalProverConfiguration();
+        ProverConfiguration pc = new ProverConfiguration();
         pc.proverName = proverName;
         pc.proverCommand = command;
         pc.subDialects = subDialectList;
@@ -121,7 +118,7 @@ public class LocalProver implements Prover {
 
     public void updateProver(String oldProverName, String newProverName, String command, List<TPTPDefinitions.TPTPSubDialect> subDialectList) throws ProverNotAvailableException {
         if (!getAllProverNames().contains(oldProverName)) throw new ProverNotAvailableException("The prover with name='" + oldProverName + "' does not exist.");
-        LocalProverConfiguration pc = allProvers.get(oldProverName);
+        ProverConfiguration pc = allProvers.get(oldProverName);
         for (TPTPDefinitions.TPTPSubDialect sd : pc.subDialects) availableProvers.get(sd).remove(pc);
         pc.proverName = newProverName;
         pc.proverCommand = command;

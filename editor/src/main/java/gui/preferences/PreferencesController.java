@@ -16,7 +16,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import prover.ProveResult;
 import prover.TPTPDefinitions;
-import prover.local.LocalProver;
+import prover.LocalProver;
 import util.RandomString;
 
 import java.io.IOException;

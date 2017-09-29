@@ -1,4 +1,4 @@
-package prover.remote;
+package prover;
 
 import exceptions.ProverNotAvailableException;
 import exceptions.ProverResultNotInterpretableException;
@@ -7,38 +7,42 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import prover.ProveResult;
-import prover.Prover;
-import prover.TPTPDefinitions;
+import util.HttpRequest;
 
 import java.io.IOException;
 import java.util.*;
 
-public class HttpProver implements Prover {
+public class SystemOnTPTPProver implements Prover {
 
-    private static HttpProver instance;
+    private static SystemOnTPTPProver instance;
     private Map<TPTPDefinitions.TPTPSubDialect,List<String>> availableProvers;
 
     // for testing purposes only
-    /*
     public static void main(String[] args) throws Exception {
+        SystemOnTPTPProver.getInstance();
+        //List<TPTPDefinitions.TPTPSubDialect> subDialects = new ArrayList<>();
+        //subDialects.add(TPTPDefinitions.TPTPSubDialect.TH0);
+        //SystemOnTPTPProver.getInstance().getAvailableProvers(subDialects).forEach(System.out::println);
+
+        /*
         String myproblem = "thf(a1,conjecture,$true).";
         String prover = "Satallax---3.2";
-        HttpProver i = HttpProver.getInstance();
+        SystemOnTPTPProver i = SystemOnTPTPProver.getInstance();
         Arrays.stream(TPTPDefinitions.TPTPDialect.values()).forEach(d->{
             System.out.println(d);i.availableProvers.get(d).stream().forEach(System.out::println);});
-        System.out.println(HttpProver.getInstance().prove(myproblem, "asd",prover,5).toString());
+        System.out.println(SystemOnTPTPProver.getInstance().prove(myproblem, "asd",prover,5).toString());
+        */
     }
-    */
+
 
     /**
      * Constructor substitute.
-     * @return only way to get an instance of HttpProver
+     * @return only way to get an instance of SystemOnTPTPProver
      * @throws IOException if SystemOnTPTP website could not be reached
      */
-    public static HttpProver getInstance() throws IOException {
+    public static SystemOnTPTPProver getInstance() throws IOException {
         if (instance == null){
-            instance = new HttpProver();
+            instance = new SystemOnTPTPProver();
             instance.loadProvers();
         }
         return instance;
@@ -86,6 +90,21 @@ public class HttpProver implements Prover {
      * @throws ProverResultNotInterpretableException the return result of the SystemOnTPTP website could not be interpreted
      */
     public ProveResult prove(String problem, String prover, int timeLimit) throws ProverNotAvailableException, ProverResultNotInterpretableException {
+        return prove(problem,prover,null,timeLimit);
+    }
+
+        /**
+         * Sends a problem to a remote prover and gets a result.
+         * @param problem problem to prove as String
+         * @param prover prover name as string; a list of names for a certain TPTPDefinitions.TPTPDialect
+         *               can be retrieved with the method getAvailableProvers
+         * @param command individual remote prover command
+         * @param timeLimit time limit for the proving process in seconds
+         * @return ProveResult object containing an SZSStatus and additional information
+         * @throws ProverNotAvailableException no connection to the SystemOnTPTP website could be established
+         * @throws ProverResultNotInterpretableException the return result of the SystemOnTPTP website could not be interpreted
+         */
+    public ProveResult prove(String problem, String prover, String command, int timeLimit) throws ProverNotAvailableException, ProverResultNotInterpretableException {
         Hashtable<String,Object> URLParameters = new Hashtable<>();
 
         URLParameters.put("NoHTML",new Integer(1));
@@ -93,6 +112,7 @@ public class HttpProver implements Prover {
         URLParameters.put("ProblemSource","UPLOAD");
         URLParameters.put("SubmitButton","RunSelectedSystems");
         URLParameters.put("System___" + prover,prover);
+        if (command != null) URLParameters.put("Command___" + prover,command);
         URLParameters.put("TimeLimit___" + prover, timeLimit);
         URLParameters.put("ProblemSource","FORMULAE");
         URLParameters.put("FORMULAEProblem",problem);
@@ -151,6 +171,8 @@ public class HttpProver implements Prover {
         HashSet<TPTPDefinitions.TPTPSubDialect> ret = new HashSet<>();
         Arrays.stream(TPTPDefinitions.TPTPSubDialect.values()).forEach(dialect ->
         {if (input.contains(dialect.name())) ret.add(dialect);});
+        Arrays.stream(TPTPDefinitions.TPTPDialect.values()).forEach(dialect ->
+        {if (input.contains(dialect.name())) TPTPDefinitions.getTPTPSubDialectsFromTPTPDialect(dialect).forEach(ret::add);});
         return new ArrayList<>(ret);
     }
 }
