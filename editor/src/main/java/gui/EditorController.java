@@ -514,92 +514,13 @@ public class EditorController implements Initializable {
         renameFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                File source = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), true, false).toString());
-                String error = "";
-                String name = null;
-                Path directory = null;
-                
-                while (true) {
-                    TextInputDialog dialog = new TextInputDialog(source.getName());
-                    dialog.setTitle("Rename file");
-                    dialog.setHeaderText("New file name"+error);
-                    dialog.setContentText("Please enter the new file name:");
-                    
-                    Optional<String> result = dialog.showAndWait();
-                    if (!result.isPresent())
-                        break;
-                    name = result.get();
-                    if (name.equals("") || name == null) {
-                        error = "\n\nERROR: Please enter a file name!";
-                        continue;
-                    }
-                    if (name.contains("../") || name.contains("..\\")) {
-                        error = "\n\nERROR: Please enter a valid file name!";
-                        continue;
-                    }
-                    directory = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem().getParent(), false, false);
-                    Path newFile = directory.resolve(name);
-                    File file = new File(newFile.toString());
-                    if (source.renameTo(file)) {
-                        FileTreeItem item = new FileTreeItem(new FileWrapper(file));
-                        TreeItem<FileWrapper> sourceItem = fileBrowser.getSelectionModel().getSelectedItem();
-                        sourceItem.getParent().getChildren().remove(sourceItem);
-                        item.setGraphic(item.getIconNodeByFile(file));
-                        fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
-                        ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);
-                        //FileTreeView.updateTree(fileBrowser.getSelectionModel().getSelectedItem(), fileBrowser.getRoot(), new File(directory.toString()));
-                        break;
-                    } else {
-                        continue;
-                    }
-                }
+                renameFileOrDir();
             }
         });
         rename.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                File source = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false).toString());
-                String error = "";
-                String name = null;
-                Path directory = null;
-                
-                if (fileBrowser.getSelectionModel().getSelectedItem().getParent() == null)
-                    return;
-                
-                while (true) {
-                    TextInputDialog dialog = new TextInputDialog(source.getName());
-                    dialog.setTitle("Rename file");
-                    dialog.setHeaderText("New file name"+error);
-                    dialog.setContentText("Please enter the new file name:");
-                    
-                    Optional<String> result = dialog.showAndWait();
-                    if (!result.isPresent())
-                        break;
-                    name = result.get();
-                    if (name.equals("") || name == null) {
-                        error = "\n\nERROR: Please enter a file name!";
-                        continue;
-                    }
-                    if (name.contains("../") || name.contains("..\\")) {
-                        error = "\n\nERROR: Please enter a valid file name!";
-                        continue;
-                    }
-                    directory = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem().getParent(), false, false);
-                    Path newFile = directory.resolve(name);
-                    File file = new File(newFile.toString());
-                    if (source.renameTo(file)) {
-                        FileTreeItem item = new FileTreeItem(new FileWrapper(file));
-                        TreeItem<FileWrapper> sourceItem = fileBrowser.getSelectionModel().getSelectedItem();
-                        sourceItem.getParent().getChildren().remove(sourceItem);
-                        item.setGraphic(item.getIconNodeByFile(file));
-                        fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
-                        ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem().getParent()).sortChildren(false);
-                        //FileTreeView.updateTree(fileBrowser.getSelectionModel().getSelectedItem(), fileBrowser.getRoot(), new File(directory.toString()));
-                        break;
-                    } else {
-                        continue;
-                    }
-                }
+                renameFileOrDir();
             }
         });
         
@@ -931,6 +852,51 @@ public class EditorController implements Initializable {
                 } else {
                     ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem().getParent()).sortChildren(false);
                 }
+            }
+        }
+    }
+    
+    public void renameFileOrDir() {
+        File source = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false).toString());
+        String error = "";
+        String name = null;
+        Path directory = null;
+        
+        if (fileBrowser.getSelectionModel().getSelectedItem().getParent() == null)
+            return;
+        
+        while (true) {
+            TextInputDialog dialog = new TextInputDialog(source.getName());
+            dialog.setTitle("Rename file");
+            dialog.setHeaderText("New file name"+error);
+            dialog.setContentText("Please enter the new file name:");
+            
+            Optional<String> result = dialog.showAndWait();
+            if (!result.isPresent())
+                break;
+            name = result.get();
+            if (name.equals("") || name == null) {
+                error = "\n\nERROR: Please enter a file name!";
+                continue;
+            }
+            if (name.contains("../") || name.contains("..\\")) {
+                error = "\n\nERROR: Please enter a valid file name!";
+                continue;
+            }
+            directory = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem().getParent(), false, false);
+            Path newFile = directory.resolve(name);
+            File file = new File(newFile.toString());
+            if (source.renameTo(file)) {
+                FileTreeItem item = new FileTreeItem(new FileWrapper(file));
+                TreeItem<FileWrapper> sourceItem = fileBrowser.getSelectionModel().getSelectedItem();
+                sourceItem.getParent().getChildren().remove(sourceItem);
+                item.setGraphic(item.getIconNodeByFile(file));
+                fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
+                ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem().getParent()).sortChildren(false);
+                //FileTreeView.updateTree(fileBrowser.getSelectionModel().getSelectedItem(), fileBrowser.getRoot(), new File(directory.toString()));
+                break;
+            } else {
+                continue;
             }
         }
     }
