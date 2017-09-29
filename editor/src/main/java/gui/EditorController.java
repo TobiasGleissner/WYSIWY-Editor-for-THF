@@ -85,6 +85,8 @@ import gui.fileStructure.StructureTreeView;
 import gui.fileBrowser.FileTreeItem;
 import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
+import prover.Prover;
+import prover.ProvingHistory;
 import prover.TPTPDefinitions;
 import prover.remote.HttpProver;
 import prover.local.LocalProver;
@@ -246,6 +248,23 @@ public class EditorController implements Initializable {
                     {
                         if(newState == Worker.State.SUCCEEDED) {
                             log.init();
+
+                            // DEBUG for proving history
+                            /*ProvingHistory h = ProvingHistory.getInstance();
+                            EditorDocument doc1 = new EditorDocument(Paths.get("/home/tg/d1.p"));
+                            EditorDocument doc2 = new EditorDocument(Paths.get("/home/tg/d2.p"));
+                            h.addDocument(doc1);
+                            h.addDocument(doc2);
+                            h.prove(doc1,"Satallax---3.2", Prover.ProverType.SYSTEMONTPTP_PROVER,5);
+                            h.prove(doc1,"Satallax---3.2", Prover.ProverType.SYSTEMONTPTP_PROVER,5);
+                            h.prove(doc2,"LEO-II---1.7.0", Prover.ProverType.SYSTEMONTPTP_PROVER,5);
+                            System.out.println("######### entryList #########");
+                            h.entryList.forEach(System.out::println);
+                            System.out.println("######### documentToEntryListMap #########");
+                            for (EditorDocument d : h.documentToEntryListMap.keySet()){
+                                h.documentToEntryListMap.get(d).forEach(System.out::println);
+                            }*/
+                            // END DEBUG
                         }
 
                     }});
@@ -265,6 +284,7 @@ public class EditorController implements Initializable {
 
         // Initialize tabs on the left side
         makeTabPaneCollapsable();
+
     }
 
     // ==========================================================================
@@ -788,7 +808,7 @@ public class EditorController implements Initializable {
             List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
             List<String> availableProversRemote = HttpProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
             ToggleGroup menubarProvers = new ToggleGroup();
-            // add list of local provers to menubar
+            // addDocument list of local provers to menubar
             MenuItem labelForLocalProvers = new MenuItem("Local provers");
             labelForLocalProvers.setDisable(true);
             menubarRunProver.getItems().add(labelForLocalProvers);
@@ -805,7 +825,7 @@ public class EditorController implements Initializable {
             }
             SeparatorMenuItem separator = new SeparatorMenuItem();
             menubarRunProver.getItems().add(separator);
-            // add list of remote provers to menubar
+            // addDocument list of remote provers to menubar
             MenuItem labelForRemoteProvers = new MenuItem("Remote provers");
             labelForRemoteProvers.setDisable(true);
             menubarRunProver.getItems().add(labelForRemoteProvers);
@@ -828,13 +848,13 @@ public class EditorController implements Initializable {
                     if(newValue) {
                         toolbarRunProver.getItems().clear();
                         ToggleGroup toolbarProvers = new ToggleGroup();
-                        // add list of local provers to toolbar
+                        // addDocument list of local provers to toolbar
                         for (Iterator<String> i = availableProversLocal.iterator(); i.hasNext();) {
                             RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
                             item.setToggleGroup(toolbarProvers);
                             toolbarRunProver.getItems().add(item);
                         }
-                        // add list of remote provers to toolbar
+                        // addDocument list of remote provers to toolbar
                         for (Iterator<String> i = availableProversRemote.iterator(); i.hasNext();) {
                             RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
                             item.setToggleGroup(toolbarProvers);

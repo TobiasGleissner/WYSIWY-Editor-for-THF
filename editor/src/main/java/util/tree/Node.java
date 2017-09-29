@@ -135,7 +135,7 @@ public class Node {
      * probably not working
     public void addChildAfter(Node newChild, Node afterChild){
         if (this.children.contains(afterChild)){
-            this.children.add(this.children.indexOf(afterChild),newChild);
+            this.children.addDocument(this.children.indexOf(afterChild),newChild);
             newChild.parent = this;
         }
     }
@@ -310,11 +310,11 @@ public class Node {
         dot.append("    edge [fontname=Helvetica,fontsize=10];\n");
 
         List<Node> nodes = this.getNodesBfs();
-        // add nodes
+        // addDocument nodes
         nodes.forEach(
                 n -> dot.append("    n" + n.hashCode() + " [label=\"(" + n.hashCode() + ")\\n" +
                         n.getEscapedLabel() + "\\n" + n.getRule().toString() + "\"];\n"));
-        // add edges
+        // addDocument edges
         nodes.forEach(n -> n.getChildren().stream().filter(c -> c.hasParent()).forEach(c -> dot.append("    n" +
                 c.getParent().hashCode() + " -- n" + c.hashCode() + ";\n")));
 

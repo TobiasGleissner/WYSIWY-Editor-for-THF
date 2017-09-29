@@ -78,7 +78,6 @@ public class HttpProver implements Prover {
     /**
      * Sends a problem to a remote prover and gets a result.
      * @param problem problem to prove as String
-     * @param source meta information of the problem e.g. filename or an url
      * @param prover prover name as string; a list of names for a certain TPTPDefinitions.TPTPDialect
      *               can be retrieved with the method getAvailableProvers
      * @param timeLimit time limit for the proving process in seconds
@@ -86,8 +85,8 @@ public class HttpProver implements Prover {
      * @throws ProverNotAvailableException no connection to the SystemOnTPTP website could be established
      * @throws ProverResultNotInterpretableException the return result of the SystemOnTPTP website could not be interpreted
      */
-    public ProveResult prove(String problem, String source, String prover, int timeLimit) throws ProverNotAvailableException, ProverResultNotInterpretableException {
-        Hashtable<String,Object> URLParameters = new Hashtable<String,Object>();
+    public ProveResult prove(String problem, String prover, int timeLimit) throws ProverNotAvailableException, ProverResultNotInterpretableException {
+        Hashtable<String,Object> URLParameters = new Hashtable<>();
 
         URLParameters.put("NoHTML",new Integer(1));
         URLParameters.put("QuietFlag","-q2");
@@ -112,17 +111,17 @@ public class HttpProver implements Prover {
             int nextWhitespace = statusString.indexOf(" ");
             statusString = statusString.substring(0,nextWhitespace);
             TPTPDefinitions.SZSDeductiveStatus status = TPTPDefinitions.getStatusFromString(statusString);
-            if (status == null) throw new ProverResultNotInterpretableException("Status is not interpretable.");
+            if (status == null) throw new ProverResultNotInterpretableException("Status is not interpretable.",r);
 
             int cpuIndex = r.indexOf("CPU =");
             String cpuString = r.substring(cpuIndex + 5).trim();
             nextWhitespace = cpuString.indexOf(" ");
             cpuString = cpuString.substring(0,nextWhitespace);
             double elapsedTime = Double.parseDouble(cpuString);
-            return new ProveResult(problem, source, prover, r, "",status, elapsedTime, timeLimit);
+            return new ProveResult(problem, ProverType.SYSTEMONTPTP_PROVER, prover, r, "",status, elapsedTime, timeLimit);
         }
         catch (Exception e){
-            throw new ProverResultNotInterpretableException(e.toString());
+            throw new ProverResultNotInterpretableException(e.toString(),r);
         }
     }
 

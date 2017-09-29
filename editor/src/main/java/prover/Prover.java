@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.util.List;
 
 public interface Prover {
-    ProveResult prove(String problem, String source, String prover, int timeLimit) throws ProverNotAvailableException, ProverResultNotInterpretableException, IOException;
+    public enum ProverType{LOCAL_PROVER, SYSTEMONTPTP_PROVER}
+    ProveResult prove(String problem, String prover, int timeLimit) throws ProverNotAvailableException, ProverResultNotInterpretableException, IOException;
     /**
      * Retrieves a list of available provers of a certain TPTP dialect.
      * @param dialect

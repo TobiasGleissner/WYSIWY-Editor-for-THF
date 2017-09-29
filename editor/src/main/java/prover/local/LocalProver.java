@@ -150,7 +150,7 @@ public class LocalProver implements Prover {
         return prove(testProblem,proverCommand,5);
     }
 
-    private ProveResult prove(String problem, String proverCommand, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
+    private ProveResult proveHelper(String problem, String proverCommand, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
         File tempFile = null;
         BufferedWriter writer = null;
         try {
@@ -201,11 +201,21 @@ public class LocalProver implements Prover {
         return ret;
     }
 
+    /**
+     * Sends a problem to a local prover and gets a result.
+     * @param problem problem to prove as String
+     * @param prover prover name as string; a list of names for a certain TPTPDefinitions.TPTPDialect
+     *               can be retrieved with the method getAvailableProvers
+     * @param timeLimit time limit for the proving process in seconds
+     * @return ProveResult object containing an SZSStatus and additional information
+     * @throws ProverNotAvailableException prover command does not exist or does not work
+     * @throws ProverResultNotInterpretableException the return result of the local prover could not be interpreted
+     */
     @Override
-    public ProveResult prove(String problem, String source, String prover, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
+    public ProveResult prove(String problem, String prover, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
         String cmdProver = getProverCommand(prover);
-        ProveResult r = prove(problem,cmdProver,timeLimit);
-        return new ProveResult(problem, source, prover, r.stdout, r.stderr, r.status, r.elapsedTime, timeLimit);
+        ProveResult r = proveHelper(problem,cmdProver,timeLimit);
+        return new ProveResult(problem, ProverType.LOCAL_PROVER, prover, r.stdout, r.stderr, r.status, r.elapsedTime, timeLimit);
     }
 
     private double parseCPU(String s){
@@ -222,11 +232,11 @@ public class LocalProver implements Prover {
 
     private TPTPDefinitions.SZSDeductiveStatus parseSZSStatus(String s) throws ProverResultNotInterpretableException {
         int statusBeginning = s.indexOf("SZS status");
-        if (statusBeginning == -1) throw new ProverResultNotInterpretableException("Could not find SZS Status beginning");
+        if (statusBeginning == -1) throw new ProverResultNotInterpretableException("Could not find SZS Status beginning",s);
         statusBeginning += 11;
         String status = s.substring(statusBeginning);
         int statusEnd = status.indexOf("\n");
-        if (statusEnd == -1) throw new ProverResultNotInterpretableException("Could not find SZS Status ending");
+        if (statusEnd == -1) throw new ProverResultNotInterpretableException("Could not find SZS Status ending",s);
         status = status.substring(0,statusEnd).trim();
         return TPTPDefinitions.getStatusFromString(status);
     }
