@@ -521,71 +521,13 @@ public class EditorController implements Initializable {
         pasteFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                final Clipboard clipboard = Clipboard.getSystemClipboard();
-                List<File> files = clipboard.getFiles();
-                if (files == null || files.size() == 0) {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("No file to paste");
-                    alert.setHeaderText("No file to paste");
-                    alert.setContentText("There is no file in the clipboard!");
-                    alert.showAndWait();
-                    return;
-                }
-                
-                File f = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem().getParent(), false, false).toString());
-                
-                for (File file : files) {
-                    try {
-                        File destination = new File (f.toPath().resolve(file.getName()).toString());
-                        if (destination.exists() && !destination.isDirectory()) {
-                            String error = "";
-                            String name = file.getName();
-                            while (true) {
-                                TextInputDialog dialog = new TextInputDialog(name);
-                                dialog.setTitle("Copy file");
-                                dialog.setHeaderText("Copy file:"+error);
-                                dialog.setContentText("The file "+name+" already exists. Please enter a new file name or replace the existing file:");
-                                
-                                Optional<String> result = dialog.showAndWait();
-                                if (!result.isPresent())
-                                    return;
-                                name = result.get();
-                                if (name.equals("") || name == null) {
-                                    error = "\n\nERROR: Please enter a file name!";
-                                    System.out.println("A");
-                                    continue;
-                                }
-                                if (name.contains("../") || name.contains("..\\")) {
-                                    error = "\n\nERROR: Please enter a valid file name!";
-                                    continue;
-                                }
-                                destination = new File(f.toPath().resolve(name).toString());
-                                break;
-                            }
-                        }
-                        
-                        boolean noNewFileBrowserEntry = false;
-                        
-                        if (destination.exists() && !destination.isDirectory()) {
-                            noNewFileBrowserEntry = true;
-                        }
-                        
-                        Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                        if (!noNewFileBrowserEntry) {
-                            FileTreeItem item = new FileTreeItem(new FileWrapper(destination));
-                            item.setGraphic(item.getIconNodeByFile(destination));
-                            fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
-                        }
-                    } catch (IOException e) {
-                        Alert alert = new Alert(AlertType.ERROR);
-                        alert.setTitle("ERROR");
-                        alert.setHeaderText("Error");
-                        alert.setContentText("There was an error pasting the file "+file.getName()+"!");
-                        alert.showAndWait();
-                    } finally {
-                        ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem().getParent()).sortChildren(false);
-                    }
-                }
+                copyFile(false);
+            }
+        });
+        paste.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                copyFile(true);
             }
         });
         
@@ -775,6 +717,88 @@ public class EditorController implements Initializable {
         TreeItem<FileWrapper> item = fileBrowser.getSelectionModel().getSelectedItem();
         if (item != null) {
             copyStringToClipboard(item.getValue().toString());
+        }
+    }
+    
+    private void copyFile(boolean selectedItemIsDirectory) {
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        List<File> files = clipboard.getFiles();
+        if (files == null || files.size() == 0) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("No file to paste");
+            alert.setHeaderText("No file to paste");
+            alert.setContentText("There is no file in the clipboard!");
+            alert.showAndWait();
+            return;
+        }
+        
+        File f = null;
+        
+        if (selectedItemIsDirectory) {
+            f = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false).toString());
+        } else {
+            f = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem().getParent(), false, false).toString());
+        }
+        
+        for (File file : files) {
+            try {
+                File destination = new File (f.toPath().resolve(file.getName()).toString());
+                if (destination.exists() && !destination.isDirectory()) {
+                    String error = "";
+                    String name = file.getName();
+                    while (true) {
+                        TextInputDialog dialog = new TextInputDialog(name);
+                        dialog.setTitle("Copy file");
+                        dialog.setHeaderText("Copy file:"+error);
+                        dialog.setContentText("The file "+name+" already exists. Please enter a new file name or replace the existing file:");
+                        
+                        Optional<String> result = dialog.showAndWait();
+                        if (!result.isPresent())
+                            return;
+                        name = result.get();
+                        if (name.equals("") || name == null) {
+                            error = "\n\nERROR: Please enter a file name!";
+                            System.out.println("A");
+                            continue;
+                        }
+                        if (name.contains("../") || name.contains("..\\")) {
+                            error = "\n\nERROR: Please enter a valid file name!";
+                            continue;
+                        }
+                        destination = new File(f.toPath().resolve(name).toString());
+                        break;
+                    }
+                }
+                
+                boolean noNewFileBrowserEntry = false;
+                
+                if (destination.exists() && !destination.isDirectory()) {
+                    noNewFileBrowserEntry = true;
+                }
+                
+                Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                if (!noNewFileBrowserEntry) {
+                    FileTreeItem item = new FileTreeItem(new FileWrapper(destination));
+                    item.setGraphic(item.getIconNodeByFile(destination));
+                    if (selectedItemIsDirectory) {
+                        fileBrowser.getSelectionModel().getSelectedItem().getChildren().add(item);
+                    } else {
+                        fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
+                    }
+                }
+            } catch (IOException e) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("ERROR");
+                alert.setHeaderText("Error");
+                alert.setContentText("There was an error pasting the file "+file.getName()+"!");
+                alert.showAndWait();
+            } finally {
+                if (selectedItemIsDirectory) {
+                    ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);
+                } else {
+                    ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem().getParent()).sortChildren(false);
+                }
+            }
         }
     }
 
