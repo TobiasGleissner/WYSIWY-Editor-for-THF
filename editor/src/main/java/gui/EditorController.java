@@ -416,8 +416,15 @@ public class EditorController implements Initializable {
         MenuItem renameFile = new MenuItem("Rename");
         MenuItem pasteFile = new MenuItem("Paste");
         MenuItem deleteFile = new MenuItem("Delete");
-        contextMenuFile.getItems().addAll(copyFile, copyFileName, copyPathFile, copyRelPathFile, copyContent, renameFile, pasteFile, deleteFile);
+        MenuItem runProver = new MenuItem("Run prover");
+        contextMenuFile.getItems().addAll(copyFile, copyFileName, copyPathFile, copyRelPathFile, copyContent, renameFile, pasteFile, deleteFile, runProver);
 
+        runProver.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("Run prover ...");
+            }
+        });
         
         newFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
