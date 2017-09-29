@@ -87,7 +87,7 @@ public class Config {
         prefs.put("urlSystemOnTPTPFormRepl", arg);
         flush();
     }
-    public static List<ProverConfiguration> getConfiguredRemoteProvers(){
+    public static List<ProverConfiguration> getCustomRemoteProvers(){
         int numProvers = prefs.getInt("remoteProversLen",0);
         List<ProverConfiguration> provers = new ArrayList<>();
         for (int i = 0; i < numProvers; i++){
@@ -109,7 +109,7 @@ public class Config {
         }
         return provers;
     }
-    public static void setConfiguredRemoteProvers(List<ProverConfiguration> provers){
+    public static void setCustomRemoteProvers(List<ProverConfiguration> provers){
         prefs.putInt("remoteProversLen",provers.size());
         for (int i = 0; i < provers.size(); i++){
             prefs.put("remoteProverName" + i, provers.get(i).proverName);

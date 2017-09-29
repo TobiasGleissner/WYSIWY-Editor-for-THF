@@ -31,6 +31,8 @@ public class HttpRequest {
         con.setRequestProperty(Config.USER_AGENT, HttpRequest.USER_AGENT);
         String urlParameters = this.createParameters();
 
+        System.out.println(urlParameters);
+
         // Send post request
         con.setDoOutput(true);
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());

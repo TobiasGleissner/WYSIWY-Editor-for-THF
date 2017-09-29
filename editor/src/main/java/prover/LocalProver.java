@@ -142,9 +142,9 @@ public class LocalProver implements Prover {
         Config.setLocalProvers(allProversListed);
     }
 
-    public ProveResult testTHFProver(String proverCommand) throws ProverNotAvailableException, IOException, ProverResultNotInterpretableException {
+    public ProveResult testLocalProver(String proverCommand) throws ProverNotAvailableException, IOException, ProverResultNotInterpretableException {
         String testProblem = "thf(1,conjecture,$true).";
-        return prove(testProblem,proverCommand,5);
+        return proveHelper(testProblem,proverCommand,5);
     }
 
     private ProveResult proveHelper(String problem, String proverCommand, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
@@ -159,8 +159,8 @@ public class LocalProver implements Prover {
             throw e;
         }
 
-        proverCommand = proverCommand.replace("%f", tempFile.getAbsolutePath());
-        proverCommand = proverCommand.replace("%t", Integer.toString(timeLimit));
+        proverCommand = proverCommand.replace("%s", tempFile.getAbsolutePath());
+        proverCommand = proverCommand.replace("%d", Integer.toString(timeLimit));
         String cmdTreeLimitedRun = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         cmdTreeLimitedRun += "../scripts/TreeLimitedRun";
         cmdTreeLimitedRun = cmdTreeLimitedRun
