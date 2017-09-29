@@ -398,12 +398,13 @@ public class EditorController implements Initializable {
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem newFile = new MenuItem("New file");
         MenuItem newDirectory = new MenuItem("New directory");
+        MenuItem copy = new MenuItem("Copy");
         MenuItem copyDirName = new MenuItem("Copy directory name");
         MenuItem copyPath = new MenuItem("Copy path to clipboard");
         MenuItem copyRelPath = new MenuItem("Copy relative path to clipboard");
         MenuItem cut = new MenuItem("Cut");
         MenuItem paste = new MenuItem("Paste");
-        contextMenu.getItems().addAll(newFile, newDirectory, copyDirName, copyPath, copyRelPath, cut, paste);
+        contextMenu.getItems().addAll(newFile, newDirectory, copy, copyDirName, copyPath, copyRelPath, cut, paste);
 
         final ContextMenu contextMenuFile = new ContextMenu();
         MenuItem copyFile = new MenuItem("Copy");
@@ -534,15 +535,13 @@ public class EditorController implements Initializable {
         copyFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false);
-                
-                final Clipboard clipboard = Clipboard.getSystemClipboard();
-                
-                final ClipboardContent content = new ClipboardContent();
-                ArrayList<File> fileList = new ArrayList<File>();
-                fileList.add(new File(path.toString()));
-                content.putFiles(fileList);
-                clipboard.setContent(content);
+                copyFileOrDirToClipboard();
+            }
+        });
+        copy.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                copyFileOrDirToClipboard();
             }
         });
         copyFileName.setOnAction(new EventHandler<ActionEvent>() {
@@ -716,6 +715,18 @@ public class EditorController implements Initializable {
         if (item != null) {
             copyStringToClipboard(item.getValue().toString());
         }
+    }
+    
+    private void copyFileOrDirToClipboard() {
+        Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false);
+        
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        
+        final ClipboardContent content = new ClipboardContent();
+        ArrayList<File> fileList = new ArrayList<File>();
+        fileList.add(new File(path.toString()));
+        content.putFiles(fileList);
+        clipboard.setContent(content);
     }
     
     /**
