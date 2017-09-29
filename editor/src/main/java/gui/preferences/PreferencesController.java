@@ -141,10 +141,18 @@ public class PreferencesController implements Initializable {
         proverNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (currentProver != null && currentProver.equals(newValue))
                 nameTakenWarning.setVisible(false);
-            else if (lp.getAllProverNames().contains(newValue))
-                nameTakenWarning.setVisible(true);
-            else
-                nameTakenWarning.setVisible(false);
+            else {
+                if (currentItem.getParent().equals(rootLocalProvers)){
+                    if (lp.getAllProverNames().contains(newValue))
+                        nameTakenWarning.setVisible(true);
+                }
+                else if (currentItem.getParent().equals(rootRemoteProvers)){
+                    if (rp.getAllCustomProverNames().contains(newValue))
+                        nameTakenWarning.setVisible(true);
+                } else {
+                    nameTakenWarning.setVisible(false);
+                }
+            }
         });
     }
 
@@ -223,7 +231,7 @@ public class PreferencesController implements Initializable {
             }
         } else if (currentItem.getParent().equals(rootRemoteProvers)){
             if (rp.getAllCustomProverNames().contains(proverName) && !currentProver.equals(proverName)) {
-                log.warning("Could not apply: A local prover with name='" + proverName + "' already exists.");
+                log.warning("Could not apply: A remote prover with name='" + proverName + "' already exists.");
                 return;
             }
             try {
@@ -270,6 +278,7 @@ public class PreferencesController implements Initializable {
             } else if (currentItem.getParent().equals(rootRemoteProvers)) {
                 System.out.println("REMOTE!");
                 try {
+                    // TODO this must be the actual name instead of currentProver
                     ProveResult pr = rp.testRemoteProver(currentProver,proverCommand);
                     System.out.println(pr.stdout);
                     log.info("Prover command working. Command='" + proverCommand + "'.");
