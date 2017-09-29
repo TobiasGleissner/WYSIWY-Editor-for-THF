@@ -42,6 +42,15 @@ public class TPTPDefinitions {
     public static List<TPTPSubDialect> getTPTPSubDialectsFromTPTPDialect(TPTPDialect dialect){
         return tptpDialectTPTPSubDialectMap.get(dialect);
     }
+    public static List<TPTPSubDialect> getCompatibleSubDialects(TPTPSubDialect dialect){
+        List<TPTPSubDialect> ret = new ArrayList<>();
+        switch (dialect){
+            case TH1: ret.add(TPTPSubDialect.TH0); ret.add(TPTPSubDialect.TH1); break;
+            case TF1: ret.add(TPTPSubDialect.TF0); ret.add(TPTPSubDialect.TF1); break;
+            default: ret.add(dialect);
+        }
+        return ret;
+    }
 
     // SZS Deductive Status
     public enum SZSDeductiveStatus {SAT,THM,EQV,WTH,TAC,ETH,TAU,CAX,SCA,TCA,CSA,CTH,CEQ,WCT,UNC,ECT,UNS,SCC,UCA,NOC}
