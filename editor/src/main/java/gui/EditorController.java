@@ -402,10 +402,9 @@ public class EditorController implements Initializable {
         MenuItem copyDirName = new MenuItem("Copy directory name");
         MenuItem copyPath = new MenuItem("Copy path to clipboard");
         MenuItem copyRelPath = new MenuItem("Copy relative path to clipboard");
-        MenuItem cut = new MenuItem("Cut");
         MenuItem paste = new MenuItem("Paste");
         MenuItem delete = new MenuItem("Delete");
-        contextMenu.getItems().addAll(newFile, newDirectory, copy, copyDirName, copyPath, copyRelPath, cut, paste, delete);
+        contextMenu.getItems().addAll(newFile, newDirectory, copy, copyDirName, copyPath, copyRelPath, paste, delete);
 
         final ContextMenu contextMenuFile = new ContextMenu();
         MenuItem copyFile = new MenuItem("Copy");
@@ -413,10 +412,10 @@ public class EditorController implements Initializable {
         MenuItem copyPathFile = new MenuItem("Copy path to clipboard");
         MenuItem copyRelPathFile = new MenuItem("Copy relative path to clipboard");
         MenuItem copyContent = new MenuItem("Copy file content to clipboard");
-        MenuItem cutFile = new MenuItem("Cut");
+        MenuItem renameFile = new MenuItem("Rename");
         MenuItem pasteFile = new MenuItem("Paste");
         MenuItem deleteFile = new MenuItem("Delete");
-        contextMenuFile.getItems().addAll(copyFile, copyFileName, copyPathFile, copyRelPathFile, copyContent, cutFile, pasteFile, deleteFile);
+        contextMenuFile.getItems().addAll(copyFile, copyFileName, copyPathFile, copyRelPathFile, copyContent, renameFile, pasteFile, deleteFile);
 
         
         newFile.setOnAction(new EventHandler<ActionEvent>() {
@@ -511,10 +510,48 @@ public class EditorController implements Initializable {
             }
         });
         
-        cut.setOnAction(new EventHandler<ActionEvent>() {
+        renameFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Cut...");
+                File source = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), true, false).toString());
+                String error = "";
+                String name = null;
+                Path directory = null;
+                
+                while (true) {
+                    TextInputDialog dialog = new TextInputDialog(source.getName());
+                    dialog.setTitle("Rename file");
+                    dialog.setHeaderText("New file name"+error);
+                    dialog.setContentText("Please enter the new file name:");
+                    
+                    Optional<String> result = dialog.showAndWait();
+                    if (!result.isPresent())
+                        break;
+                    name = result.get();
+                    if (name.equals("") || name == null) {
+                        error = "\n\nERROR: Please enter a file name!";
+                        continue;
+                    }
+                    if (name.contains("../") || name.contains("..\\")) {
+                        error = "\n\nERROR: Please enter a valid file name!";
+                        continue;
+                    }
+                    directory = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem().getParent(), false, false);
+                    Path newFile = directory.resolve(name);
+                    File file = new File(newFile.toString());
+                    if (source.renameTo(file)) {
+                        FileTreeItem item = new FileTreeItem(new FileWrapper(file));
+                        TreeItem<FileWrapper> sourceItem = fileBrowser.getSelectionModel().getSelectedItem();
+                        sourceItem.getParent().getChildren().remove(sourceItem);
+                        item.setGraphic(item.getIconNodeByFile(file));
+                        fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
+                        ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);
+                        //FileTreeView.updateTree(fileBrowser.getSelectionModel().getSelectedItem(), fileBrowser.getRoot(), new File(directory.toString()));
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
             }
         });
         
@@ -636,8 +673,6 @@ public class EditorController implements Initializable {
 
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK){
-
-
                     try {
                         org.apache.commons.io.FileUtils.deleteDirectory(file);
                         item.getParent().getChildren().remove(item);
@@ -802,7 +837,6 @@ public class EditorController implements Initializable {
                         name = result.get();
                         if (name.equals("") || name == null) {
                             error = "\n\nERROR: Please enter a file name!";
-                            System.out.println("A");
                             continue;
                         }
                         if (name.contains("../") || name.contains("..\\")) {
