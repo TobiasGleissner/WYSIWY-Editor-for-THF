@@ -125,7 +125,10 @@ public class FileTreeItem extends TreeItem<FileWrapper> implements Comparable<Fi
         return iconNode;
     }
     
-
+    /**
+     * Sort children of a FileTreeItem lexicographically (separately for folders and files).
+     * @param alsoChildrenOfChildren: Sort also the children of the children.
+     */
     public void sortChildren(Boolean alsoChildrenOfChildren) {
         List<TreeItem<FileWrapper>> list = this.getChildren();
         
