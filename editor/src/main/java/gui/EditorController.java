@@ -434,6 +434,7 @@ public class EditorController implements Initializable {
                             FileTreeItem item = new FileTreeItem(new FileWrapper(file));
                             item.setGraphic(item.getIconNodeByFile(file));
                             fileBrowser.getSelectionModel().getSelectedItem().getChildren().add(item);
+                            ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);
                             //FileTreeView.updateTree(fileBrowser.getSelectionModel().getSelectedItem(), fileBrowser.getRoot(), new File(directory.toString()));
                             break;
                         } else {
@@ -481,6 +482,7 @@ public class EditorController implements Initializable {
                         FileTreeItem item = new FileTreeItem(new FileWrapper(file));
                         item.setGraphic(item.getIconNodeByFile(file));
                         fileBrowser.getSelectionModel().getSelectedItem().getChildren().add(item);
+                        ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);
                         break;
                     } else {
                         continue;

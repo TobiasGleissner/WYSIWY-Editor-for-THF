@@ -1,7 +1,9 @@
 package gui.fileBrowser;
 
 import java.io.File;
+import java.util.List;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -24,7 +26,7 @@ import jiconfont.javafx.IconNode;
  *         during runtime the whole tree would have to be rebuild. Event
  *         handling is not provided in this implementation.
  */
-public class FileTreeItem extends TreeItem<FileWrapper> {
+public class FileTreeItem extends TreeItem<FileWrapper> implements Comparable<FileTreeItem> {
 
     static FontAwesome iconFile = FontAwesome.FILE_O;
     static FontAwesome iconTPTP = FontAwesome.FILE_CODE_O;
@@ -122,8 +124,38 @@ public class FileTreeItem extends TreeItem<FileWrapper> {
         iconNode.getStyleClass().add("filebrowser-icon");
         return iconNode;
     }
+    
+
+    public void sortChildren(Boolean alsoChildrenOfChildren) {
+        List<TreeItem<FileWrapper>> list = this.getChildren();
+        
+        if (list.size() == 0)
+            return;
+        Collections.sort(list);
+        
+        if (alsoChildrenOfChildren) {
+            for (TreeItem<FileWrapper> child : list) {
+                ((FileTreeItem) child).sortChildren(true);
+            }
+        }
+    }
+    
+    @Override
+    public int compareTo(FileTreeItem other) {
+        if (this.getValue().f.isDirectory() && other.getValue().f.isDirectory() || !this.getValue().f.isDirectory() && !other.getValue().f.isDirectory()) {
+            return this.getValue().f.getName().compareTo(other.getValue().f.getName());
+        }
+        if (this.getValue().f.isDirectory()) {
+            return -1;
+        } else {
+            return 1;
+        }
+            
+    }
 
     private boolean isFirstTimeChildren = true;
     private boolean isFirstTimeLeaf = true;
     private boolean isLeaf;
+
+
 }

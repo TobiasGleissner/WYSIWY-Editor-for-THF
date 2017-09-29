@@ -18,11 +18,13 @@ public class FileTreeView extends TreeView<FileWrapper> {
 
     public void openDirectory(File f){
         //this.getChildren().clear();
-        TreeItem<FileWrapper> root = new FileTreeItem(new FileWrapper(f));
+        FileTreeItem root = new FileTreeItem(new FileWrapper(f));
         IconNode icon = new IconNode(FileTreeItem.iconDirectory);
         icon.getStyleClass().add("filebrowser-icon");
         root.setGraphic(icon);
         this.setRoot(root);
+        
+        root.sortChildren(true);
     }
     
     /**
@@ -52,5 +54,4 @@ public class FileTreeView extends TreeView<FileWrapper> {
         }
         
     }
-    
 }
