@@ -31,12 +31,14 @@
 
                                  <Label layoutX="363.0" layoutY="75.0" text="Prover command" />
                                  <TextField fx:id="proverCommandTextField" layoutX="484.0" layoutY="71.0" prefHeight="40.0" prefWidth="303.0" />
-                                 <Label layoutX="484.0" layoutY="123.0" text="Indicate filename with %f and timeout with %t" />
-                                 <TreeView fx:id="localProverTree" layoutX="14.0" layoutY="48.0" />
-   
-                                 <Button fx:id="newProverButton" layoutX="24.0" layoutY="20.0" mnemonicParsing="false" onAction="#onNewProver" text="New" />
-                                 <Button fx:id="deleteProverButton" layoutX="77.0" layoutY="20.0" mnemonicParsing="false" onAction="#onDeleteProver" text="Delete" />
-                                 <Button fx:id="testProverCommandButton" layoutX="617.0" layoutY="153.0" mnemonicParsing="false" onAction="#onTestProver" text="Test Prover Command" />
+                                 <Label layoutX="484.0" layoutY="123.0" text="Indicate filename with %s and timeout with %d" />
+
+                                 <Button fx:id="newLocalProverButton" layoutX="10.0" layoutY="20.0" mnemonicParsing="false" onAction="#onNewLocalProver" text="New local prover" />
+                                 <Button fx:id="newRemoteProverButton" layoutX="10.0" layoutY="60.0" mnemonicParsing="false" onAction="#onNewRemoteProver" text="New remote prover" />
+                                 <Button fx:id="deleteProverButton" layoutX="10.0" layoutY="100.0" mnemonicParsing="false" onAction="#onDeleteProver" text="Delete" />
+                                 <TreeView fx:id="proverTree" layoutX="10.0" layoutY="140.0" />
+
+                                   <Button fx:id="testProverCommandButton" layoutX="617.0" layoutY="153.0" mnemonicParsing="false" onAction="#onTestProver" text="Test Prover Command" />
                                  <Button fx:id="applyButton" layoutX="491.0" layoutY="154.0" mnemonicParsing="false" onAction="#onApplyProvers" text="Apply" />
 
                                  <Label layoutX="363.0" layoutY="484.0" text="Supported dialects" />
