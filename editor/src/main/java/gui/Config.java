@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import prover.TPTPDefinitions;
-import prover.local.LocalProverConfiguration;
+import prover.ProverConfiguration;
 
 public class Config {
     public static Preferences prefs = Preferences.userNodeForPackage(Config.class);
@@ -87,13 +87,49 @@ public class Config {
         prefs.put("urlSystemOnTPTPFormRepl", arg);
         flush();
     }
+    public static List<ProverConfiguration> getConfiguredRemoteProvers(){
+        int numProvers = prefs.getInt("remoteProversLen",0);
+        List<ProverConfiguration> provers = new ArrayList<>();
+        for (int i = 0; i < numProvers; i++){
+            ProverConfiguration pc = new ProverConfiguration();
+            pc.proverName = prefs.get("remoteProverName" + i,null);
+            pc.proverCommand = prefs.get("remoteProverCommand" + i,null);
+            String subdialects = prefs.get("remoteProverSubDialects" + i,null);
+            List<TPTPDefinitions.TPTPSubDialect> subDialectList = new ArrayList<>();
+            for (String subdialectString : subdialects.split(",")){
+                try {
+                    if (!subdialectString.equals(""))
+                        subDialectList.add(TPTPDefinitions.TPTPSubDialect.valueOf(subdialectString));
+                } catch (IllegalArgumentException e) {
+                    // does not happen
+                }
+            }
+            pc.subDialects = subDialectList;
+            provers.add(pc);
+        }
+        return provers;
+    }
+    public static void setConfiguredRemoteProvers(List<ProverConfiguration> provers){
+        prefs.putInt("remoteProversLen",provers.size());
+        for (int i = 0; i < provers.size(); i++){
+            prefs.put("remoteProverName" + i, provers.get(i).proverName);
+            prefs.put("remoteProverCommand" + i, provers.get(i).proverCommand);
+            String subDialects = String.join(",",
+                    provers.get(i).subDialects.stream()
+                            .map(Enum::name)
+                            .collect(Collectors.toList())
+            );
+            prefs.put("remoteProverSubDialects" + i, subDialects);
+        }
+        flush();
+    }
 
     // prover local
-    public static List<LocalProverConfiguration> getLocalProvers(){
+    public static List<ProverConfiguration> getLocalProvers(){
         int numProvers = prefs.getInt("localProversLen",0);
-        List<LocalProverConfiguration> provers = new ArrayList<>();
+        List<ProverConfiguration> provers = new ArrayList<>();
         for (int i = 0; i < numProvers; i++){
-            LocalProverConfiguration pc = new LocalProverConfiguration();
+            ProverConfiguration pc = new ProverConfiguration();
             pc.proverName = prefs.get("localProverName" + i,null);
             pc.proverCommand = prefs.get("localProverCommand" + i,null);
             String subdialects = prefs.get("localProverSubDialects" + i,null);
@@ -111,7 +147,7 @@ public class Config {
         }
         return provers;
     }
-    public static void setLocalProvers(List<LocalProverConfiguration> provers){
+    public static void setLocalProvers(List<ProverConfiguration> provers){
         prefs.putInt("localProversLen",provers.size());
         for (int i = 0; i < provers.size(); i++){
             prefs.put("localProverName" + i, provers.get(i).proverName);
@@ -125,5 +161,6 @@ public class Config {
         }
         flush();
     }
+
 
 }

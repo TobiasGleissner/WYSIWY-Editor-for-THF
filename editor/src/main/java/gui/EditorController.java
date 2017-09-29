@@ -85,11 +85,9 @@ import gui.fileStructure.StructureTreeView;
 import gui.fileBrowser.FileTreeItem;
 import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
-import prover.Prover;
-import prover.ProvingHistory;
 import prover.TPTPDefinitions;
-import prover.remote.HttpProver;
-import prover.local.LocalProver;
+import prover.SystemOnTPTPProver;
+import prover.LocalProver;
 import gui.preferences.PreferencesController;
 import gui.preferences.PreferencesModel;
 
@@ -837,7 +835,7 @@ public class EditorController implements Initializable {
     private void addCurrentlyAvailableProversToMenus() {
         try {
             List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
-            List<String> availableProversRemote = HttpProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
+            List<String> availableProversRemote = SystemOnTPTPProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
             ToggleGroup menubarProvers = new ToggleGroup();
             // addDocument list of local provers to menubar
             MenuItem labelForLocalProvers = new MenuItem("Local provers");

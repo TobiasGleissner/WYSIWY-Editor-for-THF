@@ -4,27 +4,15 @@ import exceptions.ProverNotAvailableException;
 import exceptions.ProverResultNotInterpretableException;
 import gui.EditorDocument;
 import gui.Logging;
-import prover.local.LocalProver;
-import prover.remote.HttpProver;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class ProvingHistory {
-
-    public static void main(String[] args) throws IOException {
-
-        List<TPTPDefinitions.TPTPSubDialect> subDialects = new ArrayList<>();
-        subDialects.add(TPTPDefinitions.TPTPSubDialect.TH0);
-        HttpProver.getInstance().getAvailableProvers(subDialects).forEach(System.out::println);
-
-    }
-
     private static final Logging log = Logging.getInstance();
     private static ProvingHistory instance;
     LocalProver localProver;
-    HttpProver httpProver;
+    SystemOnTPTPProver systemOnTPTPProver;
 
     public Map<EditorDocument,List<ProvingEntry>> documentToEntryListMap;
     public List<ProvingEntry> entryList;
@@ -36,9 +24,9 @@ public class ProvingHistory {
             instance = new ProvingHistory();
             instance.localProver = LocalProver.getInstance();
             try {
-                instance.httpProver = HttpProver.getInstance();
+                instance.systemOnTPTPProver = SystemOnTPTPProver.getInstance();
             } catch (IOException e) {
-                instance.httpProver = null;
+                instance.systemOnTPTPProver = null;
                 log.warning("Remote provers are not available.");
             }
             instance.documentToEntryListMap = new HashMap<>();
@@ -77,17 +65,17 @@ public class ProvingHistory {
                 break;
             }
             case SYSTEMONTPTP_PROVER:{
-                if (httpProver == null){
+                if (systemOnTPTPProver == null){
                     try {
-                        httpProver = HttpProver.getInstance();
+                        systemOnTPTPProver = SystemOnTPTPProver.getInstance();
                     } catch (IOException e) {
-                        httpProver = null;
+                        systemOnTPTPProver = null;
                         log.error("Remote provers are not available.");
                         return;
                     }
                 }
                 try {
-                    proveResult = httpProver.prove(problemWithIncludes,proverName,timeLimit);
+                    proveResult = systemOnTPTPProver.prove(problemWithIncludes,proverName,timeLimit);
                 } catch (ProverNotAvailableException e) {
                     log.error("The selected prover does not exist or is malfunctioning. ProverName='"
                             + proverName + "' ProverType='" + proverType.name() + "'.");

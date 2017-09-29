@@ -9,15 +9,15 @@ public class TPTPDefinitions {
 
     // TPTP Dialects
     public enum TPTPDialect {THF,TFX,TFF,TCF,FOF,CNF}
-    public enum TPTPSubDialect {THF,TH0,TH1,TFX,TFF,TF0,TF1,TCF,FOF,CNF}
+    public enum TPTPSubDialect {TH0,TH1,TFX,TF0,TF1,TCF,FOF,CNF}
     private static Map<TPTPSubDialect,TPTPDialect> tptpSubDialectTPTPDialectMap;
     static{
         tptpSubDialectTPTPDialectMap = new HashMap<>();
-        tptpSubDialectTPTPDialectMap.put(TPTPSubDialect.THF,TPTPDialect.THF);
+        //tptpSubDialectTPTPDialectMap.put(TPTPSubDialect.THF,TPTPDialect.THF);
         tptpSubDialectTPTPDialectMap.put(TPTPSubDialect.TH0,TPTPDialect.THF);
         tptpSubDialectTPTPDialectMap.put(TPTPSubDialect.TH1,TPTPDialect.THF);
         tptpSubDialectTPTPDialectMap.put(TPTPSubDialect.TFX,TPTPDialect.TFX);
-        tptpSubDialectTPTPDialectMap.put(TPTPSubDialect.TFF,TPTPDialect.TFF);
+        //tptpSubDialectTPTPDialectMap.put(TPTPSubDialect.TFF,TPTPDialect.TFF);
         tptpSubDialectTPTPDialectMap.put(TPTPSubDialect.TF0,TPTPDialect.TFF);
         tptpSubDialectTPTPDialectMap.put(TPTPSubDialect.TF1,TPTPDialect.TFF);
         tptpSubDialectTPTPDialectMap.put(TPTPSubDialect.TCF,TPTPDialect.TCF);
