@@ -7,6 +7,10 @@ import java.io.StringReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import java.nio.file.Path;
+
+import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
@@ -14,7 +18,15 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import javafx.concurrent.Worker;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+
+import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
+
+import javafx.stage.Stage;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -24,6 +36,8 @@ import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
+
+import netscape.javascript.JSObject;
 
 import util.tree.Node;
 import util.SpanElement;
@@ -45,15 +59,82 @@ public class EditorDocumentModel
 
     private LinkedList<String> css;
 
+    private Queue<Callable<Void>> delayedActions;
+
     private int parserNodeIdCur = 0;
+
+    public class JSCallbackListener
+    {
+        private EditorDocumentModel model;
+        public JSCallbackListener(EditorDocumentModel model)
+        {
+            this.model = model;
+        }
+        public int start_parsing(int startNode, int endNode)
+        {
+            try
+            {
+                return model.reparseArea(startNode, endNode);
+            }
+            catch(Throwable e)
+            {
+                e.printStackTrace();
+                throw e;
+            }
+        }
+        public void debug(String str)
+        {
+            System.out.println("DEBUG = " + str);
+        }
+        public void sleep(Integer ms) {
+            try {Thread.sleep(ms.longValue()); }
+            catch(InterruptedException e) {}
+        }
+    }
+
+    private JSCallbackListener jsCallbackListener;
 
     public EditorDocumentModel(WebEngine engine, EditorDocumentViewController view)
     {
         this.engine = engine;
         this.view = view;
         this.style = new WebKitStyle();
-        this.doc = engine.getDocument();
-        this.style.setDoc(doc);
+
+        this.delayedActions = new LinkedList<>();
+
+        this.engine.getLoadWorker().stateProperty().addListener(
+            new ChangeListener<Worker.State>()
+            {
+                @Override
+                public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState)
+                {
+                    if(newState == Worker.State.SUCCEEDED)
+                    {
+                        jsCallbackListener = new JSCallbackListener(EditorDocumentModel.this);
+
+                        doc = engine.getDocument();
+                        style.setDoc(doc);
+
+                        JSObject window = (JSObject) engine.executeScript("window");
+                        window.setMember("java", jsCallbackListener);
+
+                        maybeCallDelayedActions();
+                    }
+                }
+            }
+        );
+
+        try
+        {
+            engine.loadContent(
+                IOUtils.toString(getClass().getResourceAsStream("/gui/editor.html"), "UTF-8")
+            );
+        }
+        catch(IOException ex)
+        {
+            /* TODO */
+            ex.printStackTrace();
+        }
 
         // Extract css classes for syntax highlighting from our css file.
         this.css = new LinkedList<String>();
@@ -70,6 +151,30 @@ public class EditorDocumentModel
             css.add("system_functor");
         }
         scanner.close();
+    }
+
+    private void maybeCallDelayedActions()
+    {
+        if(doc != null)
+        {
+            while(!delayedActions.isEmpty())
+            {
+                try
+                {
+                    delayedActions.poll().call();
+                }
+                catch(Exception e)
+                {
+                    log.debug(e.getMessage());
+                }
+            }
+        }
+    }
+
+    public boolean isEmpty()
+    {
+        /* TODO */
+        return false;
     }
 
     public void reparse()
@@ -459,34 +564,46 @@ public class EditorDocumentModel
         }
     }
 
-    public void openStream(InputStream stream, String name) {
-        try
-        {
-            String content = IOUtils.toString(stream, "UTF-8");
-
-            org.w3c.dom.Node editor = doc.getElementById("editor");
-
-            while(editor.hasChildNodes())
+    public void openStream(InputStream stream, Path file) {
+        delayedActions.add(
+            () ->
             {
-                editor.removeChild(editor.getFirstChild());
+                try
+                {
+                    String content = IOUtils.toString(stream, "UTF-8");
+
+                    org.w3c.dom.Node editor = doc.getElementById("editor");
+
+                    while(editor.hasChildNodes())
+                    {
+                        editor.removeChild(editor.getFirstChild());
+                    }
+
+                    Text textNode = doc.createTextNode(content);
+                    editor.appendChild(textNode);
+
+                    reparse();
+                    engine.executeScript("update_line_numbers()");
+
+                    if(file == null)
+                        view.setText("unnamed");
+                    else
+                        view.setText(file.getFileName().toString());
+                }
+                catch(IOException e)
+                {
+                    log.error(e.getMessage());
+                }
+
+                return null;
             }
+        );
 
-            Text textNode = doc.createTextNode(content);
-            editor.appendChild(textNode);
-
-            reparse();
-            engine.executeScript("update_line_numbers()");
-
-            view.setText(name);
-        }
-        catch(IOException e)
-        {
-            log.error(e.getMessage());
-        }
+        maybeCallDelayedActions();
     }
 
     public void openStream(InputStream stream) {
-        openStream(stream, "unnamed");
+        openStream(stream, null);
     }
 
     /**
@@ -500,7 +617,7 @@ public class EditorDocumentModel
         try
         {
             InputStream stream = new FileInputStream(file);
-            openStream(stream, file.toPath().getFileName().toString());
+            openStream(stream, file.toPath());
             log.info("Opened " + file.getAbsolutePath());
         }
         catch(FileNotFoundException e)

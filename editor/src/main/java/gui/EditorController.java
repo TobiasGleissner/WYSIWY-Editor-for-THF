@@ -98,12 +98,12 @@ public class EditorController implements Initializable {
     // ==========================================================================
 
     // DEBUG
-    @FXML public void debugALG0157() { model.openStream(getClass().getResourceAsStream("/test/ALG015^7.p")); }
-    @FXML public void debugCOM1601() { model.openStream(getClass().getResourceAsStream("/test/COM160^1.p")); }
-    @FXML public void debugLCL6331() { model.openStream(getClass().getResourceAsStream("/test/LCL633^1.p")); }
-    @FXML public void debugLCL6341() { model.openStream(getClass().getResourceAsStream("/test/LCL634^1.p")); }
-    @FXML public void debugSYN0001() { model.openStream(getClass().getResourceAsStream("/test/SYN000^1.p")); }
-    @FXML public void debugSYN0002() { model.openStream(getClass().getResourceAsStream("/test/SYN000^2.p")); }
+    @FXML public void debugALG0157() { model.openStream(getClass().getResourceAsStream("/test/ALG015^7.p"), Paths.get("ALG015^7.p")); }
+    @FXML public void debugCOM1601() { model.openStream(getClass().getResourceAsStream("/test/COM160^1.p"), Paths.get("COM160^1.p")); }
+    @FXML public void debugLCL6331() { model.openStream(getClass().getResourceAsStream("/test/LCL633^1.p"), Paths.get("LCL633^1.p")); }
+    @FXML public void debugLCL6341() { model.openStream(getClass().getResourceAsStream("/test/LCL634^1.p"), Paths.get("LCL634^1.p")); }
+    @FXML public void debugSYN0001() { model.openStream(getClass().getResourceAsStream("/test/SYN000^1.p"), Paths.get("SYN000^1.p")); }
+    @FXML public void debugSYN0002() { model.openStream(getClass().getResourceAsStream("/test/SYN000^2.p"), Paths.get("SYN000^2.p")); }
     // END DEBUG
 
     // Menu
@@ -164,8 +164,7 @@ public class EditorController implements Initializable {
         this.model.thfArea = thfArea;
 
         // Initialize THF WebView
-        EditorDocumentViewController emptyDoc = new EditorDocumentViewController(null);
-        emptyDoc.addSelf(this.thfArea.getTabs());
+        EditorDocumentViewController emptyDoc = new EditorDocumentViewController(null, this.thfArea.getTabs());
 
         // Initialize Output WebView
         log.outputEngine = outputWebView.getEngine();

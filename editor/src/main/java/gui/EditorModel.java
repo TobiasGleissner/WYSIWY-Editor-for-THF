@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import java.nio.file.Path;
+
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -97,13 +99,28 @@ public class EditorModel
         getSelectedTab().model.onViewDefaultFontSize();
     }
 
-    public void openStream(InputStream stream) {
-        getSelectedTab().model.openStream(stream);
+    public EditorDocumentViewController getNewTab() {
+        EditorDocumentViewController doc;
+
+        if(!getSelectedTab().model.isEmpty())
+        {
+            doc = new EditorDocumentViewController(null, this.thfArea.getTabs());
+            thfArea.getSelectionModel().select(doc.tab);
+        }
+        else
+        {
+            doc = getSelectedTab();
+        }
+
+        return doc;
     }
 
-    public void openFile(File file)
-    {
-        getSelectedTab().model.openFile(file);
+    public void openStream(InputStream stream, Path file) {
+        getNewTab().model.openStream(stream, file);
+    }
+
+    public void openFile(File file) {
+        getNewTab().model.openFile(file);
         updateRecentlyOpenedFiles(file);
     }
 }

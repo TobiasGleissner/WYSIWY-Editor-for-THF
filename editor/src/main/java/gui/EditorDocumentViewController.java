@@ -23,46 +23,17 @@ import gui.EditorDocumentModel;
 
 public class EditorDocumentViewController
 {
-    private WebView editor;
-    private Tab tab;
+    private List<Tab> tabs;
+    public Tab tab;
+    public WebView editor;
 
     public EditorDocument doc;
     public EditorDocumentModel model;
 
-    public class JSCallbackListener
-    {
-        private EditorDocumentModel model;
-        public JSCallbackListener(EditorDocumentModel model)
-        {
-            this.model = model;
-        }
-        public int start_parsing(int startNode, int endNode)
-        {
-            try
-            {
-                return model.reparseArea(startNode, endNode);
-            }
-            catch(Throwable e)
-            {
-                e.printStackTrace();
-                throw e;
-            }
-        }
-        public void debug(String str)
-        {
-            System.out.println("DEBUG = " + str);
-        }
-        public void sleep(Integer ms) {
-            try {Thread.sleep(ms.longValue()); }
-            catch(InterruptedException e) {}
-        }
-    }
-
-    private JSCallbackListener jsCallbackListener;
-
-    public EditorDocumentViewController(Path path)
+    public EditorDocumentViewController(Path path, List<Tab> tabs)
     {
         this.editor = new WebView();
+        this.editor.getEngine().setJavaScriptEnabled(true);
 
         this.tab = new Tab();
         if(path == null)
@@ -72,51 +43,32 @@ public class EditorDocumentViewController
         this.tab.setContent(this.editor);
         this.tab.setUserData(this);
 
-        this.editor.getEngine().setJavaScriptEnabled(true);
+        this.tabs = tabs;
+        this.tabs.add(this.tab);
 
-        this.model = null;
-        this.jsCallbackListener = null;
-
-        this.editor.getEngine().getLoadWorker().stateProperty().addListener(
-            new ChangeListener<Worker.State>()
+        this.tab.setOnCloseRequest(
+            e ->
             {
-                @Override
-                public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState)
+                /* Don't close the last tab. */
+                if(this.tabs.size() <= 1)
                 {
-                    if(newState == Worker.State.SUCCEEDED)
+                    if(this.model != null)
                     {
-                        model = new EditorDocumentModel(editor.getEngine(), EditorDocumentViewController.this);
-                        jsCallbackListener = new JSCallbackListener(model);
-
-                        JSObject window = (JSObject) editor.getEngine().executeScript("window");
-                        window.setMember("java", jsCallbackListener);
+                        this.model = new EditorDocumentModel(editor.getEngine(), EditorDocumentViewController.this);
                     }
+
+                    e.consume();
                 }
             }
         );
 
-        try
-        {
-            editor.getEngine().loadContent(
-                IOUtils.toString(getClass().getResourceAsStream("/gui/editor.html"), "UTF-8")
-            );
-        }
-        catch(IOException ex)
-        {
-            /* TODO */
-            ex.printStackTrace();
-        }
-
+        /* TODO: Merge these two. */
+        this.model = new EditorDocumentModel(editor.getEngine(), EditorDocumentViewController.this);
         this.doc = new EditorDocument(path);
     }
 
     public void setText(String text)
     {
         this.tab.setText(text);
-    }
-
-    public void addSelf(List<Tab> tabs)
-    {
-        tabs.add(this.tab);
     }
 }
