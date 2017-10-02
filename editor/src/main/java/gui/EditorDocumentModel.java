@@ -312,6 +312,12 @@ public class EditorDocumentModel
         else
             leftNode = editor.getFirstChild();
 
+        /* If the editor field is completely empty editor.getFirstChild()
+         * == null. Therefore we need to add a special case for it
+         * before using leftNode. */
+        if(leftNode == null)
+            return reparseString("", editor, null, true);
+
         boolean isFirst = leftNode.getPreviousSibling() == null;
 
         if(rightNodeId >= 0)
