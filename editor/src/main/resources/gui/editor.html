@@ -196,7 +196,7 @@
             if(parse_timeout)
                 clearTimeout(parse_timeout);
 
-            parse_ranges.push(range.cloneRange());
+            parse_ranges.push(range);
             parse_timeout = setTimeout(
                 function()
                 {
@@ -344,7 +344,6 @@
             else
                 node = editor.firstChild;
             var offset = get_range_as_text_offset(node, range);
-
             var id = java.start_parsing(start_node, end_node);
 
             node = document.getElementById("hm_node_" + id);
@@ -465,6 +464,27 @@
                     start_incremental_parsing_throttled(get_selected_range());
                     line_number_update_throttled();
                 }
+                else if(e.keyCode == 13)
+                {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    var range = get_selected_range();
+                    range.deleteContents();
+
+                    var text = document.createTextNode("\n");
+                    range.insertNode(text);
+                    range.selectNode(text);
+                    range.collapse(false);
+
+                    maybe_scroll_to_range(range);
+                    start_incremental_parsing_throttled(range);
+                    line_number_update_throttled();
+
+                    var selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
             }
         );
 
@@ -476,28 +496,22 @@
                 e.stopPropagation();
                 e.preventDefault();
 
-                var range = get_selected_range().cloneRange();
+                var range = get_selected_range();
                 range.deleteContents();
 
                 var new_text = String.fromCharCode(e.charCode);
-                if(e.charCode == 13)
-                {
-                    new_text = "\n";
-                }
-
                 var text = document.createTextNode(new_text);
                 range.insertNode(text);
                 range.selectNode(text);
                 range.collapse(false);
 
-                var selection = window.getSelection();
-                selection.removeAllRanges();
-                selection.addRange(range);
-
-                make_selection_valid(e);
                 maybe_scroll_to_range(range);
                 start_incremental_parsing_throttled(range);
                 line_number_update_throttled();
+
+                var selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
             }
         );
 
@@ -515,7 +529,7 @@
                 var clipboard_data = e.clipboardData;
                 var text = clipboard_data.getData('text/plain');
 
-                var range = get_selected_range().cloneRange();
+                var range = get_selected_range();
                 range.deleteContents();
                 var text_node = document.createTextNode(text);
                 range.insertNode(text_node);
