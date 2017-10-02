@@ -251,6 +251,7 @@
                 var is_first = true;
                 var is_last = true;
 
+                var prev_node = null;
                 if(node.nodeType == 3)
                 {
                     if(range.startOffset > 1)
@@ -263,13 +264,18 @@
                     /* For determining is_first and is_last in the next
                        part we need to start with the pointed-to child note
                        instead of the container. */
+                    prev_node = node;
+
                     if(i == 0)
                         node = node.childNodes.item(range.startOffset);
                     else
                         node = node.childNodes.item(range.endOffset);
                 }
 
-                var prev_node = null;
+                if(!node)
+                    node = prev_node;
+
+                prev_node = null;
                 var is_prev_first = is_first;
                 var is_prev_last  = is_last;
                 /* Find the node one before the editor node. */
@@ -564,6 +570,6 @@
 </head>
 <body>
     <div id="numbers"></div>
-    <div id="editor" contenteditable="true"></div>
+    <div id="editor" contenteditable="true" data-start="0"></div>
 </body>
 </html>

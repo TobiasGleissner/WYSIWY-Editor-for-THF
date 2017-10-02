@@ -612,42 +612,45 @@ public class EditorDocumentModel
      * Adds to recently opened files
      * @param file
      */
-    public void openFile(File file)
-    {
-        try
-        {
+    public void openFile(File file) {
+        try {
             InputStream stream = new FileInputStream(file);
             openStream(stream, file.toPath());
             log.info("Opened " + file.getAbsolutePath());
-        }
-        catch(FileNotFoundException e)
-        {
+        } catch(FileNotFoundException e) {
             log.error(e.getMessage());
         }
     }
 
-    public void onViewIncreaseFontSize()
-    {
+    public void onViewIncreaseFontSize() {
         style.increaseFontSize();
         engine.executeScript("update_line_numbers()");
     }
 
-    public void onViewDecreaseFontSize()
-    {
+    public void onViewDecreaseFontSize() {
         style.decreaseFontSize();
         engine.executeScript("update_line_numbers()");
     }
 
-    public void onViewEnterPresentationMode()
-    {
+    public void onViewEnterPresentationMode() {
         style.setFontSizeEditor(Config.fontSizePresentationMode);
         engine.executeScript("update_line_numbers()");
         // TODO close side drawer, ...
     }
 
-    public void onViewDefaultFontSize()
-    {
+    public void onViewDefaultFontSize() {
         style.setFontSizeEditor(Config.fontSizeEditorDefault);
         engine.executeScript("update_line_numbers()");
+    }
+
+    // ------- DEBUG FUNCTIONS -------
+    private void debugPrintHTMLImmediately() {
+        String content = (String) engine.executeScript("document.getElementsByTagName('html')[0].innerHTML");
+        System.out.println(content);
+    }
+
+    public void debugPrintHTML() {
+        delayedActions.add(() -> { debugPrintHTMLImmediately(); return null; });
+        maybeCallDelayedActions();
     }
 };

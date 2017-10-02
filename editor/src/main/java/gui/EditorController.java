@@ -946,18 +946,16 @@ public class EditorController implements Initializable {
     // Toolbar
     // ==========================================================================
 
-    @FXML private void onTestPref(ActionEvent e)
-    {
+    @FXML private void onTestPref(ActionEvent e) {
+        model.debugPrintHTML();
     }
 
     @FXML
-    private void onReparse(ActionEvent e)
-    {
+    private void onReparse(ActionEvent e) {
     }
 
     @FXML
-    private void onPrintTree(ActionEvent e)
-    {
+    private void onPrintTree(ActionEvent e) {
     }
 
     // ==========================================================================

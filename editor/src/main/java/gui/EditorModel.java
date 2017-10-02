@@ -123,4 +123,9 @@ public class EditorModel
         getNewTab().model.openFile(file);
         updateRecentlyOpenedFiles(file);
     }
+
+    // ------- DEBUG FUNCTIONS -------
+    public void debugPrintHTML() {
+        getSelectedTab().model.debugPrintHTML();
+    }
 }
