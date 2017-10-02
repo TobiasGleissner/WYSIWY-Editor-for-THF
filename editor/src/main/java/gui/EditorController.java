@@ -123,36 +123,10 @@ public class EditorController implements Initializable {
     @FXML private StructureTreeView structureView;
 
     // Editor
-    @FXML private WebView thfArea;
-    @FXML private WebView wysArea;
+    @FXML private TabPane thfArea;
 
     // Output
     @FXML public WebView outputWebView;
-
-    // ==========================================================================
-    // Class Definitions
-    // ==========================================================================
-
-    public class JSCallbackListener
-    {
-        private EditorModel model;
-        public JSCallbackListener(EditorModel model)
-        {
-            this.model = model;
-        }
-        public int start_parsing(int startNode, int endNode)
-        {
-            return model.reparseArea(startNode, endNode);
-        }
-        public void debug(String str)
-        {
-            System.out.println("DEBUG = " + str);
-        }
-        public void sleep(Integer ms) {
-            try {Thread.sleep(ms.longValue()); }
-            catch(InterruptedException e) {}
-        }
-    }
 
     // ==========================================================================
     // Controller Variables
@@ -165,9 +139,6 @@ public class EditorController implements Initializable {
     private Tab lastSelectedTabBeforeCollapse = null;
     static FontAwesome iconCollapse = FontAwesome.ANGLE_DOUBLE_DOWN;
     static FontAwesome iconUncollapse = FontAwesome.ANGLE_DOUBLE_UP;
-    JSObject jsDoc = null;
-    Document doc = null;
-    JSCallbackListener jsCallbackListener;
 
     // ==========================================================================
     // Constructors / Init
@@ -176,7 +147,6 @@ public class EditorController implements Initializable {
     public EditorController(EditorModel model, Stage mainStage) {
         this.model = model;
         this.mainStage = mainStage;
-        this.jsCallbackListener = new JSCallbackListener(model);
     }
 
     @Override
@@ -190,51 +160,12 @@ public class EditorController implements Initializable {
         });
         // END DEBUG
 
+        // Pass some members on to the model
+        this.model.thfArea = thfArea;
+
         // Initialize THF WebView
-        model.engine = this.thfArea.getEngine();
-        model.engine.setJavaScriptEnabled(true);
-        model.style = new WebKitStyle();
-        model.engine.getLoadWorker().stateProperty().addListener(
-                new ChangeListener<Worker.State>()
-                {
-                    @Override
-                    public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState)
-                    {
-                        if(newState == Worker.State.SUCCEEDED)
-                        {
-                            doc = model.engine.getDocument();
-                            model.doc = model.engine.getDocument();
-                            model.style.setDoc(doc);
-
-                            System.out.println("doc = " + doc);
-
-                            if(doc == null)
-                                return;
-
-                            jsDoc = (JSObject) doc;
-
-                            JSObject window = (JSObject) model.engine.executeScript("window");
-                            window.setMember("java", jsCallbackListener);
-
-                            Integer sel = (Integer) jsDoc.eval("getSelection().anchorOffset");
-                            System.out.println("selection = " + sel);
-                        }
-                    }
-                }
-        );
-        model.engine.setOnAlert(t -> System.out.println(t));
-        model.engine.setOnError(e -> System.out.println(e.getMessage()));
-        try
-        {
-            model.engine.loadContent(
-                    IOUtils.toString(getClass().getResourceAsStream("/gui/editor.html"), "UTF-8")
-            );
-        }
-        catch(IOException ex)
-        {
-            /* TODO */
-            ex.printStackTrace();
-        }
+        EditorDocumentViewController emptyDoc = new EditorDocumentViewController(null);
+        emptyDoc.addSelf(this.thfArea.getTabs());
 
         // Initialize Output WebView
         log.outputEngine = outputWebView.getEngine();
@@ -580,13 +511,13 @@ public class EditorController implements Initializable {
                 try {
                     stream = new FileInputStream(file);
                 } catch (FileNotFoundException e) {
-                    model.addErrorMessage(e);
+                    log.error(e.getMessage());
                 }
                 if (stream != null) {
                     try {
                         copyStringToClipboard(IOUtils.toString(stream, "UTF-8"));
                     } catch (IOException e1) {
-                        model.addErrorMessage(e1);
+                        log.error(e1.getMessage());
                     }
                 }
             }
@@ -1018,72 +949,16 @@ public class EditorController implements Initializable {
 
     @FXML private void onTestPref(ActionEvent e)
     {
-
-        Integer sel = (Integer) jsDoc.eval("getSelection().anchorOffset");
-        System.out.println("selection = " + sel);
-
-        StringBuilder content = new StringBuilder();
-        Stack<Node> nodes = new Stack<>();
-        nodes.push(doc.getFirstChild());
-
-        while(!nodes.empty())
-        {
-            Node n = nodes.pop();
-
-            if(n instanceof Text)
-            {
-                Text t = (Text)n;
-                content.append(t.getWholeText());
-            }
-
-            NodeList list = n.getChildNodes();
-            for(int i = list.getLength(); i > 0; --i)
-                nodes.push(list.item(i-1));
-
-            if(n instanceof Element)
-            {
-                Element el = (Element)n;
-                System.out.println("tag_name = '" + el.getTagName() + "'");
-                System.out.println("class = '" + el.getAttribute("class") + "'");
-
-                if(el.getTagName().equals("DIV") && el.getAttribute("class") == null)
-                    content.append("\n");
-            }
-        }
-
-        System.out.print("content = '");
-        System.out.print(content.toString());
-        System.out.println("'");
-
-        try
-        {
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = factory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-
-            StringWriter writer = new StringWriter();
-            StreamResult result = new StreamResult(writer);
-
-            transformer.transform(source, result);
-
-            System.out.print("content = '");
-            System.out.print(writer.toString());
-            System.out.println("'");
-        }
-        catch(Exception ex)
-        {
-            ex.printStackTrace();
-        }
     }
 
     @FXML
-    private void onReparse(ActionEvent e) {
-        model.reparse();
+    private void onReparse(ActionEvent e)
+    {
     }
 
     @FXML
-    private void onPrintTree(ActionEvent e) {
-        model.printTPTPTrees();
+    private void onPrintTree(ActionEvent e)
+    {
     }
 
     // ==========================================================================

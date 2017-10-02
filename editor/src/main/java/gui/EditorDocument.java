@@ -13,7 +13,7 @@ public class EditorDocument {
 
     private Path path; // Path to document. Meaning of value null see constructor.
 
-    private EditorDocument(){
+    private EditorDocument() {
         provingHistory.addDocument(this);
     }
 
