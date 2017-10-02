@@ -30,7 +30,7 @@ import javafx.stage.Stage;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
-
+import org.antlr.v4.runtime.Token;
 import org.apache.commons.io.IOUtils;
 
 import org.w3c.dom.Document;
@@ -451,6 +451,10 @@ public class EditorDocumentModel
             /* Preprocessing for highlighting: extract sections which have to be highlighted. */
             LinkedList<SpanElement> spanElements = new LinkedList<SpanElement>();
             addSpanElements(node, spanElements);
+            /* Add ranges of comments */
+            for (Token token : parseContext.getHiddenTokens()) {
+                spanElements.add(new SpanElement(token.getStartIndex(), token.getStopIndex(), "comment"));
+            }
             Collections.sort((List<SpanElement>) spanElements);
 
             Element newNode = doc.createElement("subsection");
@@ -473,6 +477,8 @@ public class EditorDocumentModel
             }
 
             StringBuilder builder = new StringBuilder();
+            
+            //System.out.println(part+" "+part.length());
 
             while (lastParsedToken < part.length()) {
 
