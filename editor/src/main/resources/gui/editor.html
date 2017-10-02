@@ -190,47 +190,34 @@
         }
 
         var parse_timeout = null;
-        var parse_ranges = [];
+        var parse_start = Infinity;
+        var parse_end = -Infinity;
         function start_incremental_parsing_throttled(range)
         {
             if(parse_timeout)
                 clearTimeout(parse_timeout);
 
-            parse_ranges.push(range);
+            ids = get_range_start_end(range);
+            if(ids[0] == -1)
+                parse_start = -1;
+            else
+                parse_start = Math.min(parse_start, ids[0]);
+
+            if(ids[1] == -1)
+                parse_end = -1;
+            else
+                parse_end = Math.max(parse_end, ids[1]);
+
             parse_timeout = setTimeout(
                 function()
                 {
                     parse_timeout = null;
-                    start_incremental_parsing_from_ranges();
-                    parse_ranges = [];
+                    start_incremental_parsing(parse_start, parse_end);
+                    parse_start = Infinity;
+                    parse_end = Infinity;
                 },
                 100
             );
-        }
-
-        function start_incremental_parsing_from_ranges()
-        {
-            var start_node = Infinity;
-            var end_node = -Infinity;
-
-            for(var i = 0; i < parse_ranges.length; ++i)
-            {
-                var range = parse_ranges[i];
-                ids = get_range_start_end(range);
-                range.detach();
-
-                if(ids[0] == -1)
-                    start_node = -1;
-                else
-                    start_node = Math.min(start_node, ids[0]);
-
-                if(ids[1] == -1)
-                    end_node = -1;
-                else
-                    end_node = Math.max(end_node, ids[1]);
-            }
-
-            start_inremental_parsing(start_node, end_node);
         }
 
         function get_range_start_end(range)
@@ -336,7 +323,7 @@
             return [start_node, end_node];
         }
 
-        function start_inremental_parsing(start_node, end_node)
+        function start_incremental_parsing(start_node, end_node)
         {
             var range = get_selected_range();
             if(start_node >= 0)
