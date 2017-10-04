@@ -253,7 +253,7 @@ public class EditorController implements Initializable {
         initializeListOfRecentlyOpenedFiles();
 
         // Initialize prover menu lists
-        addCurrentlyAvailableProversToMenus();
+        addCurrentlyAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
 
         // Initialize tabs on the left side
         makeTabPaneCollapsable();
@@ -920,11 +920,11 @@ public class EditorController implements Initializable {
         model.getSelectedTab().model.prove(currentlySelectedProver,currentlySelectedProverType,200);
     }
 
-    private void addCurrentlyAvailableProversToMenus() {
+    private void addCurrentlyAvailableProversToMenus(List<TPTPDefinitions.TPTPSubDialect> subdialects) {
         try {
-            List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
-            List<String> availableProversRemote = SystemOnTPTPProver.getInstance().getAvailableDefaultProvers(TPTPDefinitions.TPTPDialect.THF);
-            List<String> availableProversCustomRemote = SystemOnTPTPProver.getInstance().getAvailableCustomProvers(TPTPDefinitions.TPTPDialect.THF);
+            List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(subdialects);
+            List<String> availableProversRemote = SystemOnTPTPProver.getInstance().getAvailableDefaultProvers(subdialects);
+            List<String> availableProversCustomRemote = SystemOnTPTPProver.getInstance().getAvailableCustomProvers(subdialects);
             // add list of provers to menubar
             addCurrentlyAvailableProversToMenu(menubarProverSelectProver,availableProversLocal,"local");
             addCurrentlyAvailableProversToMenu(menubarProverSelectProver,availableProversRemote,"remote");
@@ -938,7 +938,7 @@ public class EditorController implements Initializable {
         }
     }
 
-    private void addCurrentlyAvailableProversToMenu(Object fxmlObj, List provers, String kind) {
+    private void addCurrentlyAvailableProversToMenu(Object fxmlObj, List<String> provers, String kind) {
 
         List<MenuItem> items = new ArrayList<MenuItem>();
 
