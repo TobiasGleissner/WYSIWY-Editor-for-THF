@@ -1,53 +1,25 @@
 package gui;
 
 import java.io.File;
-import java.io.StringReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.lang.Throwable;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.web.WebEngine;
-
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-
-import org.apache.commons.io.IOUtils;
-
-import parser.AstGen;
-import parser.ParseContext;
-
-import exceptions.ParseException;
-import util.SpanElement;
-import util.tree.Node;
 
 public class EditorModel
 {
     private static Logging log = Logging.getInstance();
 
-    private int parserNodeIdCur = 0;
-
     public TabPane thfArea;
 
     public ObservableList<String> recentlyOpenedFiles;
-
-    public WebEngine outputEngine;
 
     public EditorModel()
     {
@@ -75,12 +47,6 @@ public class EditorModel
     public void clearRecentlyOpenedFilesList(){
         recentlyOpenedFiles.clear();
         Config.setRecentlyOpenedFiles(recentlyOpenedFiles);
-    }
-
-    public void printTPTPTrees()
-    {
-        System.out.println("------------------------");
-        System.out.println("------------------------");
     }
 
     public void onViewIncreaseFontSize() {
@@ -115,8 +81,21 @@ public class EditorModel
     }
 
     public void openFile(File file) {
+        Tab openedTab = null;
+        for (Tab t : thfArea.getTabs()){
+            if (((EditorDocumentViewController) t.getUserData()).model.getPath().equals(file.toPath())){
+                openedTab = t;
+                break;
+            }
+        }
+        if (openedTab != null){
+            thfArea.getSelectionModel().select(openedTab);
+            log.warning("File already opened. File='" + file + "'.");
+            return;
+        }
         getNewTab().model.openFile(file);
         updateRecentlyOpenedFiles(file);
+        log.info("Opened file='" + file + "'.");
     }
 
     public void saveFile(EditorDocumentModel m){
