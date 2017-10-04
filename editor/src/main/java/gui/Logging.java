@@ -25,6 +25,7 @@ public class Logging {
     private Node tableNode;
     private Document doc;
     private double fontSizeOutput;
+    public WebEngine outputEngine;
 
     private static String defaultCss;
     static {
@@ -34,7 +35,6 @@ public class Logging {
 
     private Logging(){}
 
-    public WebEngine outputEngine;
 
     public static Logging getInstance(){
         if (instance == null) instance = new Logging();
@@ -50,6 +50,7 @@ public class Logging {
 
     public void log(String msg,LogLevel logLevel){
         tableNode.appendChild(createRecord(msg,logLevel));
+        scroll();
     }
 
     public void prover(ProvingEntry p){
@@ -74,6 +75,7 @@ public class Logging {
         sb.append(p.proveResult.prover);
         message.setTextContent(sb.toString());
         messageContainer.appendChild(message);
+        scroll();
     }
 
     public void prover(String msg){
@@ -141,6 +143,9 @@ public class Logging {
         style.setTextContent(st);
     }
 
+    private void scroll(){
+        outputEngine.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+    }
     // for debugging
     private void printHtml(){
         try
