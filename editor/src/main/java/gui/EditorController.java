@@ -86,6 +86,7 @@ import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
 import prover.Prover;
 import prover.TPTPDefinitions;
+import util.DirWatchService;
 import gui.preferences.PreferencesController;
 import gui.preferences.PreferencesModel;
 
@@ -176,6 +177,7 @@ public class EditorController implements Initializable {
     private Stage mainStage;
     private EditorModel model;
     private File dir;
+    private DirWatchService dirWatchService;
     private Tab lastSelectedTabBeforeCollapse = null;
     static FontAwesome iconCollapse = FontAwesome.ANGLE_DOUBLE_DOWN;
     static FontAwesome iconUncollapse = FontAwesome.ANGLE_DOUBLE_UP;
@@ -350,6 +352,16 @@ public class EditorController implements Initializable {
         //fileBrowser.setRootDirectories(FXCollections.observableArrayList(rootDirItem));
         fileBrowser.openDirectory(dir);
         //model.openDirectory(dir);
+        
+        try {
+            if (dirWatchService != null) {
+                dirWatchService.setStop();
+            }
+            dirWatchService = new DirWatchService(dir.toPath());
+        } catch (IOException e2) {
+        }
+        if (dirWatchService != null)
+            dirWatchService.start();
 
         // Open file on double click
         fileBrowser.setOnMouseClicked(new EventHandler<MouseEvent>()
