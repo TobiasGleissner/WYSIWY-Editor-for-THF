@@ -245,6 +245,9 @@ public class EditorController implements Initializable {
     @FXML private void onNAMEExit(ActionEvent e) {
         // TODO
         System.exit(0);
+        if (dirWatchService != null) {
+            dirWatchService.interrupt();
+        }
     }
 
     // ==========================================================================
@@ -316,7 +319,7 @@ public class EditorController implements Initializable {
             if (dirWatchService != null) {
                 dirWatchService.setStop();
             }
-            dirWatchService = new DirWatchService(dir.toPath());
+            dirWatchService = new DirWatchService(dir.toPath(), fileBrowser);
         } catch (IOException e2) {
         }
         if (dirWatchService != null)
