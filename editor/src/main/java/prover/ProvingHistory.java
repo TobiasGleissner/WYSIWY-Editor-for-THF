@@ -64,7 +64,7 @@ public class ProvingHistory {
                 }
                 break;
             }
-            case SYSTEMONTPTP_PROVER:{
+            case SYSTEMONTPTP_DEFAULT_PROVER:{
                 if (systemOnTPTPProver == null){
                     try {
                         systemOnTPTPProver = SystemOnTPTPProver.getInstance();
@@ -83,6 +83,32 @@ public class ProvingHistory {
                 } catch (ProverResultNotInterpretableException e) {
                     log.error("The selected prover does not exist or is malfunctioning. ProverName='"
                             + proverName + "' ProverType='" + proverType.name() + "'\nErrorMessage='" + e.getMessage()
+                            + "'\n ProverOutput='" + e.getProverOutput() + "'.");
+                    return;
+                }
+                break;
+            }
+            case SYSTEMONTPTP_CUSTOM_PROVER:{
+                if (systemOnTPTPProver == null){
+                    try {
+                        systemOnTPTPProver = SystemOnTPTPProver.getInstance();
+                    } catch (IOException e) {
+                        systemOnTPTPProver = null;
+                        log.error("Remote provers are not available.");
+                        return;
+                    }
+                }
+                String systemOnTPTPProverName = systemOnTPTPProver.getCustomProverSystemOnTPTPName(proverName);
+                String proverCommand = systemOnTPTPProver.getCustomProverCommand(proverName);
+                try {
+                    proveResult = systemOnTPTPProver.prove(problemWithIncludes,systemOnTPTPProverName,proverCommand,timeLimit);
+                } catch (ProverNotAvailableException e) {
+                    log.error("The selected prover does not exist or is malfunctioning. ProverName='"
+                            + proverName + "' SystemOnTPTPProverName='" + systemOnTPTPProverName + "' ProverCommand='" + proverCommand + "' ProverType='" + proverType.name() + "'.");
+                    return;
+                } catch (ProverResultNotInterpretableException e) {
+                    log.error("The selected prover does not exist or is malfunctioning. ProverName='"
+                            + proverName + "' SystemOnTPTPProverName='" + systemOnTPTPProverName + "' ProverCommand='" + proverCommand + "' ProverType='" + proverType.name() + "'\nErrorMessage='" + e.getMessage()
                             + "'\n ProverOutput='" + e.getProverOutput() + "'.");
                     return;
                 }

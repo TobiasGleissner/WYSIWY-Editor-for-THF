@@ -252,7 +252,7 @@ public class SystemOnTPTPProver {
             nextWhitespace = cpuString.indexOf(" ");
             cpuString = cpuString.substring(0,nextWhitespace);
             double elapsedTime = Double.parseDouble(cpuString);
-            return new ProveResult(problem, Prover.ProverType.SYSTEMONTPTP_PROVER, prover, r, "",status, elapsedTime, timeLimit);
+            return new ProveResult(problem, Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER, prover, r, "",status, elapsedTime, timeLimit);
         }
         catch (Exception e){
             throw new ProverResultNotInterpretableException(e.toString(),r);

@@ -183,9 +183,9 @@ public class EditorController implements Initializable {
                             EditorDocument doc2 = new EditorDocument(Paths.get("/home/tg/d2.p"));
                             h.addDocument(doc1);
                             h.addDocument(doc2);
-                            h.prove(doc1,"Satallax---3.2", Prover.ProverType.SYSTEMONTPTP_PROVER,5);
-                            h.prove(doc1,"Satallax---3.2", Prover.ProverType.SYSTEMONTPTP_PROVER,5);
-                            h.prove(doc2,"LEO-II---1.7.0", Prover.ProverType.SYSTEMONTPTP_PROVER,5);
+                            h.prove(doc1,"Satallax---3.2", Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER,5);
+                            h.prove(doc1,"Satallax---3.2", Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER,5);
+                            h.prove(doc2,"LEO-II---1.7.0", Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER,5);
                             System.out.println("######### entryList #########");
                             h.entryList.forEach(System.out::println);
                             System.out.println("######### documentToEntryListMap #########");
