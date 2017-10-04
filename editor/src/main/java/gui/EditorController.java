@@ -614,11 +614,28 @@ public class EditorController implements Initializable {
     }
 
     @FXML private void onFileSave(ActionEvent e) {
-        // TODO
+        if (model.getSelectedTab() == null){
+            log.error("Cannot Save: No tab selected");
+            return;
+        }
+        if (model.getSelectedTab().model.getPath() == null){
+            onFileSaveAs(e);
+        } else {
+            model.saveFile(model.getSelectedTab().model);
+        }
     }
 
     @FXML private void onFileSaveAs(ActionEvent e) {
-        // TODO
+        FileChooser fileChooser = new FileChooser();
+        //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TPTP files (*.p)", "*.p");
+        //fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showSaveDialog(mainStage);
+        if (file != null){
+            model.getSelectedTab().model.setPath(file.toPath());
+            model.saveFile(model.getSelectedTab().model);
+        } else {
+            log.error("Could not save: No file specified.");
+        }
     }
 
     @FXML private void onFileClose(ActionEvent e) {
