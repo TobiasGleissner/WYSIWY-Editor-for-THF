@@ -582,12 +582,14 @@ public class EditorDocumentModel
         }
     }
 
-    private void openStream(InputStream stream) {
+    public void openStream(InputStream stream, Path path) {
         delayedActions.add(
             () ->
             {
                 try
                 {
+                    this.path = path;
+
                     String content = IOUtils.toString(stream, "UTF-8");
 
                     org.w3c.dom.Node editor = doc.getElementById("editor");
@@ -628,9 +630,8 @@ public class EditorDocumentModel
      */
     public void openFile(File file) {
         try {
-            this.path = file.toPath();
             InputStream stream = new FileInputStream(file);
-            openStream(stream);
+            openStream(stream, file.toPath());
             log.info("Opened " + file.getAbsolutePath());
         } catch(FileNotFoundException e) {
             log.error(e.getMessage());
