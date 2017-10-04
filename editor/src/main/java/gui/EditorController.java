@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
+import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import javafx.concurrent.Worker;
 
 import javafx.beans.value.ChangeListener;
@@ -639,8 +641,10 @@ public class EditorController implements Initializable {
     }
 
     @FXML private void onFileClose(ActionEvent e) {
-        // TODO
-        System.exit(0);
+        TabPaneBehavior behavior = ((TabPaneSkin) model.getSelectedTab().tab.getTabPane().getSkin()).getBehavior();
+        if (behavior.canCloseTab(model.getSelectedTab().tab)) {
+            behavior.closeTab(model.getSelectedTab().tab);
+        }
     }
 
     /**

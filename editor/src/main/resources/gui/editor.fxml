@@ -92,7 +92,7 @@
                                     </accelerator>
                                 </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false" />
-                                <MenuItem text="Close">
+                                <MenuItem text="Close" onAction="#onFileClose">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
