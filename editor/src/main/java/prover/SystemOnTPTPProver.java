@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 public class SystemOnTPTPProver {
     private Map<TPTPDefinitions.TPTPSubDialect,List<ProverConfiguration>> availableCustomProvers;
-    private Map<String,ProverConfiguration> allProvers;
-    private List<ProverConfiguration> allProversListed;
+    private Map<String,ProverConfiguration> allCustomProvers;
+    private List<ProverConfiguration> allCustomProversListed;
 
     private static SystemOnTPTPProver instance;
     private Map<TPTPDefinitions.TPTPSubDialect,List<String>> availableDefaultProvers;
@@ -126,7 +126,7 @@ public class SystemOnTPTPProver {
      * @return A list of all remote custom prover names supporting any TPTPSubDialect
      */
     public List<String> getAvailableCustomProvers(){
-        return allProversListed.stream().map(c->c.proverName).collect(Collectors.toList());
+        return allCustomProversListed.stream().map(c->c.proverName).collect(Collectors.toList());
     }
 
     /**
@@ -140,15 +140,15 @@ public class SystemOnTPTPProver {
     }
 
     public String getCustomProverCommand(String prover){
-        return allProvers.get(prover).proverCommand;
+        return allCustomProvers.get(prover).proverCommand;
     }
 
     public String getCustomProverSystemOnTPTPName(String prover){
-        return allProvers.get(prover).remoteName;
+        return allCustomProvers.get(prover).remoteName;
     }
 
     public List<TPTPDefinitions.TPTPSubDialect> getCustomProverSubDialects(String prover){
-        return allProvers.get(prover).subDialects;
+        return allCustomProvers.get(prover).subDialects;
     }
 
     public void addProver(String proverName, String command, String systemOnTPTPName, List<TPTPDefinitions.TPTPSubDialect> subDialectList, boolean override) throws NameAlreadyInUseException {
@@ -158,40 +158,40 @@ public class SystemOnTPTPProver {
         pc.proverCommand = command;
         pc.subDialects = subDialectList;
         pc.remoteName = systemOnTPTPName;
-        allProvers.put(proverName,pc);
-        allProversListed.add(pc);
+        allCustomProvers.put(proverName,pc);
+        allCustomProversListed.add(pc);
         for (TPTPDefinitions.TPTPSubDialect sd : subDialectList){
             availableCustomProvers.get(sd).add(pc);
         }
-        Config.setCustomRemoteProvers(allProversListed);
+        Config.setCustomRemoteProvers(allCustomProversListed);
     }
 
     public void updateProver(String oldProverName, String newProverName, String command, String systemOnTPTPName, List<TPTPDefinitions.TPTPSubDialect> subDialectList) throws ProverNotAvailableException {
         if (!getAvailableCustomProvers().contains(oldProverName)) throw new ProverNotAvailableException("The prover with name='" + oldProverName + "' does not exist.");
-        ProverConfiguration pc = allProvers.get(oldProverName);
+        ProverConfiguration pc = allCustomProvers.get(oldProverName);
         for (TPTPDefinitions.TPTPSubDialect sd : pc.subDialects) availableCustomProvers.get(sd).remove(pc);
         pc.proverName = newProverName;
         pc.proverCommand = command;
         pc.subDialects = subDialectList;
         pc.remoteName = systemOnTPTPName;
-        allProvers.remove(oldProverName);
-        allProvers.put(newProverName,pc);
+        allCustomProvers.remove(oldProverName);
+        allCustomProvers.put(newProverName,pc);
         for (TPTPDefinitions.TPTPSubDialect sd : subDialectList) availableCustomProvers.get(sd).add(pc);
-        Config.setCustomRemoteProvers(allProversListed);
+        Config.setCustomRemoteProvers(allCustomProversListed);
     }
 
     public void removeProver(String proverName) throws ProverNotAvailableException {
         if (!getAvailableCustomProvers().contains(proverName)) throw new ProverNotAvailableException("prover not available");
-        Config.removePreference("remoteProverName" + (allProvers.size()-1));
-        Config.removePreference("remoteProverCommand" + (allProvers.size()-1));
-        Config.removePreference("remoteProverSystemOnTPTPName" + (allProvers.size()-1));
-        Config.removePreference("remoteProverSubDialects" + (allProvers.size()-1));
-        for (TPTPDefinitions.TPTPSubDialect sd : allProvers.get(proverName).subDialects){
-            availableCustomProvers.get(sd).remove(allProvers.get(proverName));
+        Config.removePreference("remoteProverName" + (allCustomProvers.size()-1));
+        Config.removePreference("remoteProverCommand" + (allCustomProvers.size()-1));
+        Config.removePreference("remoteProverSystemOnTPTPName" + (allCustomProvers.size()-1));
+        Config.removePreference("remoteProverSubDialects" + (allCustomProvers.size()-1));
+        for (TPTPDefinitions.TPTPSubDialect sd : allCustomProvers.get(proverName).subDialects){
+            availableCustomProvers.get(sd).remove(allCustomProvers.get(proverName));
         }
-        allProversListed.remove(allProvers.get(proverName));
-        allProvers.remove(proverName);
-        Config.setCustomRemoteProvers(allProversListed);
+        allCustomProversListed.remove(allCustomProvers.get(proverName));
+        allCustomProvers.remove(proverName);
+        Config.setCustomRemoteProvers(allCustomProversListed);
     }
     /**
      * Sends a problem to a remote prover and gets a result.
@@ -276,12 +276,12 @@ public class SystemOnTPTPProver {
             }
         }
         availableCustomProvers = new HashMap<>();
-        allProvers = new HashMap<>();
-        allProversListed = new ArrayList<>();
+        allCustomProvers = new HashMap<>();
+        allCustomProversListed = new ArrayList<>();
         Arrays.stream(TPTPDefinitions.TPTPSubDialect.values()).forEach(sd -> availableCustomProvers.put(sd,new ArrayList<>()));
         for (ProverConfiguration c : Config.getCustomRemoteProvers()){
-            allProvers.put(c.proverName,c);
-            allProversListed.add(c);
+            allCustomProvers.put(c.proverName,c);
+            allCustomProversListed.add(c);
             for (TPTPDefinitions.TPTPSubDialect sd : c.subDialects){
                 availableCustomProvers.get(sd).add(c);
             }

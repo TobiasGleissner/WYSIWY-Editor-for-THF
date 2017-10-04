@@ -69,11 +69,10 @@ public class EditorDocument {
 
     /**
      * Returns all compatible TPTP sub-dialects of the problem
-     * @param subDialect
      * @return
      */
-    public List<TPTPDefinitions.TPTPSubDialect> getCompatibleTPTPSubDialects(TPTPDefinitions.TPTPSubDialect subDialect){
-        return TPTPDefinitions.getCompatibleSubDialects(subDialect);
+    public List<TPTPDefinitions.TPTPSubDialect> getCompatibleTPTPSubDialects(){
+        return TPTPDefinitions.getCompatibleSubDialects(this.classifyByTPTPSubDialect());
     }
 
     /**

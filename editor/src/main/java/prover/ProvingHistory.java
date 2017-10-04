@@ -99,7 +99,9 @@ public class ProvingHistory {
                     }
                 }
                 String systemOnTPTPProverName = systemOnTPTPProver.getCustomProverSystemOnTPTPName(proverName);
+                if (systemOnTPTPProverName == null) System.err.println("BUG:: systemOnTPTPProverName null"); // TODO remove this in production
                 String proverCommand = systemOnTPTPProver.getCustomProverCommand(proverName);
+                if (proverCommand == null) System.err.println("BUG:: proverCommand null"); // TODO remove this in production
                 try {
                     proveResult = systemOnTPTPProver.prove(problemWithIncludes,systemOnTPTPProverName,proverCommand,timeLimit);
                 } catch (ProverNotAvailableException e) {
