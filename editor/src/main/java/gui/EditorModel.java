@@ -109,9 +109,9 @@ public class EditorModel
         return doc;
     }
 
-    //public void openStream(InputStream stream, Path path) {
-    //    getNewTab().model.openFile(path.toFile());
-    //}
+    public void openStream(InputStream stream, Path path) {
+        getNewTab().model.openStream(stream, path);
+    }
 
     public void openFile(File file) {
         getNewTab().model.openFile(file);

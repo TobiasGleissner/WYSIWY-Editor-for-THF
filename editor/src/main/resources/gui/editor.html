@@ -417,8 +417,6 @@
         document.addEventListener("keydown",
             function(e)
             {
-                make_selection_valid(e);
-
                 if(e.keyCode == 8)
                 {
                     e.stopPropagation();
@@ -430,10 +428,8 @@
 
                     selection.deleteFromDocument();
 
-                    make_selection_valid(e);
                     maybe_scroll_to_range(get_selected_range());
                     start_incremental_parsing_throttled(get_selected_range());
-                    line_number_update_throttled();
                 }
                 else if(e.keyCode == 46)
                 {
@@ -446,10 +442,8 @@
 
                     selection.deleteFromDocument();
 
-                    make_selection_valid(e);
                     maybe_scroll_to_range(get_selected_range());
                     start_incremental_parsing_throttled(get_selected_range());
-                    line_number_update_throttled();
                 }
                 else if(e.keyCode == 13)
                 {
@@ -466,7 +460,6 @@
 
                     maybe_scroll_to_range(range);
                     start_incremental_parsing_throttled(range);
-                    line_number_update_throttled();
 
                     var selection = window.getSelection();
                     selection.removeAllRanges();
@@ -478,8 +471,6 @@
         document.addEventListener("keypress",
             function(e)
             {
-                make_selection_valid(e);
-
                 e.stopPropagation();
                 e.preventDefault();
 
@@ -494,7 +485,6 @@
 
                 maybe_scroll_to_range(range);
                 start_incremental_parsing_throttled(range);
-                line_number_update_throttled();
 
                 var selection = window.getSelection();
                 selection.removeAllRanges();
@@ -505,8 +495,6 @@
         document.addEventListener("paste",
             function(e)
             {
-                make_selection_valid(e);
-
                 e.stopPropagation();
                 e.preventDefault();
 
@@ -529,7 +517,6 @@
 
                 maybe_scroll_to_range(range);
                 start_incremental_parsing_throttled(range);
-                line_number_update_throttled();
             }
         );
 
