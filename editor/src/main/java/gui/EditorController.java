@@ -924,12 +924,15 @@ public class EditorController implements Initializable {
         try {
             List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
             List<String> availableProversRemote = SystemOnTPTPProver.getInstance().getAvailableDefaultProvers(TPTPDefinitions.TPTPDialect.THF);
+            List<String> availableProversCustomRemote = SystemOnTPTPProver.getInstance().getAvailableCustomProvers(TPTPDefinitions.TPTPDialect.THF);
             // add list of provers to menubar
             addCurrentlyAvailableProversToMenu(menubarProverSelectProver,availableProversLocal,"local");
             addCurrentlyAvailableProversToMenu(menubarProverSelectProver,availableProversRemote,"remote");
+            addCurrentlyAvailableProversToMenu(menubarProverSelectProver,availableProversCustomRemote,"custom");
             // add list of provers to toolbar
             addCurrentlyAvailableProversToMenu(toolbarSelectProver,availableProversLocal,"local");
             addCurrentlyAvailableProversToMenu(toolbarSelectProver,availableProversRemote,"remote");
+            addCurrentlyAvailableProversToMenu(toolbarSelectProver,availableProversCustomRemote,"custom");
         } catch (IOException e) {
             // TODO: write log entry
         }
@@ -958,10 +961,16 @@ public class EditorController implements Initializable {
                         currentlySelectedProverType = Prover.ProverType.LOCAL_PROVER;
                         toolbarSelectProver.setText(proverName);
                     });
-                } else {
+                } else if (kind.equals("remote")) {
                     item.setOnAction(a->{
                         currentlySelectedProver = prover;
                         currentlySelectedProverType = Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER;
+                        toolbarSelectProver.setText(proverName);
+                    });
+                } else {
+                    item.setOnAction(a->{
+                        currentlySelectedProver = prover;
+                        currentlySelectedProverType = Prover.ProverType.SYSTEMONTPTP_CUSTOM_PROVER;
                         toolbarSelectProver.setText(proverName);
                     });
                 }
@@ -970,14 +979,12 @@ public class EditorController implements Initializable {
             }
         }
 
-        if (kind.equals("local")) items.add(new SeparatorMenuItem());
+        if (kind.equals("local")|kind.equals("remote")) items.add(new SeparatorMenuItem());
 
         if (fxmlObj instanceof Menu) {
-            Menu bar = (Menu)fxmlObj;
-            bar.getItems().addAll(items);
+            ((Menu)fxmlObj).getItems().addAll(items);
         } else if (fxmlObj instanceof MenuButton) {
-            MenuButton bar = (MenuButton)fxmlObj;
-            bar.getItems().addAll(items);
+            ((MenuButton)fxmlObj).getItems().addAll(items);
         }
 
         toolbarSelectProver.setText(defaultProver); // TODO
