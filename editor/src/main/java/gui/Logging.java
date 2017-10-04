@@ -4,7 +4,6 @@ import javafx.scene.web.WebEngine;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import prover.ProveResult;
 import prover.Prover;
 import prover.ProvingEntry;
 
@@ -63,23 +62,18 @@ public class Logging {
         messageContainer.appendChild(status);
         Element message = doc.createElement("span");
         StringBuilder sb = new StringBuilder(200);
-        sb.append("cpu=");
+        sb.append(" cpu=");
         sb.append(p.proveResult.cpu);
         sb.append(" wc=");
         sb.append(p.proveResult.wc);
         sb.append(" timeLimit=");
         sb.append(p.proveResult.timelimit);
         sb.append(" by ");
-        sb.append(Prover.getNiceName(p.proveResult.proverType));
+        sb.append(Prover.getNiceProverTypeName(p.proveResult.proverType));
         sb.append(" ");
         sb.append(p.proveResult.prover);
         message.setTextContent(sb.toString());
         messageContainer.appendChild(message);
-    }
-
-    public void prover(ProveResult p){
-        // TODO
-        //this.prover(p.toString());
     }
 
     public void prover(String msg){
