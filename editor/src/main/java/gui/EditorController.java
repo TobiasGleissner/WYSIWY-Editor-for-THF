@@ -408,10 +408,6 @@ public class EditorController implements Initializable {
                     File file = new File(newFile.toString());
                     try {
                         if (file.createNewFile()) {
-                            /*FileTreeItem item = new FileTreeItem(new FileWrapper(file));
-                            item.setGraphic(item.getIconNodeByFile(file));
-                            fileBrowser.getSelectionModel().getSelectedItem().getChildren().add(item);
-                            ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);*/
                             break;
                         } else {
                             continue;
@@ -455,10 +451,6 @@ public class EditorController implements Initializable {
                     File file = new File(newDir.toString());
 
                     if (file.mkdir()) {
-                        /*FileTreeItem item = new FileTreeItem(new FileWrapper(file));
-                        item.setGraphic(item.getIconNodeByFile(file));
-                        fileBrowser.getSelectionModel().getSelectedItem().getChildren().add(item);
-                        ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);*/
                         break;
                     } else {
                         continue;
@@ -599,7 +591,6 @@ public class EditorController implements Initializable {
                 if (result.get() == ButtonType.OK){
                     try {
                         org.apache.commons.io.FileUtils.deleteDirectory(file);
-                        item.getParent().getChildren().remove(item);
                     } catch (IOException e) {
                         Alert alert1 = new Alert(AlertType.ERROR);
                         alert1.setTitle("ERROR");

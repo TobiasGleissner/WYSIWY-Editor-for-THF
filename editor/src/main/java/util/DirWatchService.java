@@ -101,8 +101,6 @@ public class DirWatchService extends Thread {
                 
                 
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                    
-                    // TODO: Synchronization!
                     File file = completePath.toFile();
                     FileTreeItem newItem = new FileTreeItem(new FileWrapper(file));
                     newItem.setGraphic(newItem.getIconNodeByFile(file));
