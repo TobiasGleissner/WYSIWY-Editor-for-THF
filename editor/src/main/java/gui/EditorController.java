@@ -177,7 +177,6 @@ public class EditorController implements Initializable {
     private static Logging log = Logging.getInstance();
     private Stage mainStage;
     private EditorModel model;
-    //private EditorDocumentViewController emptyDoc;
     private File dir;
     private Tab lastSelectedTabBeforeCollapse = null;
     static FontAwesome iconCollapse = FontAwesome.ANGLE_DOUBLE_DOWN;
