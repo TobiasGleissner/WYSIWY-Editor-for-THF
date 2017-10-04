@@ -2,7 +2,7 @@ package prover;
 
 import exceptions.ProverNotAvailableException;
 import exceptions.ProverResultNotInterpretableException;
-import gui.EditorDocument;
+import gui.EditorDocumentModel;
 import gui.Logging;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class ProvingHistory {
     LocalProver localProver;
     SystemOnTPTPProver systemOnTPTPProver;
 
-    public Map<EditorDocument,List<ProvingEntry>> documentToEntryListMap;
+    public Map<EditorDocumentModel,List<ProvingEntry>> documentToEntryListMap;
     public List<ProvingEntry> entryList;
 
     private ProvingHistory(){}
@@ -35,12 +35,12 @@ public class ProvingHistory {
         return instance;
     }
 
-    private String preprocessIncludes(EditorDocument doc){
+    private String preprocessIncludes(EditorDocumentModel doc){
         // TODO includes
         return doc.getText();
     }
 
-    public void prove(EditorDocument editorDocument, String proverName, Prover.ProverType proverType, int timeLimit){
+    public void prove(EditorDocumentModel editorDocument, String proverName, Prover.ProverType proverType, int timeLimit){
         Date now = new Date();
         ProveResult proveResult = null;
         String problemWithIncludes = preprocessIncludes(editorDocument);
@@ -127,11 +127,11 @@ public class ProvingHistory {
         log.prover(provingEntry);
     }
 
-    public void remove(EditorDocument doc){
+    public void remove(EditorDocumentModel doc){
         documentToEntryListMap.remove(doc);
     }
 
-    public void addDocument(EditorDocument doc){
+    public void addDocument(EditorDocumentModel doc){
         documentToEntryListMap.put(doc,new ArrayList<>());
     }
 }

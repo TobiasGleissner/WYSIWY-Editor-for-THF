@@ -23,10 +23,7 @@ import javafx.concurrent.Worker;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
-
-import javafx.stage.Stage;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -39,6 +36,9 @@ import org.w3c.dom.Text;
 
 import netscape.javascript.JSObject;
 
+import prover.Prover;
+import prover.ProvingHistory;
+import prover.TPTPDefinitions;
 import util.tree.Node;
 import util.SpanElement;
 
@@ -50,6 +50,9 @@ import exceptions.ParseException;
 public class EditorDocumentModel
 {
     private static Logging log = Logging.getInstance();
+    private static ProvingHistory provingHistory = ProvingHistory.getInstance();
+
+    private Path path; // Path to document. Meaning of value null see constructor.
 
     private WebEngine engine;
     private Document doc;
@@ -96,6 +99,7 @@ public class EditorDocumentModel
 
     public EditorDocumentModel(WebEngine engine, EditorDocumentViewController view)
     {
+        provingHistory.addDocument(this);
         this.engine = engine;
         this.view = view;
         this.style = new WebKitStyle();
@@ -297,7 +301,7 @@ public class EditorDocumentModel
      *
      * @param leftNodeId    The leftmost node ID to be reparsed. If it is
      *                      -1 parsing starts from the start.
-     * @param richtNodeId   The rightmost node ID to be reparsed. If it
+     * @param rightNodeId   The rightmost node ID to be reparsed. If it
      *                      is -1 parsing ends with the end of the file.
      * @return              The ID of the first inserted node.
      */
@@ -578,7 +582,7 @@ public class EditorDocumentModel
         }
     }
 
-    public void openStream(InputStream stream, Path file) {
+    private void openStream(InputStream stream) {
         delayedActions.add(
             () ->
             {
@@ -599,10 +603,10 @@ public class EditorDocumentModel
                     reparse();
                     engine.executeScript("update_line_numbers()");
 
-                    if(file == null)
+                    if(this.path == null)
                         view.setText("unnamed");
                     else
-                        view.setText(file.getFileName().toString());
+                        view.setText(this.path.getFileName().toString());
                 }
                 catch(IOException e)
                 {
@@ -616,10 +620,6 @@ public class EditorDocumentModel
         maybeCallDelayedActions();
     }
 
-    public void openStream(InputStream stream) {
-        openStream(stream, null);
-    }
-
     /**
      * Loads the content of a file into the THF area
      * Every opening method MUST use this
@@ -628,8 +628,9 @@ public class EditorDocumentModel
      */
     public void openFile(File file) {
         try {
+            this.path = file.toPath();
             InputStream stream = new FileInputStream(file);
-            openStream(stream, file.toPath());
+            openStream(stream);
             log.info("Opened " + file.getAbsolutePath());
         } catch(FileNotFoundException e) {
             log.error(e.getMessage());
@@ -655,6 +656,75 @@ public class EditorDocumentModel
     public void onViewDefaultFontSize() {
         style.setFontSizeEditor(Config.fontSizeEditorDefault);
         engine.executeScript("update_line_numbers()");
+    }
+
+    /**
+     * Creates a new Document including WebView which can be used for opening multiple documents simultaneously
+     * @param path file path on disk, null indicates there is no underlying file.
+     *             This might be the case if the file was deleted/moved or a new document was created
+     *             The field path has to be updated manually and TODO is assumed to be valid at all times
+     */
+
+    /**
+     * Returns the plain problem
+     * @return
+     */
+    public String getText(){
+        return doc.getElementById("editor").getTextContent();
+    }
+
+    /**
+     * Displays the proving history of this document in a separate window
+     */
+    public void showProvingHistory(){
+        // TODO
+        // implement new window or something with slider, etc.
+    }
+
+    public void prove(String prover, Prover.ProverType proverType, int timeLimit){
+        provingHistory.prove(this, prover, proverType, timeLimit);
+    }
+
+    /**
+     * Cleanup document specific stuff on File > close
+     */
+    public void close(){
+        provingHistory.remove(this);
+    }
+
+    /**
+     * Returns the TPTP sub-dialect of the problem
+     * @return
+     */
+    public TPTPDefinitions.TPTPSubDialect classifyByTPTPSubDialect(){
+        // TODO
+        // maybe this should happen in listener, trigger some flags etc.
+        return TPTPDefinitions.TPTPSubDialect.TH1;
+    }
+
+    /**
+     * Returns all compatible TPTP sub-dialects of the problem
+     * @return
+     */
+    public List<TPTPDefinitions.TPTPSubDialect> getCompatibleTPTPSubDialects(){
+        return TPTPDefinitions.getCompatibleSubDialects(this.classifyByTPTPSubDialect());
+    }
+
+    /**
+     * Sets the current file path of the document
+     * @param path
+     */
+    public void setPath(Path path){
+        this.path = path;
+    }
+
+    /**
+     * Returns the current file path of the document
+     * The path is assumed to be valid at all times
+     * @return
+     */
+    public Path getPath(){
+        return path;
     }
 
     // ------- DEBUG FUNCTIONS -------

@@ -1,25 +1,11 @@
 package gui;
 
-import java.io.IOException;
-
 import java.nio.file.Path;
 
 import java.util.List;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-
-import javafx.concurrent.Worker;
-
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebView;
-
-import org.apache.commons.io.IOUtils;
-
-import netscape.javascript.JSObject;
-
-import gui.EditorDocument;
-import gui.EditorDocumentModel;
 
 public class EditorDocumentViewController
 {
@@ -27,7 +13,6 @@ public class EditorDocumentViewController
     public Tab tab;
     public WebView editor;
 
-    public EditorDocument doc;
     public EditorDocumentModel model;
 
     public EditorDocumentViewController(Path path, List<Tab> tabs)
@@ -62,9 +47,7 @@ public class EditorDocumentViewController
             }
         );
 
-        /* TODO: Merge these two. */
         this.model = new EditorDocumentModel(editor.getEngine(), EditorDocumentViewController.this);
-        this.doc = new EditorDocument(path);
     }
 
     public void setText(String text)

@@ -99,29 +99,26 @@ public class EditorModel
         getSelectedTab().model.onViewDefaultFontSize();
     }
 
-    public EditorDocumentViewController getNewTab() {
+    private EditorDocumentViewController getNewTab() {
         EditorDocumentViewController doc;
 
-        if(!getSelectedTab().model.isEmpty())
-        {
-            doc = new EditorDocumentViewController(null, this.thfArea.getTabs());
-            thfArea.getSelectionModel().select(doc.tab);
-        }
-        else
-        {
-            doc = getSelectedTab();
-        }
+        doc = new EditorDocumentViewController(null, this.thfArea.getTabs());
+        thfArea.getSelectionModel().select(doc.tab);
 
         return doc;
     }
 
-    public void openStream(InputStream stream, Path file) {
-        getNewTab().model.openStream(stream, file);
-    }
+    //public void openStream(InputStream stream, Path path) {
+    //    getNewTab().model.openFile(path.toFile());
+    //}
 
     public void openFile(File file) {
         getNewTab().model.openFile(file);
         updateRecentlyOpenedFiles(file);
+    }
+
+    public void newFile(){
+        getNewTab();
     }
 
     // ------- DEBUG FUNCTIONS -------
