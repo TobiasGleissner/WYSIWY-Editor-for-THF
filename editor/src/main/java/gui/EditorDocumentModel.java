@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 
 import java.nio.file.Path;
 
+import java.util.Stack;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.Collections;
@@ -169,6 +170,7 @@ public class EditorDocumentModel
                 }
                 catch(Exception e)
                 {
+                    e.printStackTrace();
                     log.debug(e.getMessage());
                 }
             }
@@ -190,20 +192,14 @@ public class EditorDocumentModel
      * Inserts a text node as child of parent and before sibling,
      * inserting the appropriate newline markers.
      *
-     * @param text      The text content of the new text node.
-     * @param parent    The parent node of the new text node.
-     * @param sibling   The next sibling of the new text node. If this
-     *                  argument is null the node is inserted as last
-     *                  child of parent.
-     * @param startOffset The offset from the start of the node. Used
-     *                    for data-start and data-end annotations,
-     *                    which are optimizations for position queries
-     *                    in javascript.
-     * @param isFirst   Whether this if the first entry of the file. If
-     *                  true a newline marker is inserted at the beginning
-     *                  of the first line.
+     * @param text          The text content of the new text node.
+     * @param parent        The parent node of the new text node.
+     * @param sibling       The next sibling of the new text node. If this argument is null the node is inserted as last child of parent.
+     * @param cursorStart   The position at which the cursor_start node was found or -1 if it isn't contained in the parsed text.
+     * @param cursorEnd     The position at which the cursor_end node was found or -1 if it isn't contained in the parsed text.
+     * @param isFirst       Whether this if the first entry of the file. If true a newline marker is inserted at the beginning of the first line.
      */
-    private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, int startOffset, boolean isFirst)
+    private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, int cursorStart, int cursorEnd, boolean isFirst)
     {
         int start = 0;
         int end = 0;
@@ -217,25 +213,54 @@ public class EditorDocumentModel
             else
                 end++;
 
+            boolean insertStart = false;
+            if(start < cursorStart && cursorStart <= end)
+            {
+                end = cursorStart;
+                insertStart = true;
+            }
+
+            boolean insertEnd = false;
+            if(start < cursorEnd && cursorEnd <= end)
+            {
+                end = cursorEnd;
+                insertEnd = true;
+            }
+
             if(isFirst)
             {
                 isFirst = false;
 
                 Element nl = doc.createElement("subsection");
                 nl.setAttribute("class", "new_line");
-                nl.setAttribute("data-start", "" + (startOffset + start));
-                nl.setAttribute("data-end", "" + (startOffset + start));
                 parent.insertBefore(nl, sibling);
             }
 
-            String s = text.substring(start, end);
-            parent.insertBefore(doc.createTextNode(s), sibling);
-            if(s.endsWith("\n"))
+            if(!text.isEmpty())
+            {
+                String s = text.substring(start, end);
+                Text textNode = doc.createTextNode(s);
+                parent.insertBefore(textNode, sibling);
+            }
+
+            if(insertStart)
+            {
+                Element cursor_start = doc.createElement("span");
+                cursor_start.setAttribute("id", "cursor_start");
+                parent.insertBefore(cursor_start, sibling);
+            }
+
+            if(insertEnd)
+            {
+                Element cursor_end = doc.createElement("span");
+                cursor_end.setAttribute("id", "cursor_end");
+                parent.insertBefore(cursor_end, sibling);
+            }
+
+            if(!text.isEmpty() && text.charAt(end-1) == '\n')
             {
                 Element nl = doc.createElement("subsection");
                 nl.setAttribute("class", "new_line");
-                nl.setAttribute("data-start", "" + (startOffset + end));
-                nl.setAttribute("data-end", "" + (startOffset + end));
                 parent.insertBefore(nl, sibling);
             }
         }
@@ -246,54 +271,15 @@ public class EditorDocumentModel
      * Inserts a text node as child of parent and before sibling,
      * inserting the appropriate newline markers.
      *
-     * @param text      The text content of the new text node.
-     * @param parent    The parent node of the new text node.
-     * @param sibling   The next sibling of the new text node. If this
-     *                  argument is null the node is inserted as last
-     *                  child of parent.
-     * @param startOffset The offset from the start of the node. Used
-     *                    for data-start and data-end annotations,
-     *                    which are optimizations for position queries
-     *                    in javascript.
+     * @param text              The text content of the new text node.
+     * @param parent            The parent node of the new text node.
+     * @param cursorStartPos    The position at which the cursor_start node was found or -1 if it isn't contained in the parsed text.
+     * @param cursorEndPos      The position at which the cursor_end node was found or -1 if it isn't contained in the parsed text.
+     * @param isFirst           Whether this if the first entry of the file. If true a newline marker is inserted at the beginning of the first line.
      */
-    private void insertNewTextNode(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, int startOffset)
+    private void insertNewTextNode(String text, org.w3c.dom.Node parent, int cursorStartPos, int cursorEndPos, boolean isFirst)
     {
-        insertNewTextNode(text, parent, sibling, startOffset, false);
-    }
-
-    /**
-     * Inserts a text node as child of parent and before sibling,
-     * inserting the appropriate newline markers.
-     *
-     * @param text      The text content of the new text node.
-     * @param parent    The parent node of the new text node.
-     * @param startOffset The offset from the start of the node. Used
-     *                    for data-start and data-end annotations,
-     *                    which are optimizations for position queries
-     *                    in javascript.
-     */
-    private void insertNewTextNode(String text, org.w3c.dom.Node parent, int startOffset)
-    {
-        insertNewTextNode(text, parent, null, startOffset);
-    }
-
-    /**
-     * Inserts a text node as child of parent and before sibling,
-     * inserting the appropriate newline markers.
-     *
-     * @param text      The text content of the new text node.
-     * @param parent    The parent node of the new text node.
-     * @param startOffset The offset from the start of the node. Used
-     *                    for data-start and data-end annotations,
-     *                    which are optimizations for position queries
-     *                    in javascript.
-     * @param isFirst   Whether this if the first entry of the file. If
-     *                  true a newline marker is inserted at the beginning
-     *                  of the first line.
-     */
-    private void insertNewTextNode(String text, org.w3c.dom.Node parent, int startOffset, boolean isFirst)
-    {
-        insertNewTextNode(text, parent, null, startOffset, isFirst);
+        insertNewTextNode(text, parent, null, cursorStartPos, cursorEndPos, isFirst);
     }
 
     /**
@@ -316,28 +302,66 @@ public class EditorDocumentModel
         else
             leftNode = editor.getFirstChild();
 
-        /* If the editor field is completely empty editor.getFirstChild()
-         * == null. Therefore we need to add a special case for it
-         * before using leftNode. */
+        /* If the editor field is completely empty editor.getFirstChild() == null. Therefore we need to add a special case for it before using leftNode. */
         if(leftNode == null)
-            return reparseString("", editor, null, true);
+            return reparseString("", editor, null, -1, -1, true);
 
         boolean isFirst = leftNode.getPreviousSibling() == null;
 
         if(rightNodeId >= 0)
             sibling = doc.getElementById("hm_node_" + rightNodeId).getNextSibling();
 
+        int cursorStartOffset = -1;
+        int cursorEndOffset = -1;
+
         StringBuilder content = new StringBuilder();
         while(leftNode != null && (sibling == null || !leftNode.isEqualNode(sibling)))
         {
-            content.append(leftNode.getTextContent());
+            /* Get the text and cursor offsets. */
+            Stack<org.w3c.dom.Node> nodes = new Stack<>();
+            nodes.push(leftNode);
+
+            while(!nodes.isEmpty())
+            {
+                org.w3c.dom.Node node = nodes.pop();
+
+                if(node instanceof Text)
+                {
+                    Text text = (Text) node;
+                    content.append(node.getTextContent());
+                    continue;
+                }
+
+                org.w3c.dom.Node last = node.getLastChild();
+                while(last != null)
+                {
+                    nodes.push(last);
+                    last = last.getPreviousSibling();
+                }
+
+                if(node instanceof Element)
+                {
+                    Element el = (Element) node;
+                    String id = el.getAttribute("id");
+
+                    if(id != null)
+                    {
+                        if(id.toLowerCase().equals("cursor_start"))
+                            cursorStartOffset = content.length();
+
+                        if(id.toLowerCase().equals("cursor_end"))
+                            cursorEndOffset = content.length();
+                    }
+                }
+            }
+
             org.w3c.dom.Node old = leftNode;
             leftNode = leftNode.getNextSibling();
             editor.removeChild(old);
         }
 
         String text = content.toString();
-        return reparseString(text, editor, sibling, isFirst);
+        return reparseString(text, editor, sibling, cursorStartOffset, cursorEndOffset, isFirst);
     }
 
     /**
@@ -355,7 +379,7 @@ public class EditorDocumentModel
      *                  of the first line.
      * @return          The ID of the first inserted node.
      */
-    public int reparseString(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, boolean isFirst)
+    public int reparseString(String text, org.w3c.dom.Node parent, org.w3c.dom.Node sibling, int cursorStartOffset, int cursorEndOffset, boolean isFirst)
     {
         int ret = -1;
 
@@ -439,12 +463,12 @@ public class EditorDocumentModel
                 Element newNode = doc.createElement("subsection");
                 newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
                 newNode.setAttribute("class", "not_parsed");
-                newNode.setAttribute("data-start", "0");
-                newNode.setAttribute("data-end", "" + part.length());
                 if(ret == -1) ret = parserNodeIdCur;
                 parserNodeIdCur++;
 
-                insertNewTextNode(part, newNode, 0, isFirst);
+                insertNewTextNode(part, newNode, cursorStartOffset, cursorEndOffset, isFirst);
+                cursorStartOffset -= part.length();
+                cursorEndOffset -= part.length();
                 if(isFirst) isFirst = false;
 
                 parent.insertBefore(newNode, sibling);
@@ -467,8 +491,6 @@ public class EditorDocumentModel
             Element newNode = doc.createElement("subsection");
             newNode.setAttribute("id", "hm_node_" + parserNodeIdCur);
             newNode.setAttribute("class", "hm_node");
-            newNode.setAttribute("data-start", "0");
-            newNode.setAttribute("data-end", "" + part.length());
 
             if(ret == -1) ret = parserNodeIdCur;
             parserNodeIdCur++;
@@ -491,7 +513,9 @@ public class EditorDocumentModel
 
                 if (startIndex == -1) {
                     builder.append(part.substring(lastParsedToken));
-                    insertNewTextNode(builder.toString(), newNode, lastParsedToken, isFirst);
+                    insertNewTextNode(builder.toString(), newNode, cursorStartOffset, cursorEndOffset, isFirst);
+                    cursorStartOffset -= builder.length();
+                    cursorEndOffset -= builder.length();
                     if(isFirst) isFirst = false;
                     builder.delete(0, builder.length());
                     break;
@@ -499,7 +523,9 @@ public class EditorDocumentModel
 
                 if (startIndex > lastParsedToken ) {
                     builder.append(part.substring(lastParsedToken, startIndex));
-                    insertNewTextNode(builder.toString(), newNode, lastParsedToken, isFirst);
+                    insertNewTextNode(builder.toString(), newNode, cursorStartOffset, cursorEndOffset, isFirst);
+                    cursorStartOffset -= builder.length();
+                    cursorEndOffset -= builder.length();
                     lastParsedToken += builder.length();
                     if(isFirst) isFirst = false;
                     builder.delete(0, builder.length());
@@ -512,9 +538,9 @@ public class EditorDocumentModel
 
                     Element newSpan = doc.createElement("subsection");
                     newSpan.setAttribute("class", spanElement.getTag());
-                    newSpan.setAttribute("data-start", "" + startIndex);
-                    newSpan.setAttribute("data-end", "" + (startIndex + builder.length()));
-                    insertNewTextNode(builder.toString(), newSpan, startIndex, isFirst);
+                    insertNewTextNode(builder.toString(), newSpan, cursorStartOffset, cursorEndOffset, isFirst);
+                    cursorStartOffset -= builder.length();
+                    cursorEndOffset -= builder.length();
                     if(isFirst) isFirst = false;
                     newNode.appendChild(newSpan);
 
@@ -537,7 +563,9 @@ public class EditorDocumentModel
                 }
             }
 
-            insertNewTextNode(builder.toString(), newNode, lastParsedToken, isFirst);
+            insertNewTextNode(builder.toString(), newNode, cursorStartOffset, cursorEndOffset, isFirst);
+            cursorStartOffset -= builder.length();
+            cursorEndOffset -= builder.length();
             if(isFirst) isFirst = false;
             builder.delete(0, builder.length());
             parent.insertBefore(newNode, sibling);

@@ -90,96 +90,6 @@
             }
         }
 
-        function get_range_as_text_offset(tgt_node, range)
-        {
-            var search_node = range.startContainer;
-
-            var offset = range.startOffset;
-
-            /* Sum up all text nodes until the first non-text (annotated) one. */
-            var prev_node = null;
-            while(search_node && search_node.nodeType == 3)
-            {
-                /* Not for the first node. We use startOffset for text nodes. */
-                if(prev_node)
-                    offset += search_node.textContent.length;
-                prev_node = search_node;
-                search_node = search_node.previousSibling;
-            }
-
-            if(search_node)
-            {
-                /* If we found a non-text node (annotated!)  on the same level we can use its data-end annotation to calculate our offset. */
-                offset += parseInt(search_node.getAttribute("data-end"));
-            }
-            else
-            {
-                /* Otherwise we can use the parent's (annotated!) data-start annotation. */
-                search_node = prev_node.parentNode;
-                offset += parseInt(search_node.getAttribute("data-start"));
-            }
-
-            /* Now we need to find the offset from tgt_node to our parent hm_node. */
-
-            /* First we find our parent hm_node. */
-            while(
-                search_node &&
-                (
-                    !search_node.getAttribute('id') ||
-                    !search_node.getAttribute('id').startsWith('hm_node_')
-                )
-            )
-            {
-                search_node = search_node.parentElement;
-            }
-
-            /* No containing hm_node_*. We must be the first text element in editor. */
-            if(!search_node)
-                return offset;
-
-            /* And sum up all lengths until our target node. */
-            while(search_node && !search_node.isSameNode(tgt_node))
-            {
-                search_node = search_node.previousSibling;
-                if(search_node)
-                {
-                    offset += parseInt(search_node.getAttribute("data-end"));
-                }
-            }
-
-            return offset;
-        }
-
-        function new_range_by_text_offset(node, offset)
-        {
-            while(node != null)
-            {
-                var new_offset = offset - node.textContent.length;
-
-                if(new_offset <= 0)
-                {
-                    if(node.firstChild == null)
-                    {
-                        var range = new Range();
-                        range.setStart(node, offset);
-                        range.setEnd(node, offset);
-                        return range;
-                    }
-                    else
-                    {
-                        node = node.firstChild;
-                    }
-                }
-                else
-                {
-                    offset = new_offset;
-                    node = node.nextSibling;
-                }
-            }
-
-            return null;
-        }
-
         function maybe_scroll_to_range(range)
         {
             var hidden = document.createElement("span");
@@ -325,21 +235,43 @@
 
         function start_incremental_parsing(start_node, end_node)
         {
-            var range = get_selected_range();
             if(start_node >= 0)
                 node = document.getElementById("hm_node_" + start_node);
             else
                 node = editor.firstChild;
-            var offset = get_range_as_text_offset(node, range);
-            var id = java.start_parsing(start_node, end_node);
 
-            node = document.getElementById("hm_node_" + id);
+            /* START: CREATE selection marker */
+            var cursor_start = document.createElement("span");
+            cursor_start.setAttribute('id', 'cursor_start');
 
-            var range = new_range_by_text_offset(node, offset);
+            var cursor_end = document.createElement("span");
+            cursor_end.setAttribute('id', 'cursor_end');
+
+            var old_range = get_selected_range();
+
+            old_range.insertNode(cursor_start);
+            old_range.collapse(false);
+            old_range.insertNode(cursor_end);
+            /* END: CREATE selection marker */
+
+            java.start_parsing(start_node, end_node);
+
+            /* START: USE & DELETE selection marker */
+            cursor_start = document.getElementById("cursor_start");
+            cursor_end = document.getElementById("cursor_end");
+
+            var new_range = document.createRange();
+            new_range.setStart(cursor_start, 0);
+            new_range.setEnd(cursor_end, 0);
 
             var selection = window.getSelection();
             selection.removeAllRanges();
-            selection.addRange(range);
+            selection.addRange(new_range);
+
+            cursor_start.parentNode.removeChild(cursor_start);
+            cursor_end.parentNode.removeChild(cursor_end);
+            /* END: USE & DELETE selection marker */
+
             update_line_numbers();
         }
 
