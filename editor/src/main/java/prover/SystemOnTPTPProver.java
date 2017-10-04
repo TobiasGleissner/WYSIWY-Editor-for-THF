@@ -259,8 +259,8 @@ public class SystemOnTPTPProver {
 
             int wcIndex = r.indexOf("WC =");
             String wcString = r.substring(wcIndex + 4).trim();
-            nextWhitespace = cpuString.indexOf(" ");
-            wcString = cpuString.substring(0,nextWhitespace);
+            nextWhitespace = wcString.indexOf(" ");
+            wcString = wcString.substring(0,nextWhitespace);
             double wc = Double.parseDouble(wcString);
             return new ProveResult(problem, Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER, prover, r, "",status, cpu, wc, timeLimit);
         }

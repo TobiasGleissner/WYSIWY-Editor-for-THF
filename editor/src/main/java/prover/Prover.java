@@ -35,7 +35,7 @@ public abstract class Prover {
         public abstract List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subdialects) throws IOException;
     }
 
-    public static String getNiceName(ProverType pt){
+    public static String getNiceProverTypeName(ProverType pt){
         switch (pt){
             case LOCAL_PROVER: return "local";
             case SYSTEMONTPTP_CUSTOM_PROVER: return "custom remote";
