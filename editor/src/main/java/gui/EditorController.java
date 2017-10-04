@@ -916,8 +916,8 @@ public class EditorController implements Initializable {
 
 
     @FXML private void onRunSelectedProver() {
-
-        model.getSelectedTab().model.prove(currentlySelectedProver,currentlySelectedProverType,200);
+        if (model.getSelectedTab() == null) log.error("Could not run Prover: There is no opened document.");
+        else model.getSelectedTab().model.prove(currentlySelectedProver,currentlySelectedProverType,200);
     }
 
     private void addCurrentlyAvailableProversToMenus(List<TPTPDefinitions.TPTPSubDialect> subdialects) {
