@@ -137,7 +137,7 @@ public class EditorController implements Initializable {
 
     private static Logging log = Logging.getInstance();
     private Stage mainStage;
-    private EditorModel model;
+    public EditorModel model; // TODO
     private File dir;
     private DirWatchService dirWatchService;
     private Tab lastSelectedTabBeforeCollapse = null;
@@ -235,7 +235,7 @@ public class EditorController implements Initializable {
     @FXML public void onNAMEPreferences(ActionEvent actionEvent) {
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/preferences.fxml"));
-        loader.setControllerFactory(t->new PreferencesController(new PreferencesModel(), stage));
+        loader.setControllerFactory(t->new PreferencesController(new PreferencesModel(), this, stage));
         Scene scene = null;
         try {
             scene = new Scene(loader.load());
@@ -895,7 +895,7 @@ public class EditorController implements Initializable {
         else model.getSelectedTab().model.prove(currentlySelectedProver,currentlySelectedProverType,200);
     }
 
-    private void addAvailableProversToMenus(List<TPTPDefinitions.TPTPSubDialect> subdialects) {
+    public void addAvailableProversToMenus(List<TPTPDefinitions.TPTPSubDialect> subdialects) {
 
         try {
 

@@ -15,10 +15,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import prover.ProveResult;
-import prover.SystemOnTPTPProver;
-import prover.TPTPDefinitions;
-import prover.LocalProver;
 import util.RandomString;
 
 import java.io.IOException;
@@ -26,8 +22,16 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import prover.ProveResult;
+import prover.SystemOnTPTPProver;
+import prover.TPTPDefinitions;
+import prover.LocalProver;
+import gui.EditorController;
+import gui.EditorDocumentModel;
+
 public class PreferencesController implements Initializable {
     private PreferencesModel model;
+    private EditorController editor;
     private Stage stage;
     private LocalProver lp;
     private SystemOnTPTPProver rp;
@@ -48,8 +52,9 @@ public class PreferencesController implements Initializable {
     private TreeItem<String> currentItem;
 
 
-    public PreferencesController(PreferencesModel model, Stage stage){
+    public PreferencesController(PreferencesModel model, EditorController editor, Stage stage){
         this.model = model;
+        this.editor = editor;
         this.stage = stage;
     }
 
@@ -280,6 +285,12 @@ public class PreferencesController implements Initializable {
 
         log.info("Updated prover with name='" + proverName + "' and command = '" + proverCommand
                 + "' and TPTP dialects='" + dialectString + "'.");
+
+        // Refresh lists of available provers in menubar and toolbar
+        if (editor.model.getSelectedTab() == null) editor.addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
+        else editor.addAvailableProversToMenus(editor.model.getSelectedTab().model.getCompatibleTPTPSubDialects());
+
+        log.info("Updated prover lists in menu");
     }
 
     @FXML
