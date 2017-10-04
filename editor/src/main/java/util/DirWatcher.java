@@ -25,11 +25,21 @@ public class DirWatcher {
         registerSubfolders(path);
     }
     
+    /**
+     * Register the folder with the path @param path.
+     * @param path
+     * @throws IOException
+     */
     private void registerFolder(Path path) throws IOException {
         WatchKey key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
         keys.put(key, path);
     }
 
+    /**
+     * Register all subfolders of @param path, including @param path.
+     * @param path
+     * @throws IOException
+     */
     public void registerSubfolders(Path path) throws IOException {
         
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {

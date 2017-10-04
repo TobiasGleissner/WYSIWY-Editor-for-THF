@@ -2,7 +2,6 @@ package util;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
@@ -29,6 +28,16 @@ public class DirWatchService extends Thread {
     FileTreeView fileBrowser;
     Path rootPath;
     
+    /**
+     * This WatchService registers all subfolders of @param path (including path) such that on each create or delete event,
+     * the file browser tree is updated, and all files and folders are shown.
+     * 
+     * This service handles both, file system actions started within our file browser and those started outside of it.
+     * 
+     * @param path
+     * @param fileBrowser
+     * @throws IOException
+     */
     public DirWatchService(Path path, FileTreeView fileBrowser) throws IOException {
         dirWatcher = new DirWatcher(path);
         watcher = dirWatcher.getWatcher();
@@ -48,6 +57,7 @@ public class DirWatchService extends Thread {
                     key = watcher.take();
                     break;
                 } catch (InterruptedException e) {
+                    // Exit when finished
                     if (stop.get())
                         return;
                 }
@@ -72,8 +82,7 @@ public class DirWatchService extends Thread {
                 Path newPath = (Path) event.context();
                 Path completePath = path.resolve(newPath);
                 
-                //System.out.format("%s: %s\n", event.kind().name(), completePath);
-                
+                // Get the relative path in order to navigate in the file browser tree.
                 Path relativePath = rootPath.relativize(completePath);
                 Iterator<Path> itr = relativePath.iterator();
                 LinkedList<Path> list = new LinkedList<Path>();
@@ -87,6 +96,7 @@ public class DirWatchService extends Thread {
                     size = 1;
                 }
                 
+                // Find the item of the file browser which has to be changed.
                 while (list.size() > size) {
                     ObservableList<TreeItem<FileWrapper>> children = item.getChildren();
                     Path nextPath = list.pop();
@@ -100,6 +110,7 @@ public class DirWatchService extends Thread {
                 
                 
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                    // Add new entry to the file browser.
                     File file = completePath.toFile();
                     FileTreeItem newItem = new FileTreeItem(new FileWrapper(file));
                     newItem.setGraphic(newItem.getIconNodeByFile(file));
@@ -113,6 +124,7 @@ public class DirWatchService extends Thread {
                     }
                 }
                 if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                    // Remove the corresponding item in the file browser.
                     item.getParent().getChildren().remove(item);
                 }
             }
