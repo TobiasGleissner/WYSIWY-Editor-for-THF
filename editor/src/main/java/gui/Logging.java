@@ -5,6 +5,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import prover.ProveResult;
+import prover.Prover;
 import prover.ProvingEntry;
 
 import javax.xml.transform.Transformer;
@@ -53,13 +54,32 @@ public class Logging {
     }
 
     public void prover(ProvingEntry p){
-        // TODO
-        this.prover(p.proveResult);
+        Element tr = createRecordSkeleton(LogLevel.PROVER);
+        Element messageContainer = doc.createElement("td");
+        tr.appendChild(messageContainer);
+        Element status = doc.createElement("span");
+        status.setAttribute("class","szsstatus");
+        status.setTextContent(p.proveResult.status.name());
+        messageContainer.appendChild(status);
+        Element message = doc.createElement("span");
+        StringBuilder sb = new StringBuilder(200);
+        sb.append("cpu=");
+        sb.append(p.proveResult.cpu);
+        sb.append(" wc=");
+        sb.append(p.proveResult.wc);
+        sb.append(" timeLimit=");
+        sb.append(p.proveResult.timelimit);
+        sb.append(" by ");
+        sb.append(Prover.getNiceName(p.proveResult.proverType));
+        sb.append(" ");
+        sb.append(p.proveResult.prover);
+        message.setTextContent(sb.toString());
+        messageContainer.appendChild(message);
     }
 
     public void prover(ProveResult p){
         // TODO
-        this.prover(p.toString());
+        //this.prover(p.toString());
     }
 
     public void prover(String msg){
@@ -87,6 +107,14 @@ public class Logging {
     }
 
     private Node createRecord(String msg, LogLevel logLevel){
+        Element tr = createRecordSkeleton(logLevel);
+        Element message = doc.createElement("td");
+        message.setTextContent(msg);
+        tr.appendChild(message);
+        return tr;
+    }
+
+    private Element createRecordSkeleton(LogLevel logLevel){
         Element tr = doc.createElement("tr");
         tableNode.appendChild(tr);
         Element loglvl = doc.createElement("td");
@@ -96,9 +124,6 @@ public class Logging {
         Element time = doc.createElement("td");
         time.setTextContent(getCurrentTime());
         tr.appendChild(time);
-        Element message = doc.createElement("td");
-        message.setTextContent(msg);
-        tr.appendChild(message);
         return tr;
     }
 

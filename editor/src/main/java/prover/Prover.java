@@ -4,12 +4,7 @@ import java.util.List;
 
 import java.io.IOException;
 
-import prover.TPTPDefinitions;
-import prover.SystemOnTPTPProver;
-import prover.LocalProver;
-
 public abstract class Prover {
-
     public enum ProverType {
         LOCAL_PROVER {
             public String getString() {
@@ -38,5 +33,14 @@ public abstract class Prover {
 
         public abstract String getString();
         public abstract List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subdialects) throws IOException;
+    }
+
+    public static String getNiceName(ProverType pt){
+        switch (pt){
+            case LOCAL_PROVER: return "local";
+            case SYSTEMONTPTP_CUSTOM_PROVER: return "custom remote";
+            case SYSTEMONTPTP_DEFAULT_PROVER: return "default remote";
+            default: return "unknown";
+        }
     }
 }

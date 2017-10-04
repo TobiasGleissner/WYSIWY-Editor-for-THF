@@ -190,9 +190,11 @@ public class LocalProver {
         if (stdout.contains("Usage:")) throw new ProverNotAvailableException("Prover could not be started");
 
         TPTPDefinitions.SZSDeductiveStatus status = parseSZSStatus(stdout);
-        double elapsedTime = parseWC(stdout);
+        double wc = parseWC(stdout);
+        double cpu = parseCPU(stdout);
         ProveResult ret = new ProveResult();
-        ret.elapsedTime = elapsedTime;
+        ret.wc = wc;
+        ret.cpu = cpu;
         ret.status = status;
         ret.stdout = stdout;
         ret.stderr = stderr;
@@ -212,7 +214,7 @@ public class LocalProver {
     public ProveResult prove(String problem, String prover, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {
         String cmdProver = getProverCommand(prover);
         ProveResult r = proveHelper(problem,cmdProver,timeLimit);
-        return new ProveResult(problem, Prover.ProverType.LOCAL_PROVER, prover, r.stdout, r.stderr, r.status, r.elapsedTime, timeLimit);
+        return new ProveResult(problem, Prover.ProverType.LOCAL_PROVER, prover, r.stdout, r.stderr, r.status, r.cpu, r.wc, timeLimit);
     }
 
     private double parseCPU(String s){
