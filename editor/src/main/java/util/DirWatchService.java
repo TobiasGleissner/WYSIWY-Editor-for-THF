@@ -12,7 +12,6 @@ import java.nio.file.WatchService;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Spliterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import gui.fileBrowser.FileTreeItem;
@@ -109,7 +108,6 @@ public class DirWatchService extends Thread {
                     if (completePath.toFile().isDirectory()) {
                         try {
                             dirWatcher.registerSubfolders(completePath);
-                            // TODO: Add files of new subfolders ...
                         } catch (IOException e) {
                         }
                     }

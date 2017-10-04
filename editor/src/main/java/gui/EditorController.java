@@ -249,6 +249,7 @@ public class EditorController implements Initializable {
         // TODO
         System.exit(0);
         if (dirWatchService != null) {
+            dirWatchService.setStop();
             dirWatchService.interrupt();
         }
     }
@@ -321,6 +322,7 @@ public class EditorController implements Initializable {
         try {
             if (dirWatchService != null) {
                 dirWatchService.setStop();
+                dirWatchService.interrupt();
             }
             dirWatchService = new DirWatchService(dir.toPath(), fileBrowser);
         } catch (IOException e2) {
@@ -852,13 +854,6 @@ public class EditorController implements Initializable {
             Path newFile = directory.resolve(name);
             File file = new File(newFile.toString());
             if (source.renameTo(file)) {
-                FileTreeItem item = new FileTreeItem(new FileWrapper(file));
-                TreeItem<FileWrapper> sourceItem = fileBrowser.getSelectionModel().getSelectedItem();
-                sourceItem.getParent().getChildren().remove(sourceItem);
-                item.setGraphic(item.getIconNodeByFile(file));
-                fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
-                ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem().getParent()).sortChildren(false);
-                //FileTreeView.updateTree(fileBrowser.getSelectionModel().getSelectedItem(), fileBrowser.getRoot(), new File(directory.toString()));
                 break;
             } else {
                 continue;
