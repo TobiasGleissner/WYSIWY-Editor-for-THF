@@ -243,7 +243,7 @@ public class EditorDocumentModel
             if(insertStart)
             {
                 Element cursor_start = doc.createElement("span");
-                cursor_start.setAttribute("id", "cursor_start");
+                cursor_start.setAttribute("id", "cursor");
                 parent.insertBefore(cursor_start, sibling);
             }
 
@@ -345,7 +345,7 @@ public class EditorDocumentModel
                     {
                         String lc = id.toLowerCase();
 
-                        if(lc.equals("cursor_start"))
+                        if(lc.equals("cursor"))
                             cursorStartOffset = content.length();
 
                         if(lc.equals("cursor_end"))

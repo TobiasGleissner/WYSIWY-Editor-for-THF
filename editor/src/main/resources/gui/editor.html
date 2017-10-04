@@ -27,6 +27,10 @@
                             }
                             ret = "[" + ret;
                         }
+                        else
+                        {
+                            ret = "/" + ret;
+                        }
                         ret = node.nodeName + ret;
                         break;
                     case 3:
@@ -54,49 +58,21 @@
             return ret;
         }
 
-        function make_selection_valid(e)
-        {
-            var selection = window.getSelection();
-            var editor = document.getElementById("editor");
-
-            if(selection.rangeCount < 1 ||
-               !editor.contains(selection.anchorNode) ||
-               !editor.contains(selection.focusNode))
-            {
-                selection.removeAllRanges();
-
-                var range = document.createRange();
-                range.setStart(editor, 0);
-                range.setEnd(editor, 0);
-                selection.addRange(range);
-            }
-        }
-        document.addEventListener("click", make_selection_valid);
-        document.addEventListener("keypress", make_selection_valid);
-
         function get_selected_range()
         {
             var selection = window.getSelection();
             if(selection.rangeCount < 1)
             {
                 var range = document.createRange();
-                range.setStart(editor, 0);
-                range.setEnd(editor, 0);
+                var cursor = get_cursor();
+                range.setStart(cursor, 0);
+                range.setEnd(cursor, 0);
                 return range;
             }
             else
             {
                 return selection.getRangeAt(0).cloneRange();
             }
-        }
-
-        function maybe_scroll_to_range(range)
-        {
-            var hidden = document.createElement("span");
-            hidden.textContent = ".";
-            range.insertNode(hidden);
-            hidden.scrollIntoViewIfNeeded(false);
-            hidden.parentNode.removeChild(hidden);
         }
 
         var parse_timeout = null;
@@ -125,6 +101,34 @@
                     start_incremental_parsing(parse_start, parse_end);
                     parse_start = Infinity;
                     parse_end = -Infinity;
+                },
+                100
+            );
+        }
+
+        function start_incremental_parsing_throttled_from_cursor()
+        {
+            if(parse_timeout)
+                clearTimeout(parse_timeout);
+
+            ids = get_start_end_from_cursor(false, false); /* TODO: was_first, was_last */
+            if(ids[0] == -1)
+                parse_start = -1;
+            else
+                parse_start = Math.min(parse_start, ids[0]);
+
+            if(ids[1] == -1)
+                parse_end = -1;
+            else
+                parse_end = Math.max(parse_end, ids[1]);
+
+            parse_timeout = setTimeout(
+                function()
+                {
+                    parse_timeout = null;
+                    start_incremental_parsing(parse_start, parse_end);
+                    parse_start = Infinity;
+                    parse_end = Infinity;
                 },
                 100
             );
@@ -233,44 +237,67 @@
             return [start_node, end_node];
         }
 
+        function get_start_end_from_cursor(was_first, was_last)
+        {
+            var cursor = get_cursor();
+
+            var par = cursor;
+            var prev_node = null;
+            while(par && (!par.getAttribute('id') || par.getAttribute('id').toLowerCase() != 'editor') )
+            {
+                prev_node = par;
+                par = par.parentElement;
+            }
+
+            if(!par)
+                throw 'ERROR: Could not find the editor element starting from the cursor element.'
+
+            /* If we didn't find any parsed chunk as parent we need
+             * to reparse everything. This can happen on the very first
+             * input. */
+            if(!prev_node ||
+                prev_node.nodeType != 1 ||
+               !prev_node.getAttribute('id') ||
+               !prev_node.getAttribute('id').toLowerCase().startsWith('hm_node_'))
+                return [-1, -1];
+
+            var snode = prev_node;
+            var enode = prev_node;
+
+            /* Is the cursor at the start of the node? If so we need  */
+            if(was_first)
+                snode = snode.previousSibling;
+
+            if(was_last)
+                enode = enode.nextSibling;
+
+            var start_id = -1;
+            if(snode)
+            {
+                var match = snode.getAttribute('id').toLowerCase().match(/^hm_node_(\d+)$/);
+                start_id = parseInt(match[1]);
+            }
+
+            var end_id = -1;
+            if(enode)
+            {
+                var match = enode.getAttribute('id').toLowerCase().match(/^hm_node_(\d+)$/);
+                end_id = parseInt(match[1]);
+            }
+
+            return [start_id, end_id];
+        }
+
         function start_incremental_parsing(start_node, end_node)
         {
+            var cursor = get_cursor();
+
             if(start_node >= 0)
                 node = document.getElementById("hm_node_" + start_node);
             else
                 node = editor.firstChild;
 
-            /* START: CREATE selection marker */
-            var cursor_start = document.createElement("span");
-            cursor_start.setAttribute('id', 'cursor_start');
-
-            var cursor_end = document.createElement("span");
-            cursor_end.setAttribute('id', 'cursor_end');
-
-            var old_range = get_selected_range();
-
-            old_range.insertNode(cursor_start);
-            old_range.collapse(false);
-            old_range.insertNode(cursor_end);
-            /* END: CREATE selection marker */
-
             java.start_parsing(start_node, end_node);
-
-            /* START: USE & DELETE selection marker */
-            cursor_start = document.getElementById("cursor_start");
-            cursor_end = document.getElementById("cursor_end");
-
-            var new_range = document.createRange();
-            new_range.setStart(cursor_start, 0);
-            new_range.setEnd(cursor_end, 0);
-
-            var selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(new_range);
-
-            cursor_start.parentNode.removeChild(cursor_start);
-            cursor_end.parentNode.removeChild(cursor_end);
-            /* END: USE & DELETE selection marker */
 
             update_line_numbers();
         }
@@ -346,56 +373,420 @@
             }
         }
 
+        function is_editor(node)
+        {
+            if(!node || node.nodeType != 1)
+                return false;
+
+            var id = node.getAttribute('id');
+
+            if(!id)
+                return false;
+
+            return id.toLowerCase() == 'editor';
+        }
+
+        function get_offset_to_line_from_node(node)
+        {
+            var offset = 0;
+
+            while(node)
+            {
+                if(node.nodeType == 3)
+                    offset += node.textContent.length;
+
+                var sibling = node.previousSibling;
+
+                if(sibling)
+                {
+                    node = sibling;
+                    while(node.lastChild)
+                        node = node.lastChild;
+                }
+                else
+                {
+                    node = node.parentNode;
+
+                    if(is_editor(node))
+                        return offset;
+                }
+
+                if(node.nodeType == 1 &&
+                   node.getAttribute('class') &&
+                   node.getAttribute('class').toLowerCase() == 'new_line')
+                   return offset;
+            }
+
+            throw 'ERROR: Could not find the previous newline node';
+        }
+
+        function get_newline_by_line_offset(node, line_offset, go_up)
+        {
+            while(node)
+            {
+                if(go_up)
+                    var sibling = node.previousSibling;
+                else
+                    var sibling = node.nextSibling;
+
+                if(sibling)
+                {
+                    node = sibling;
+
+                    if(go_up)
+                    {
+                        while(node.lastChild)
+                            node = node.lastChild;
+                    }
+                    else
+                    {
+                        while(node.firstChild)
+                            node = node.firstChild;
+                    }
+                }
+                else
+                {
+                    node = node.parentNode;
+
+                    if(is_editor(node))
+                        return node;
+                }
+
+                if(node.nodeType == 1 &&
+                   node.getAttribute('class') &&
+                   node.getAttribute('class').toLowerCase() == 'new_line')
+                {
+                    if(line_offset != 0)
+                        line_offset--;
+                    else
+                        return node;
+                }
+            }
+
+            throw 'ERROR: Could not find the previous newline node';
+        }
+
+        function get_pos_by_offset_to_line_from_node(node, offset)
+        {
+            var prev_node = node;
+
+            while(node)
+            {
+                if(node.nodeType == 3)
+                {
+                    var new_offset = offset - node.textContent.length;
+
+                    if(new_offset < 0)
+                        return [node.parentNode, node.splitText(offset)];
+
+                    offset = new_offset;
+                }
+
+                var sibling = node.nextSibling;
+
+                if(sibling)
+                {
+                    node = sibling;
+                    while(node.firstChild)
+                        node = node.firstChild;
+                }
+                else
+                {
+                    node = node.parentNode;
+
+                    if(is_editor(node))
+                        return [node, node.firstChild];
+                }
+
+                if(node.nodeType == 1 &&
+                   node.getAttribute('class') &&
+                   node.getAttribute('class').toLowerCase() == 'new_line')
+                   return [prev_node.parentNode, prev_node];
+
+                prev_node = node;
+            }
+
+            throw 'ERROR: Could not find the next newline node';
+        }
+
+        /* --- CURSOR MOVEMENT --- */
+        var hidden_offset = 0;
+        var shift_modifier = false;
+
+        function get_cursor_lr(go_left, offset, supports_shift=true)
+        {
+            hidden_offset = 0;
+
+            if(shift_modifier && supports_shift)
+            {
+                var range = get_selected_range();
+                var selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                selection.modify("extend", go_left ? "backward" : "forward", "character");
+
+                return null;
+            }
+
+            collapse_cursor();
+
+            var cursor = get_cursor();
+
+            var node = cursor;
+            var sibling = null;
+
+            while(node)
+            {
+                if(node.nodeType == 3)
+                {
+                    var len = node.textContent.length;
+                    if(len >= offset)
+                    {
+                        if(go_left)
+                            var cur_off = len - offset;
+                        else
+                            var cur_off = offset;
+
+                        var next = node.splitText(cur_off);
+                        return [next.parentNode, next];
+                    }
+                    else
+                    {
+                        offset -= len;
+                    }
+                }
+
+                /* Iterate nodes in the proper direction: (left|right)Sibling & deepest (right|left)Child -> parent. */
+                if(go_left)
+                    sibling = node.previousSibling;
+                else
+                    sibling = node.nextSibling;
+
+                if(sibling)
+                {
+                    node = sibling;
+
+                    if(go_left)
+                    {
+                        while(node.lastChild)
+                            node = node.lastChild;
+                    }
+                    else
+                    {
+                        while(node.firstChild)
+                            node = node.firstChild;
+                    }
+                }
+                else
+                {
+                    node = node.parentNode;
+
+                    if(is_editor(node))
+                    {
+                        if(go_left)
+                            return [node, node.firstChild];
+                        else
+                            return [node, null];
+
+                        break;
+                    }
+                }
+            }
+
+            throw 'ERROR: Could not find the next character';
+        }
+
+        function get_cursor_ud(go_up, offset)
+        {
+            collapse_cursor();
+            var cursor = get_cursor();
+
+            var offset = get_offset_to_line_from_node(cursor);
+            offset = Math.max(offset, hidden_offset);
+            hidden_offset = offset;
+
+            var start_node = get_newline_by_line_offset(cursor, go_up ? 1 : 0, go_up);
+
+            return get_pos_by_offset_to_line_from_node(start_node, offset);
+        }
+
+        function get_cursor()
+        {
+            var cursor = document.getElementById("cursor");
+
+            if(!cursor)
+            {
+                var editor = document.getElementById("editor");
+                if(!editor)
+                    throw 'ERROR: Could not find the editor element.'
+
+                cursor = document.createElement("div");
+                cursor.setAttribute("id", "cursor");
+
+                editor.insertBefore(cursor, editor.firstChild);
+            }
+            return cursor;
+        }
+
+        /* Set the cursor assuring it is never inserted directly before a newline marker, as it would confuse the up/down code. */
+        function set_cursor(par, next)
+        {
+            var cursor = get_cursor();
+
+            while(next &&
+                  next.nodeType == 3 &&
+                  next.textContent.length == 0)
+                  next = next.nextSibling;
+
+            if(next &&
+               next.nodeType == 1 &&
+               next.getAttribute('class') &&
+               next.getAttribute('class').toLowerCase() == 'new_line')
+               next = next.nextSibling;
+
+            par.insertBefore(cursor, next);
+        }
+
+        function collapse_cursor()
+        {
+            var selection = window.getSelection();
+            selection.removeAllRanges();
+        }
+
+        function maybe_scroll_to_cursor()
+        {
+            var cursor = get_cursor();
+            cursor.scrollIntoViewIfNeeded();
+        }
+
         document.addEventListener("keydown",
             function(e)
             {
-                if(e.keyCode == 8)
+                switch(e.keyCode)
                 {
-                    e.stopPropagation();
-                    e.preventDefault();
+                    case 16: /* SHIFT */
+                        shift_modifier = true;
+                        break;
+                    case 8: /* BACKSPACE */
+                        e.stopPropagation();
+                        e.preventDefault();
 
-                    var selection = window.getSelection();
-                    if(selection.isCollapsed)
-                        selection.modify("extend", "backward", "character");
+                        hidden_offset = 0;
 
-                    selection.deleteFromDocument();
+                        var range = get_selected_range();
+                        if(range.toString().length != 0)
+                        {
+                            range.deleteContents();
+                            if(!document.getElementById("cursor"))
+                                range.insertNode(get_cursor());
 
-                    maybe_scroll_to_range(get_selected_range());
-                    start_incremental_parsing_throttled(get_selected_range());
+                            var selection = window.getSelection();
+                            selection.removeAllRanges();
+                            start_incremental_parsing_throttled_from_cursor();
+                            break;
+                        }
+
+                        var next = get_cursor_lr(true, 1, false);
+                        if(next[1])
+                            next[1].parentNode.removeChild(next[1]);
+
+                        maybe_scroll_to_cursor();
+                        start_incremental_parsing_throttled_from_cursor();
+                        break;
+                    case 46: /* DEL */
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        hidden_offset = 0;
+
+                        var range = get_selected_range();
+                        if(range.toString().length != 0)
+                        {
+                            range.deleteContents();
+                            if(!document.getElementById("cursor"))
+                                range.insertNode(get_cursor());
+
+                            var selection = window.getSelection();
+                            selection.removeAllRanges();
+                            start_incremental_parsing_throttled_from_cursor();
+                            break;
+                        }
+
+                        var next = get_cursor_lr(false, 1, false);
+                        if(next[1])
+                            next[1].parentNode.removeChild(next[1]);
+
+                        maybe_scroll_to_cursor();
+                        start_incremental_parsing_throttled_from_cursor();
+                        break;
+                    case 13: /* ENTER */
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        hidden_offset = 0;
+
+                        var cursor = get_cursor();
+
+                        var text_node = document.createTextNode("\n");
+                        cursor.parentNode.insertBefore(text_node, cursor);
+
+                        maybe_scroll_to_cursor();
+                        start_incremental_parsing_throttled_from_cursor();
+                        break;
+                    case 37: /* LEFT */
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        var cursor = get_cursor();
+                        var next = get_cursor_lr(true, 1);
+                        if(!next) break;
+                        set_cursor(next[0], next[1]);
+
+                        maybe_scroll_to_cursor();
+                        break;
+                    case 38: /* UP */
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        var cursor = get_cursor();
+                        var next = get_cursor_ud(true, 1);
+                        set_cursor(next[0], next[1]);
+
+                        maybe_scroll_to_cursor();
+                        break;
+                    case 39: /* RIGHT */
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        var cursor = get_cursor();
+                        var next = get_cursor_lr(false, 1);
+                        if(!next) break;
+                        set_cursor(next[0], next[1]);
+
+                        maybe_scroll_to_cursor();
+                        break;
+                    case 40: /* DOWN */
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        var cursor = get_cursor();
+                        var next = get_cursor_ud(false, 1);
+                        set_cursor(next[0], next[1]);
+
+                        maybe_scroll_to_cursor();
+                        break;
                 }
-                else if(e.keyCode == 46)
+            }
+        );
+
+        document.addEventListener("keyup",
+            function(e)
+            {
+                switch(e.keyCode)
                 {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    var selection = window.getSelection();
-                    if(selection.isCollapsed)
-                        selection.modify("extend", "forward", "character");
-
-                    selection.deleteFromDocument();
-
-                    maybe_scroll_to_range(get_selected_range());
-                    start_incremental_parsing_throttled(get_selected_range());
-                }
-                else if(e.keyCode == 13)
-                {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    var range = get_selected_range();
-                    range.deleteContents();
-
-                    var text = document.createTextNode("\n");
-                    range.insertNode(text);
-                    range.selectNode(text);
-                    range.collapse(false);
-
-                    maybe_scroll_to_range(range);
-                    start_incremental_parsing_throttled(range);
-
-                    var selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
+                    case 16: /* SHIFT */
+                        shift_modifier = false;
+                        break;
                 }
             }
         );
@@ -406,21 +797,20 @@
                 e.stopPropagation();
                 e.preventDefault();
 
+                hidden_offset = 0;
+
                 var range = get_selected_range();
                 range.deleteContents();
 
                 var new_text = String.fromCharCode(e.charCode);
-                var text = document.createTextNode(new_text);
-                range.insertNode(text);
-                range.selectNode(text);
-                range.collapse(false);
+                var cursor = get_cursor();
 
-                maybe_scroll_to_range(range);
-                start_incremental_parsing_throttled(range);
+                var text_node = document.createTextNode(new_text);
+                cursor.parentNode.insertBefore(text_node, cursor);
 
-                var selection = window.getSelection();
-                selection.removeAllRanges();
-                selection.addRange(range);
+                maybe_scroll_to_cursor();
+                start_incremental_parsing_throttled_from_cursor();
+                line_number_update_throttled();
             }
         );
 
@@ -430,25 +820,37 @@
                 e.stopPropagation();
                 e.preventDefault();
 
+                hidden_offset = 0;
+
                 var hm_node_id_left = 0;
                 var hm_node_id_right = 0;
 
                 var clipboard_data = e.clipboardData;
                 var text = clipboard_data.getData('text/plain');
 
-                var range = get_selected_range();
-                range.deleteContents();
+                var cursor = get_cursor();
+
                 var text_node = document.createTextNode(text);
-                range.insertNode(text_node);
-                range.selectNode(text_node);
-                range.collapse(false);
+                cursor.parentNode.insertBefore(text_node, cursor);
 
+                maybe_scroll_to_cursor();
+                start_incremental_parsing_throttled_from_cursor();
+            }
+        );
+
+        document.addEventListener("selectionchange",
+            function(e)
+            {
                 var selection = window.getSelection();
-                selection.removeAllRanges();
-                selection.addRange(range);
+                if(selection.rangeCount == 0)
+                    return;
 
-                maybe_scroll_to_range(range);
-                start_incremental_parsing_throttled(range);
+                hidden_offset = 0;
+
+                var cursor = get_cursor();
+                var range = selection.getRangeAt(0);
+                range.insertNode(cursor);
+                set_cursor(cursor.parentNode, cursor);
             }
         );
 
@@ -485,6 +887,6 @@
 </head>
 <body>
     <div id="numbers"></div>
-    <div id="editor" contenteditable="true" data-start="0"></div>
+    <div id="editor" data-start="0"><span id="cursor"></span></div>
 </body>
 </html>
