@@ -476,15 +476,10 @@
                 function()
                 {
                     line_number_timeout = null;
-                    line_number_handler();
+                    update_line_numbers();
                 },
                 200
             );
-        }
-
-        function line_number_handler()
-        {
-            update_line_numbers();
         }
     </script>
 </head>
