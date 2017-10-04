@@ -50,21 +50,32 @@ public class EditorModel
     }
 
     public void onViewIncreaseFontSize() {
-        getSelectedTab().model.onViewIncreaseFontSize();
+        for (Tab t : thfArea.getTabs()){
+            ((EditorDocumentViewController) t.getUserData()).model.style.increaseFontSize();
+            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
+        }
     }
 
     public void onViewDecreaseFontSize() {
-        getSelectedTab().model.onViewDecreaseFontSize();
+        for (Tab t : thfArea.getTabs()){
+            ((EditorDocumentViewController) t.getUserData()).model.style.decreaseFontSize();
+            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
+        }
     }
 
     public void onViewEnterPresentationMode() {
-        getSelectedTab().model.onViewEnterPresentationMode();
+        for (Tab t : thfArea.getTabs()){
+            ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizePresentationMode);
+            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
+        }
         // TODO close side drawer, ...
     }
 
-    public void onViewDefaultFontSize()
-    {
-        getSelectedTab().model.onViewDefaultFontSize();
+    public void onViewDefaultFontSize() {
+        for (Tab t : thfArea.getTabs()){
+            ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizeEditorDefault);
+            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
+        }
     }
 
     private EditorDocumentViewController getNewTab() {

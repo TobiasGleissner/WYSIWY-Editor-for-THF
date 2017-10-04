@@ -55,9 +55,9 @@ public class EditorDocumentModel
 
     private Path path; // Path to document. Meaning of value null see constructor.
 
-    private WebEngine engine;
+    public WebEngine engine;
     private Document doc;
-    private WebKitStyle style;
+    public WebKitStyle style;
 
     private EditorDocumentViewController view;
 
@@ -664,27 +664,6 @@ public class EditorDocumentModel
         } catch(FileNotFoundException e) {
             log.error(e.getMessage());
         }
-    }
-
-    public void onViewIncreaseFontSize() {
-        style.increaseFontSize();
-        engine.executeScript("update_line_numbers()");
-    }
-
-    public void onViewDecreaseFontSize() {
-        style.decreaseFontSize();
-        engine.executeScript("update_line_numbers()");
-    }
-
-    public void onViewEnterPresentationMode() {
-        style.setFontSizeEditor(Config.fontSizePresentationMode);
-        engine.executeScript("update_line_numbers()");
-        // TODO close side drawer, ...
-    }
-
-    public void onViewDefaultFontSize() {
-        style.setFontSizeEditor(Config.fontSizeEditorDefault);
-        engine.executeScript("update_line_numbers()");
     }
 
     /**
