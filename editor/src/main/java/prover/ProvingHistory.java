@@ -43,11 +43,11 @@ public class ProvingHistory {
     public void prove(EditorDocumentModel editorDocument, String proverName, Prover.ProverType proverType, int timeLimit){
         Date now = new Date();
         ProveResult proveResult = null;
-        String problemWithIncludes = preprocessIncludes(editorDocument);
+        String problemWithResolvedIncludes = preprocessIncludes(editorDocument);
         switch (proverType){
             case LOCAL_PROVER:{
                 try {
-                    proveResult = localProver.prove(problemWithIncludes,proverName,timeLimit);
+                    proveResult = localProver.prove(problemWithResolvedIncludes,proverName,timeLimit);
                 } catch (IOException e) {
                     log.error("Could not create a temporary file containing the problem. Filename='"
                             + editorDocument.getPath().toString()+ "'.");
@@ -75,7 +75,7 @@ public class ProvingHistory {
                     }
                 }
                 try {
-                    proveResult = systemOnTPTPProver.prove(problemWithIncludes,proverName,timeLimit);
+                    proveResult = systemOnTPTPProver.prove(problemWithResolvedIncludes,proverName,timeLimit);
                 } catch (ProverNotAvailableException e) {
                     log.error("The selected prover does not exist or is malfunctioning. ProverName='"
                             + proverName + "' ProverType='" + proverType.name() + "'.");
@@ -99,11 +99,9 @@ public class ProvingHistory {
                     }
                 }
                 String systemOnTPTPProverName = systemOnTPTPProver.getCustomProverSystemOnTPTPName(proverName);
-                if (systemOnTPTPProverName == null) System.err.println("BUG:: systemOnTPTPProverName null"); // TODO remove this in production
                 String proverCommand = systemOnTPTPProver.getCustomProverCommand(proverName);
-                if (proverCommand == null) System.err.println("BUG:: proverCommand null"); // TODO remove this in production
                 try {
-                    proveResult = systemOnTPTPProver.prove(problemWithIncludes,systemOnTPTPProverName,proverCommand,timeLimit);
+                    proveResult = systemOnTPTPProver.prove(problemWithResolvedIncludes,systemOnTPTPProverName,proverCommand,timeLimit);
                 } catch (ProverNotAvailableException e) {
                     log.error("The selected prover does not exist or is malfunctioning. ProverName='"
                             + proverName + "' SystemOnTPTPProverName='" + systemOnTPTPProverName + "' ProverCommand='" + proverCommand + "' ProverType='" + proverType.name() + "'.");

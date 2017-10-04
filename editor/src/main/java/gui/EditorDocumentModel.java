@@ -141,7 +141,6 @@ public class EditorDocumentModel
         }
         catch(IOException ex)
         {
-            /* TODO */
             ex.printStackTrace();
         }
 

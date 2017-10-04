@@ -207,7 +207,6 @@ public class EditorController implements Initializable {
         try {
             log.outputEngine.loadContent(IOUtils.toString(getClass().getResourceAsStream("/gui/output.html"), "UTF-8"));
         } catch (IOException e) {
-            // TODO
             e.printStackTrace();
         }
 
@@ -1026,7 +1025,6 @@ public class EditorController implements Initializable {
     }
 
     private void quit() {
-        // TODO
         if (dirWatchService != null) {
             dirWatchService.setStop();
             dirWatchService.interrupt();
