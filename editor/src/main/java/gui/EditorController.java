@@ -86,8 +86,6 @@ import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
 import prover.Prover;
 import prover.TPTPDefinitions;
-import prover.SystemOnTPTPProver;
-import prover.LocalProver;
 import gui.preferences.PreferencesController;
 import gui.preferences.PreferencesModel;
 
@@ -253,7 +251,8 @@ public class EditorController implements Initializable {
         initializeListOfRecentlyOpenedFiles();
 
         // Initialize prover menu lists
-        addCurrentlyAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
+        addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
+        toolbarSelectProver.setText(defaultProver);
 
         // Initialize tabs on the left side
         makeTabPaneCollapsable();
@@ -920,74 +919,51 @@ public class EditorController implements Initializable {
         else model.getSelectedTab().model.prove(currentlySelectedProver,currentlySelectedProverType,200);
     }
 
-    private void addCurrentlyAvailableProversToMenus(List<TPTPDefinitions.TPTPSubDialect> subdialects) {
+    private void addAvailableProversToMenus(List<TPTPDefinitions.TPTPSubDialect> subdialects) {
+
         try {
-            List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(subdialects);
-            List<String> availableProversRemote = SystemOnTPTPProver.getInstance().getAvailableDefaultProvers(subdialects);
-            List<String> availableProversCustomRemote = SystemOnTPTPProver.getInstance().getAvailableCustomProvers(subdialects);
-            // add list of provers to menubar
-            addCurrentlyAvailableProversToMenu(menubarProverSelectProver,availableProversLocal,"local");
-            addCurrentlyAvailableProversToMenu(menubarProverSelectProver,availableProversRemote,"remote");
-            addCurrentlyAvailableProversToMenu(menubarProverSelectProver,availableProversCustomRemote,"custom");
-            // add list of provers to toolbar
-            addCurrentlyAvailableProversToMenu(toolbarSelectProver,availableProversLocal,"local");
-            addCurrentlyAvailableProversToMenu(toolbarSelectProver,availableProversRemote,"remote");
-            addCurrentlyAvailableProversToMenu(toolbarSelectProver,availableProversCustomRemote,"custom");
+
+            menubarProverSelectProver.getItems().clear();
+            toolbarSelectProver.getItems().clear();
+
+            for (Prover.ProverType type : Prover.ProverType.values()) {
+                // add list of provers to menubar
+                menubarProverSelectProver.getItems().addAll(getMenuItemsForAvailableProvers(type,type.getAvailableProvers(subdialects)));
+                // add list of provers to toolbar
+                toolbarSelectProver.getItems().addAll(getMenuItemsForAvailableProvers(type,type.getAvailableProvers(subdialects)));
+            }
+
         } catch (IOException e) {
             // TODO: write log entry
         }
     }
 
-    private void addCurrentlyAvailableProversToMenu(Object fxmlObj, List<String> provers, String kind) {
+    private List<MenuItem> getMenuItemsForAvailableProvers(Prover.ProverType proverType, List<String> provers) {
 
         List<MenuItem> items = new ArrayList<MenuItem>();
 
-        MenuItem label = new MenuItem(kind.substring(0, 1).toUpperCase() + kind.substring(1) + " Provers");
+        MenuItem label = new MenuItem(proverType.getString() + " Provers");
         label.setDisable(true);
         items.add(label);
 
         if (provers.isEmpty()) {
-            MenuItem noProvers = new MenuItem("No " + kind + " Provers available");
+            MenuItem noProvers = new MenuItem("No provers available");
             noProvers.setDisable(true);
             items.add(noProvers);
         } else {
             for (Iterator<String> i = provers.iterator(); i.hasNext();) {
                 String prover = i.next();
-                String proverName = prover.replace("---"," ");
-                MenuItem item = new MenuItem(proverName);
-                if (kind.equals("local")) {
-                    item.setOnAction(a->{
-                        currentlySelectedProver = prover;
-                        currentlySelectedProverType = Prover.ProverType.LOCAL_PROVER;
-                        toolbarSelectProver.setText(proverName);
-                    });
-                } else if (kind.equals("remote")) {
-                    item.setOnAction(a->{
-                        currentlySelectedProver = prover;
-                        currentlySelectedProverType = Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER;
-                        toolbarSelectProver.setText(proverName);
-                    });
-                } else {
-                    item.setOnAction(a->{
-                        currentlySelectedProver = prover;
-                        currentlySelectedProverType = Prover.ProverType.SYSTEMONTPTP_CUSTOM_PROVER;
-                        toolbarSelectProver.setText(proverName);
-                    });
-                }
-                item.setUserData(prover);
+                MenuItem item = new MenuItem(prover.replace("---"," "));
+                item.setOnAction(a->{
+                    currentlySelectedProver = prover;
+                    currentlySelectedProverType = proverType;
+                    toolbarSelectProver.setText(item.getText());
+                });
                 items.add(item);
             }
         }
 
-        if (kind.equals("local")|kind.equals("remote")) items.add(new SeparatorMenuItem());
-
-        if (fxmlObj instanceof Menu) {
-            ((Menu)fxmlObj).getItems().addAll(items);
-        } else if (fxmlObj instanceof MenuButton) {
-            ((MenuButton)fxmlObj).getItems().addAll(items);
-        }
-
-        toolbarSelectProver.setText(defaultProver); // TODO
+        return items;
     }
 
     // ==========================================================================
