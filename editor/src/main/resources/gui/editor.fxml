@@ -229,6 +229,7 @@
                         <Button onAction="#debugLCL6341" text="LCL6341" />
                         <Button onAction="#debugSYN0001" text="SYN0001" />
                         <Button onAction="#debugSYN0002" text="SYN0002" />
+                        <Button onAction="#debugTrue" text="So True" />
                     </items>
                 </ToolBar>
 

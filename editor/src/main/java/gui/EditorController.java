@@ -102,6 +102,7 @@ public class EditorController implements Initializable {
     @FXML public void debugLCL6341() { model.openStream(getClass().getResourceAsStream("/test/LCL634^1.p"), Paths.get("LCL634^1.p")); }
     @FXML public void debugSYN0001() { model.openStream(getClass().getResourceAsStream("/test/SYN000^1.p"), Paths.get("SYN000^1.p")); }
     @FXML public void debugSYN0002() { model.openStream(getClass().getResourceAsStream("/test/SYN000^2.p"), Paths.get("SYN000^2.p")); }
+    @FXML public void debugTrue() { model.openStream(getClass().getResourceAsStream("/test/true.p"), Paths.get("true.p")); }
 
     // END DEBUG
 
