@@ -2,8 +2,8 @@ package gui.fileBrowser;
 
 import java.io.File;
 import java.util.List;
+import java.util.Collections;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -134,7 +134,24 @@ public class FileTreeItem extends TreeItem<FileWrapper> implements Comparable<Fi
         
         if (list.size() == 0)
             return;
-        Collections.sort(list);
+        Collections.sort(list,
+            (lhs, rhs) ->
+            {
+                if(!(lhs instanceof FileTreeItem) &&
+                   !(rhs instanceof FileTreeItem))
+                    return lhs.getValue().toString().compareTo(rhs.getValue().toString());
+
+                if(!(lhs instanceof FileTreeItem))
+                    return -1;
+                if(!(rhs instanceof FileTreeItem))
+                    return 1;
+
+                FileTreeItem lhs_ = (FileTreeItem)lhs;
+                FileTreeItem rhs_ = (FileTreeItem)rhs;
+
+                return lhs_.compareTo(rhs_);
+            }
+        );
         
         if (alsoChildrenOfChildren) {
             for (TreeItem<FileWrapper> child : list) {
