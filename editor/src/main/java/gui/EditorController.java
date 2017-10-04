@@ -965,6 +965,7 @@ public class EditorController implements Initializable {
 
     @FXML
     private void onPrintTree(ActionEvent e) {
+        model.debugPrintIncludes();
     }
 
     // ==========================================================================

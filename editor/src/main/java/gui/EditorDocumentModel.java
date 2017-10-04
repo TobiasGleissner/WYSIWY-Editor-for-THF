@@ -9,6 +9,8 @@ import java.io.FileNotFoundException;
 
 import java.nio.file.Path;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 import java.util.Queue;
 import java.util.concurrent.Callable;
@@ -58,6 +60,8 @@ public class EditorDocumentModel
     public WebEngine engine;
     private Document doc;
     public WebKitStyle style;
+
+    private HashMap<Integer, Node> includes;
 
     private EditorDocumentViewController view;
 
@@ -156,6 +160,8 @@ public class EditorDocumentModel
             css.add("system_functor");
         }
         scanner.close();
+
+        this.includes = new HashMap<>();
     }
 
     private void maybeCallDelayedActions()
@@ -346,11 +352,21 @@ public class EditorDocumentModel
 
                     if(id != null)
                     {
-                        if(id.toLowerCase().equals("cursor_start"))
+                        String lc = id.toLowerCase();
+
+                        if(lc.equals("cursor_start"))
                             cursorStartOffset = content.length();
 
-                        if(id.toLowerCase().equals("cursor_end"))
+                        if(lc.equals("cursor_end"))
                             cursorEndOffset = content.length();
+
+                        if(id.startsWith("hm_node_"))
+                        {
+                            String idSuff = id.substring("hm_node_".length());
+                            Integer idInt = Integer.valueOf(Integer.parseInt(idSuff));
+
+                            this.includes.remove(idInt);
+                        }
                     }
                 }
             }
@@ -479,6 +495,18 @@ public class EditorDocumentModel
             if(node.stopIndex < node.startIndex)
                 node.stopIndex = node.startIndex = 0;
 
+            Stack<Node> nodes = new Stack<>();
+            nodes.push(node);
+            while(!nodes.isEmpty())
+            {
+                Node n = nodes.pop();
+
+                if(n.getRule().equals("include"))
+                    includes.put(Integer.valueOf(parserNodeIdCur), n);
+
+                nodes.addAll(n.getChildren());
+            }
+
             /* Preprocessing for highlighting: extract sections which have to be highlighted. */
             LinkedList<SpanElement> spanElements = new LinkedList<SpanElement>();
             addSpanElements(node, spanElements);
@@ -493,7 +521,6 @@ public class EditorDocumentModel
             newNode.setAttribute("class", "hm_node");
 
             if(ret == -1) ret = parserNodeIdCur;
-            parserNodeIdCur++;
 
             int lastParsedToken = 0;
             int nextEnd = -1;
@@ -569,6 +596,8 @@ public class EditorDocumentModel
             if(isFirst) isFirst = false;
             builder.delete(0, builder.length());
             parent.insertBefore(newNode, sibling);
+
+            parserNodeIdCur++;
         }
 
         return ret;
@@ -744,5 +773,11 @@ public class EditorDocumentModel
     public void debugPrintHTML() {
         delayedActions.add(() -> { debugPrintHTMLImmediately(); return null; });
         maybeCallDelayedActions();
+    }
+
+    public void debugPrintIncludes() {
+        for(Map.Entry<Integer, Node> entry : includes.entrySet()) {
+            System.out.println(entry.getValue().toString());
+        }
     }
 };

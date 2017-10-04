@@ -127,4 +127,8 @@ public class EditorModel
     public void debugPrintHTML() {
         getSelectedTab().model.debugPrintHTML();
     }
+
+    public void debugPrintIncludes() {
+        getSelectedTab().model.debugPrintIncludes();
+    }
 }
