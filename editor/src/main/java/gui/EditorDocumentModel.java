@@ -219,8 +219,8 @@ public class EditorDocumentModel
 
                 Element nl = doc.createElement("subsection");
                 nl.setAttribute("class", "new_line");
-                nl.setAttribute("data-start", "" + startOffset + start);
-                nl.setAttribute("data-end", "" + startOffset + start);
+                nl.setAttribute("data-start", "" + (startOffset + start));
+                nl.setAttribute("data-end", "" + (startOffset + start));
                 parent.insertBefore(nl, sibling);
             }
 
