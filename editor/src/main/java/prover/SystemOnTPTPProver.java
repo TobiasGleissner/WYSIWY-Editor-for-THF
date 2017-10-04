@@ -85,7 +85,7 @@ public class SystemOnTPTPProver {
     public List<String> getAvailableCustomProvers(List<TPTPDefinitions.TPTPSubDialect> subDialectList){
         List<String> provers = new ArrayList<>();
         for (TPTPDefinitions.TPTPSubDialect d : subDialectList){
-            provers.addAll(getAvailableDefaultProvers(d));
+            provers.addAll(getAvailableCustomProvers(d));
         }
         return provers;
     }
