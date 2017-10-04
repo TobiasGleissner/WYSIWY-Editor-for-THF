@@ -428,7 +428,7 @@ public class EditorDocumentModel
             if(!hasError)
                 node = parseContext.getRoot().getFirstChild();
 
-            if(hasError || node.stopIndex < node.startIndex)
+            if(hasError)
             {
                 node = new Node("not_parsed");
 
@@ -447,6 +447,9 @@ public class EditorDocumentModel
 
                 continue;
             }
+
+            if(node.stopIndex < node.startIndex)
+                node.stopIndex = node.startIndex = 0;
 
             /* Preprocessing for highlighting: extract sections which have to be highlighted. */
             LinkedList<SpanElement> spanElements = new LinkedList<SpanElement>();
@@ -492,9 +495,8 @@ public class EditorDocumentModel
 
                 if (startIndex > lastParsedToken ) {
                     builder.append(part.substring(lastParsedToken, startIndex));
-                    lastParsedToken += builder.length();
-
                     insertNewTextNode(builder.toString(), newNode, lastParsedToken, isFirst);
+                    lastParsedToken += builder.length();
                     if(isFirst) isFirst = false;
                     builder.delete(0, builder.length());
                 }
