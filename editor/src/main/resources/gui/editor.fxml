@@ -159,14 +159,15 @@
                         </Menu>
 
                         <!-- menuitem prover -->
-                        <Menu fx:id="menubarRunProver" text="Prover">
+                        <Menu text="Prover">
                             <items>
-                                <MenuItem text="Run selected Prover">
+                                <Menu fx:id="menubarProverSelectProver" text="Select Prover" />
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem onAction="#onRunSelectedProver" text="Run selected Prover">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="R" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
                                 </MenuItem>
-                                <SeparatorMenuItem mnemonicParsing="false" />
                             </items>
                         </Menu>
 
@@ -210,15 +211,15 @@
                         <HBox prefWidth="20" />
                     </items>
                     <items>
-                        <Button mnemonicParsing="false">
+                        <MenuButton fx:id="toolbarSelectProver" mnemonicParsing="false">
+                            <tooltip><Tooltip text="Select Prover" /></tooltip>
+                        </MenuButton>
+                        <Button onAction="#onRunSelectedProver" mnemonicParsing="false">
                             &#xf04b; <!-- PLAY -->
                             <tooltip>
                                 <Tooltip text="Run selected Prover" />
                             </tooltip>
                         </Button>
-                        <MenuButton fx:id="toolbarRunProver" mnemonicParsing="false">
-                            <tooltip><Tooltip text="Select and run Prover" /></tooltip>
-                        </MenuButton>
                     </items>
                     <!-- debug buttons -->
                     <items>

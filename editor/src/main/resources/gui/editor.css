@@ -77,12 +77,12 @@
     -fx-background-color: -fx-selection-bar;
 }
 
-.menu-bar > .container > .menu-button:hover > .label {
-     -fx-text-fill: -fx-darker-base;
-}
-
 .menu-item:disabled {
      -fx-opacity: 0.7;
+}
+
+.menu-item:disabled:hover {
+     -fx-background-color: transparent;
 }
 
 .context-menu {
@@ -117,8 +117,17 @@
     -fx-padding: 0em 0.3em 0.5em 0.5em;
 }
 
+.tool-bar:horizontal > .container > .menu-button > .label {
+    -fx-text-fill: -fx-darker-base;
+    -fx-font-size: 85%;
+}
+
+.tool-bar:horizontal > .container > .menu-button:hover > .label {
+    -fx-text-fill: -fx-medium-base;
+}
+
 .tool-bar:horizontal > .container > .menu-button > .arrow-button {
-    -fx-padding: 0.6em 0em 0.5em -2.55em;
+    -fx-padding: 0.6em 0.1em 0.5em -0.3em;
 }
 
 .tool-bar:horizontal > .container > .menu-button > .arrow-button > .arrow {
@@ -190,7 +199,7 @@
 }
 
 .tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
-    -fx-font-size: 10px;
+    -fx-font-size: 80%;
 }
 
 .tab-pane > .tab-header-area > .headers-region > .tab:selected {

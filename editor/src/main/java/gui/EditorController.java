@@ -43,10 +43,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
@@ -107,12 +105,12 @@ public class EditorController implements Initializable {
     // END DEBUG
 
     // Menu
-    @FXML private Menu menubarRunProver;
+    @FXML private Menu menubarProverSelectProver;
     @FXML private Menu menubarFileReopenFile;
     @FXML private MenuItem menubarFileReopenFileNoFiles;
 
     // Toolbar
-    @FXML private MenuButton toolbarRunProver;
+    @FXML private MenuButton toolbarSelectProver;
 
     // Tabs left
     @FXML private SplitPane splitPaneVertical;
@@ -139,6 +137,8 @@ public class EditorController implements Initializable {
     private Tab lastSelectedTabBeforeCollapse = null;
     static FontAwesome iconCollapse = FontAwesome.ANGLE_DOUBLE_DOWN;
     static FontAwesome iconUncollapse = FontAwesome.ANGLE_DOUBLE_UP;
+    private String defaultProver = "Leo-III 1.1";
+    private String currentlySelectedProver = defaultProver;
 
     // ==========================================================================
     // Constructors / Init
@@ -355,21 +355,21 @@ public class EditorController implements Initializable {
                 System.out.println("Run prover ...");
             }
         });
-        
+
         newFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                
+
                 String error = "";
                 String name = null;
                 Path directory = null;
-                
+
                 while (true) {
                     TextInputDialog dialog = new TextInputDialog();
                     dialog.setTitle("New file");
                     dialog.setHeaderText("New file name"+error);
                     dialog.setContentText("Please enter the file name:");
-                    
+
                     Optional<String> result = dialog.showAndWait();
                     if (!result.isPresent())
                         break;
@@ -407,17 +407,17 @@ public class EditorController implements Initializable {
         newDirectory.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                
+
                 String error = "";
                 String name = null;
                 Path directory = null;
-                
+
                 while (true) {
                     TextInputDialog dialog = new TextInputDialog();
                     dialog.setTitle("New directory");
                     dialog.setHeaderText("New directory name"+error);
                     dialog.setContentText("Please enter the directory name:");
-                    
+
                     Optional<String> result = dialog.showAndWait();
                     if (!result.isPresent())
                         break;
@@ -434,7 +434,7 @@ public class EditorController implements Initializable {
                     directory = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false);
                     Path newDir = directory.resolve(name);
                     File file = new File(newDir.toString());
-                    
+
                     if (file.mkdir()) {
                         FileTreeItem item = new FileTreeItem(new FileWrapper(file));
                         item.setGraphic(item.getIconNodeByFile(file));
@@ -447,7 +447,7 @@ public class EditorController implements Initializable {
                 }
             }
         });
-        
+
         renameFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -460,7 +460,7 @@ public class EditorController implements Initializable {
                 renameFileOrDir();
             }
         });
-        
+
         pasteFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -473,7 +473,7 @@ public class EditorController implements Initializable {
                 copyFile(true);
             }
         });
-        
+
         // Copy file to clipboard.
         // TODO: File is only available within our application!
         copyFile.setOnAction(new EventHandler<ActionEvent>() {
@@ -565,7 +565,7 @@ public class EditorController implements Initializable {
                 }
             }
         });
-        
+
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -687,19 +687,19 @@ public class EditorController implements Initializable {
             copyStringToClipboard(item.getValue().toString());
         }
     }
-    
+
     private void copyFileOrDirToClipboard() {
         Path path = getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false);
-        
+
         final Clipboard clipboard = Clipboard.getSystemClipboard();
-        
+
         final ClipboardContent content = new ClipboardContent();
         ArrayList<File> fileList = new ArrayList<File>();
         fileList.add(new File(path.toString()));
         content.putFiles(fileList);
         clipboard.setContent(content);
     }
-    
+
     /**
      * Copy file from clipboard to the selected position in the file browser.
      * @param selectedItemIsDirectory
@@ -715,19 +715,19 @@ public class EditorController implements Initializable {
             alert.showAndWait();
             return;
         }
-        
+
         File f = null;
-        
+
         if (selectedItemIsDirectory) {
             f = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false).toString());
         } else {
             f = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem().getParent(), false, false).toString());
         }
-        
+
         for (File file : files) {
             try {
                 File destination = new File (f.toPath().resolve(file.getName()).toString());
-                
+
                 if (!file.isDirectory() && destination.exists() && !destination.isDirectory()) {
                     String error = "";
                     String name = file.getName();
@@ -736,7 +736,7 @@ public class EditorController implements Initializable {
                         dialog.setTitle("Copy");
                         dialog.setHeaderText("Copy file:"+error);
                         dialog.setContentText("The file "+name+" already exists. Please enter a new name or replace the existing file:");
-                        
+
                         Optional<String> result = dialog.showAndWait();
                         if (!result.isPresent())
                             return;
@@ -753,13 +753,13 @@ public class EditorController implements Initializable {
                         break;
                     }
                 }
-                
+
                 boolean noNewFileBrowserEntry = false;
-                
+
                 if (!file.isDirectory() && destination.exists() && !destination.isDirectory() || file.isDirectory() && destination.exists() && destination.isDirectory()) {
                     noNewFileBrowserEntry = true;
                 }
-                
+
                 if (!file.isDirectory()) {
                     Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 } else {
@@ -767,7 +767,7 @@ public class EditorController implements Initializable {
                     org.apache.commons.io.FileUtils.copyDirectoryToDirectory(file, destination);
                     destination = new File (f.toPath().resolve(file.getName()).toString());
                 }
-                
+
                 if (!noNewFileBrowserEntry) {
                     FileTreeItem item = new FileTreeItem(new FileWrapper(destination));
                     item.setGraphic(item.getIconNodeByFile(destination));
@@ -792,22 +792,22 @@ public class EditorController implements Initializable {
             }
         }
     }
-    
+
     public void renameFileOrDir() {
         File source = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false).toString());
         String error = "";
         String name = null;
         Path directory = null;
-        
+
         if (fileBrowser.getSelectionModel().getSelectedItem().getParent() == null)
             return;
-        
+
         while (true) {
             TextInputDialog dialog = new TextInputDialog(source.getName());
             dialog.setTitle("Rename file");
             dialog.setHeaderText("New file name"+error);
             dialog.setContentText("Please enter the new file name:");
-            
+
             Optional<String> result = dialog.showAndWait();
             if (!result.isPresent())
                 break;
@@ -870,74 +870,68 @@ public class EditorController implements Initializable {
     // Menu Prover
     // ==========================================================================
 
+
+    @FXML private void onRunSelectedProver() {
+        System.out.println(currentlySelectedProver);
+    }
+
     private void addCurrentlyAvailableProversToMenus() {
         try {
             List<String> availableProversLocal = LocalProver.getInstance().getAvailableProvers(TPTPDefinitions.TPTPDialect.THF);
             List<String> availableProversRemote = SystemOnTPTPProver.getInstance().getAvailableDefaultProvers(TPTPDefinitions.TPTPDialect.THF);
-            ToggleGroup menubarProvers = new ToggleGroup();
-            // addDocument list of local provers to menubar
-            MenuItem labelForLocalProvers = new MenuItem("Local provers");
-            labelForLocalProvers.setDisable(true);
-            menubarRunProver.getItems().add(labelForLocalProvers);
-            if (availableProversLocal.isEmpty()) {
-                MenuItem noLocalProvers = new MenuItem("No local provers available");
-                noLocalProvers.setDisable(true);
-                menubarRunProver.getItems().add(noLocalProvers);
-            } else {
-                for (Iterator<String> i = availableProversLocal.iterator(); i.hasNext();) {
-                    RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
-                    item.setToggleGroup(menubarProvers);
-                    menubarRunProver.getItems().add(item);
-                }
-            }
-            SeparatorMenuItem separator = new SeparatorMenuItem();
-            menubarRunProver.getItems().add(separator);
-            // addDocument list of remote provers to menubar
-            MenuItem labelForRemoteProvers = new MenuItem("Remote provers");
-            labelForRemoteProvers.setDisable(true);
-            menubarRunProver.getItems().add(labelForRemoteProvers);
-            if (availableProversRemote.isEmpty()) {
-                MenuItem noRemoteProvers = new MenuItem("No remote provers available");
-                noRemoteProvers.setDisable(true);
-                menubarRunProver.getItems().add(noRemoteProvers);
-            } else {
-                for (Iterator<String> i = availableProversRemote.iterator(); i.hasNext();) {
-                    RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
-                    item.setToggleGroup(menubarProvers);
-                    menubarRunProver.getItems().add(item);
-                }
-            }
-
-            // listener for the toolbar prover menu
-            toolbarRunProver.showingProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if(newValue) {
-                        toolbarRunProver.getItems().clear();
-                        ToggleGroup toolbarProvers = new ToggleGroup();
-                        // addDocument list of local provers to toolbar
-                        for (Iterator<String> i = availableProversLocal.iterator(); i.hasNext();) {
-                            RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
-                            item.setToggleGroup(toolbarProvers);
-                            toolbarRunProver.getItems().add(item);
-                        }
-                        // addDocument list of remote provers to toolbar
-                        for (Iterator<String> i = availableProversRemote.iterator(); i.hasNext();) {
-                            RadioMenuItem item = new RadioMenuItem(i.next().replace("---"," "));
-                            item.setToggleGroup(toolbarProvers);
-                            toolbarRunProver.getItems().add(item);
-                        }
-                    }
-                }
-            });
+            // add list of provers to menubar
+            addCurrentlyAvailableProversToMenu(menubarProverSelectProver,availableProversLocal,"local");
+            addCurrentlyAvailableProversToMenu(menubarProverSelectProver,availableProversRemote,"remote");
+            // add list of provers to toolbar
+            addCurrentlyAvailableProversToMenu(toolbarSelectProver,availableProversLocal,"local");
+            addCurrentlyAvailableProversToMenu(toolbarSelectProver,availableProversRemote,"remote");
         } catch (IOException e) {
             // TODO: write log entry
         }
     }
 
+    private void addCurrentlyAvailableProversToMenu(Object fxmlObj, List provers, String kind) {
+
+        List<MenuItem> items = new ArrayList<MenuItem>();
+
+        MenuItem label = new MenuItem(kind.substring(0, 1).toUpperCase() + kind.substring(1) + " Provers");
+        label.setDisable(true);
+        items.add(label);
+
+        if (provers.isEmpty()) {
+            MenuItem noProvers = new MenuItem("No " + kind + " Provers available");
+            noProvers.setDisable(true);
+            items.add(noProvers);
+        } else {
+            for (Iterator<String> i = provers.iterator(); i.hasNext();) {
+                String prover = i.next().replace("---"," ");
+                MenuItem item = new MenuItem(prover);
+                item.setOnAction(a->{
+                    currentlySelectedProver = prover;
+                    toolbarSelectProver.setText(prover);
+                });
+                item.setUserData(prover);
+                items.add(item);
+            }
+        }
+
+        if (kind.equals("local")) items.add(new SeparatorMenuItem());
+
+        if (fxmlObj instanceof Menu) {
+            Menu bar = (Menu)fxmlObj;
+            bar.getItems().addAll(items);
+        } else if (fxmlObj instanceof MenuButton) {
+            MenuButton bar = (MenuButton)fxmlObj;
+            bar.getItems().addAll(items);
+        }
+
+        toolbarSelectProver.setText(defaultProver); // TODO
+    }
+
     // ==========================================================================
     // Menu Help
     // ==========================================================================
+
     @FXML private void onHelpAbout(ActionEvent e){
 
     }
