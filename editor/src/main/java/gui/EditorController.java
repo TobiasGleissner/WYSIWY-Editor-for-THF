@@ -177,7 +177,7 @@ public class EditorController implements Initializable {
     private static Logging log = Logging.getInstance();
     private Stage mainStage;
     private EditorModel model;
-    private EditorDocumentViewController emptyDoc;
+    //private EditorDocumentViewController emptyDoc;
     private File dir;
     private Tab lastSelectedTabBeforeCollapse = null;
     static FontAwesome iconCollapse = FontAwesome.ANGLE_DOUBLE_DOWN;
@@ -917,7 +917,8 @@ public class EditorController implements Initializable {
 
 
     @FXML private void onRunSelectedProver() {
-        emptyDoc.doc.prove(currentlySelectedProver,currentlySelectedProverType,200);
+
+        model.getSelectedTab().model.prove(currentlySelectedProver,currentlySelectedProverType,200);
     }
 
     private void addCurrentlyAvailableProversToMenus() {

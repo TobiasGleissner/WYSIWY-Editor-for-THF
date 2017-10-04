@@ -53,7 +53,7 @@ public class EditorModel
         recentlyOpenedFiles = FXCollections.observableArrayList(); // first element = oldest file, last element = latest file
     }
 
-    private EditorDocumentViewController getSelectedTab()
+    EditorDocumentViewController getSelectedTab()
     {
         return (EditorDocumentViewController) thfArea.getSelectionModel().getSelectedItem().getUserData();
     }
