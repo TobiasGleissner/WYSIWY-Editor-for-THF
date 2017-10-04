@@ -55,8 +55,6 @@ public class DefaultTreeListener implements ParseTreeListener {
         this.rmap = null;
         this.tokens = tokens;
         this.hiddenTokens = new ArrayList<>();
-        List<Token> ht = tokens.getHiddenTokensToRight(0);
-        if (ht != null) this.hiddenTokens.addAll(ht);
     }
 
     public String getRuleByKey(int key) {
@@ -81,7 +79,7 @@ public class DefaultTreeListener implements ParseTreeListener {
         n.startIndex = terminalNode.getSymbol().getStartIndex();
         n.stopIndex = terminalNode.getSymbol().getStopIndex();
         nodeptr.addChild(n);
-        List<Token> ht = tokens.getHiddenTokensToRight(terminalNode.getSymbol().getTokenIndex());
+        List<Token> ht = tokens.getHiddenTokensToLeft(terminalNode.getSymbol().getTokenIndex());
         if (ht != null) this.hiddenTokens.addAll(ht);
     }
 
@@ -110,7 +108,6 @@ public class DefaultTreeListener implements ParseTreeListener {
         if (this.filter.test(rule)) {
             this.nodeptr = this.nodeptr.getParent();
         }
-
 
     }
 

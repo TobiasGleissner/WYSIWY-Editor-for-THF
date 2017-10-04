@@ -26,9 +26,10 @@ public class ParseContext {
 
     public void setHiddenTokens(List<Token> hiddenTokens) {
         this.hiddenTokens = hiddenTokens;
+        //System.out.println("HIDDEN TOKENS:");
         //this.hiddenTokens.forEach(System.out::println);
-        /*
-        hiddenTokens.stream().forEach(c->{
+
+        /*hiddenTokens.stream().forEach(c->{
             System.out.println("toString:"+c);
             System.out.println("getLine:"+c.getLine());
             System.out.println("getStartIndex:" + c.getStartIndex());
