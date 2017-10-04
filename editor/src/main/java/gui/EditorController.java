@@ -84,6 +84,7 @@ import gui.fileStructure.StructureTreeView;
 import gui.fileBrowser.FileTreeItem;
 import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
+import prover.Prover;
 import prover.TPTPDefinitions;
 import prover.SystemOnTPTPProver;
 import prover.LocalProver;
@@ -174,22 +175,24 @@ public class EditorController implements Initializable {
     // ==========================================================================
 
     private static Logging log = Logging.getInstance();
-    private EditorModel model;
     private Stage mainStage;
+    private EditorModel model;
+    private EditorDocumentViewController emptyDoc;
     private File dir;
     private Tab lastSelectedTabBeforeCollapse = null;
     static FontAwesome iconCollapse = FontAwesome.ANGLE_DOUBLE_DOWN;
     static FontAwesome iconUncollapse = FontAwesome.ANGLE_DOUBLE_UP;
     private String defaultProver = "Leo-III 1.1";
-    private String currentlySelectedProver = defaultProver;
+    private String currentlySelectedProver = defaultProver.replace(" ","---");
+    private Prover.ProverType currentlySelectedProverType = Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER;
 
     // ==========================================================================
     // Constructors / Init
     // ==========================================================================
 
     public EditorController(EditorModel model, Stage mainStage) {
-        this.model = model;
         this.mainStage = mainStage;
+        this.model = model;
     }
 
     @Override
@@ -207,7 +210,7 @@ public class EditorController implements Initializable {
         this.model.thfArea = thfArea;
 
         // Initialize THF WebView
-        //EditorDocumentViewController emptyDoc = new EditorDocumentViewController(null, this.thfArea.getTabs());
+        // EditorDocumentViewController emptyDoc = new EditorDocumentViewController(null, this.thfArea.getTabs());
 
         // Initialize Output WebView
         log.outputEngine = outputWebView.getEngine();
@@ -914,7 +917,7 @@ public class EditorController implements Initializable {
 
 
     @FXML private void onRunSelectedProver() {
-        System.out.println(currentlySelectedProver);
+        emptyDoc.doc.prove(currentlySelectedProver,currentlySelectedProverType,200);
     }
 
     private void addCurrentlyAvailableProversToMenus() {
@@ -946,12 +949,22 @@ public class EditorController implements Initializable {
             items.add(noProvers);
         } else {
             for (Iterator<String> i = provers.iterator(); i.hasNext();) {
-                String prover = i.next().replace("---"," ");
-                MenuItem item = new MenuItem(prover);
-                item.setOnAction(a->{
-                    currentlySelectedProver = prover;
-                    toolbarSelectProver.setText(prover);
-                });
+                String prover = i.next();
+                String proverName = prover.replace("---"," ");
+                MenuItem item = new MenuItem(proverName);
+                if (kind.equals("local")) {
+                    item.setOnAction(a->{
+                        currentlySelectedProver = prover;
+                        currentlySelectedProverType = Prover.ProverType.LOCAL_PROVER;
+                        toolbarSelectProver.setText(proverName);
+                    });
+                } else {
+                    item.setOnAction(a->{
+                        currentlySelectedProver = prover;
+                        currentlySelectedProverType = Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER;
+                        toolbarSelectProver.setText(proverName);
+                    });
+                }
                 item.setUserData(prover);
                 items.add(item);
             }
