@@ -75,26 +75,34 @@ public class DirWatchService extends Thread {
                 
                 //System.out.format("%s: %s\n", event.kind().name(), completePath);
                 
+                Path relativePath = rootPath.relativize(completePath);
+                Iterator<Path> itr = relativePath.iterator();
+                LinkedList<Path> list = new LinkedList<Path>();
+                while (itr.hasNext()) {
+                    list.add(itr.next());
+                }
+                TreeItem<FileWrapper> item = fileBrowser.getRoot();
+                int size = 0;
+                
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                    Path relativePath = rootPath.relativize(completePath);
-                    Iterator<Path> itr = relativePath.iterator();
-                    LinkedList<Path> list = new LinkedList<Path>();
-                    while (itr.hasNext()) {
-                        list.add(itr.next());
-                    }
-                    TreeItem<FileWrapper> item = fileBrowser.getRoot();
-                    
-                    while (list.size() > 1) {
-                        ObservableList<TreeItem<FileWrapper>> children = item.getChildren();
-                        Path nextPath = list.pop();
-                        for (TreeItem<FileWrapper> child : children) {
-                            if (child.getValue().toString().equals(nextPath.toString())) {
-                                item = child;
-                                break;
-                            }
+                    size = 1;
+                }
+                
+                while (list.size() > size) {
+                    ObservableList<TreeItem<FileWrapper>> children = item.getChildren();
+                    Path nextPath = list.pop();
+                    for (TreeItem<FileWrapper> child : children) {
+                        if (child.getValue().toString().equals(nextPath.toString())) {
+                            item = child;
+                            break;
                         }
                     }
+                }
+                
+                
+                if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
                     
+                    // TODO: Synchronization!
                     File file = completePath.toFile();
                     FileTreeItem newItem = new FileTreeItem(new FileWrapper(file));
                     newItem.setGraphic(newItem.getIconNodeByFile(file));
@@ -103,9 +111,13 @@ public class DirWatchService extends Thread {
                     if (completePath.toFile().isDirectory()) {
                         try {
                             dirWatcher.registerSubfolders(completePath);
+                            // TODO: Add files of new subfolders ...
                         } catch (IOException e) {
                         }
                     }
+                }
+                if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                    item.getParent().getChildren().remove(item);
                 }
             }
             

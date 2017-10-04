@@ -408,11 +408,10 @@ public class EditorController implements Initializable {
                     File file = new File(newFile.toString());
                     try {
                         if (file.createNewFile()) {
-                            FileTreeItem item = new FileTreeItem(new FileWrapper(file));
+                            /*FileTreeItem item = new FileTreeItem(new FileWrapper(file));
                             item.setGraphic(item.getIconNodeByFile(file));
                             fileBrowser.getSelectionModel().getSelectedItem().getChildren().add(item);
-                            ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);
-                            //FileTreeView.updateTree(fileBrowser.getSelectionModel().getSelectedItem(), fileBrowser.getRoot(), new File(directory.toString()));
+                            ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);*/
                             break;
                         } else {
                             continue;
@@ -456,10 +455,10 @@ public class EditorController implements Initializable {
                     File file = new File(newDir.toString());
 
                     if (file.mkdir()) {
-                        FileTreeItem item = new FileTreeItem(new FileWrapper(file));
+                        /*FileTreeItem item = new FileTreeItem(new FileWrapper(file));
                         item.setGraphic(item.getIconNodeByFile(file));
                         fileBrowser.getSelectionModel().getSelectedItem().getChildren().add(item);
-                        ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);
+                        ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);*/
                         break;
                     } else {
                         continue;
@@ -581,7 +580,6 @@ public class EditorController implements Initializable {
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK){
                     file.delete();
-                    item.getParent().getChildren().remove(item);
                 }
             }
         });
@@ -807,7 +805,7 @@ public class EditorController implements Initializable {
                     destination = new File (f.toPath().resolve(file.getName()).toString());
                 }
 
-                if (!noNewFileBrowserEntry) {
+                /*if (!noNewFileBrowserEntry) {
                     FileTreeItem item = new FileTreeItem(new FileWrapper(destination));
                     item.setGraphic(item.getIconNodeByFile(destination));
                     if (selectedItemIsDirectory) {
@@ -815,7 +813,7 @@ public class EditorController implements Initializable {
                     } else {
                         fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
                     }
-                }
+                }*/
             } catch (IOException e) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("ERROR");
