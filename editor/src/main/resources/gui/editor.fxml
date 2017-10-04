@@ -101,6 +101,7 @@
                         </Menu>
 
                         <!-- menuitem edit -->
+                        <!--
                         <Menu text="Edit">
                             <items>
                                 <MenuItem text="Undo">
@@ -143,6 +144,7 @@
                                 </MenuItem>
                             </items>
                         </Menu>
+                        -->
 
                         <!-- menuitem view -->
                         <Menu fx:id="menubarView" text="View">
