@@ -92,7 +92,7 @@
                                     </accelerator>
                                 </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false" />
-                                <MenuItem text="Close">
+                                <MenuItem text="Close" onAction="#onFileClose">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                                     </accelerator>
@@ -229,6 +229,7 @@
                         <Button onAction="#debugLCL6341" text="LCL6341" />
                         <Button onAction="#debugSYN0001" text="SYN0001" />
                         <Button onAction="#debugSYN0002" text="SYN0002" />
+                        <Button onAction="#debugTrue" text="So True" />
                     </items>
                 </ToolBar>
 

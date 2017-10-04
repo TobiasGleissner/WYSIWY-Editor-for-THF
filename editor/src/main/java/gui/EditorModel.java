@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.*;
@@ -116,6 +117,16 @@ public class EditorModel
     public void openFile(File file) {
         getNewTab().model.openFile(file);
         updateRecentlyOpenedFiles(file);
+    }
+
+    public void saveFile(EditorDocumentModel m){
+        try {
+            Files.write(m.getPath(),m.getText().getBytes());
+            log.info("Saved editor content to file " + m.getPath() + ".");
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            log.error("Could not save editor content to file " + m.getPath() + ".");
+        }
     }
 
     public void newFile(){

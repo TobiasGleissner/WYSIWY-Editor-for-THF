@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
+import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import javafx.concurrent.Worker;
 
 import javafx.beans.value.ChangeListener;
@@ -103,6 +105,7 @@ public class EditorController implements Initializable {
     @FXML public void debugLCL6341() { model.openStream(getClass().getResourceAsStream("/test/LCL634^1.p"), Paths.get("LCL634^1.p")); }
     @FXML public void debugSYN0001() { model.openStream(getClass().getResourceAsStream("/test/SYN000^1.p"), Paths.get("SYN000^1.p")); }
     @FXML public void debugSYN0002() { model.openStream(getClass().getResourceAsStream("/test/SYN000^2.p"), Paths.get("SYN000^2.p")); }
+    @FXML public void debugTrue() { model.openStream(getClass().getResourceAsStream("/test/true.p"), Paths.get("true.p")); }
 
     // END DEBUG
 
@@ -628,16 +631,35 @@ public class EditorController implements Initializable {
     }
 
     @FXML private void onFileSave(ActionEvent e) {
-        // TODO
+        if (model.getSelectedTab() == null){
+            log.error("Cannot Save: No tab selected");
+            return;
+        }
+        if (model.getSelectedTab().model.getPath() == null){
+            onFileSaveAs(e);
+        } else {
+            model.saveFile(model.getSelectedTab().model);
+        }
     }
 
     @FXML private void onFileSaveAs(ActionEvent e) {
-        // TODO
+        FileChooser fileChooser = new FileChooser();
+        //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TPTP files (*.p)", "*.p");
+        //fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showSaveDialog(mainStage);
+        if (file != null){
+            model.getSelectedTab().model.setPath(file.toPath());
+            model.saveFile(model.getSelectedTab().model);
+        } else {
+            log.error("Could not save: No file specified.");
+        }
     }
 
     @FXML private void onFileClose(ActionEvent e) {
-        // TODO
-        System.exit(0);
+        TabPaneBehavior behavior = ((TabPaneSkin) model.getSelectedTab().tab.getTabPane().getSkin()).getBehavior();
+        if (behavior.canCloseTab(model.getSelectedTab().tab)) {
+            behavior.closeTab(model.getSelectedTab().tab);
+        }
     }
 
     /**

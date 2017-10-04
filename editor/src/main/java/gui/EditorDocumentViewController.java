@@ -32,9 +32,11 @@ public class EditorDocumentViewController
         this.tabs.add(this.tab);
 
         this.tab.setOnCloseRequest(
+                e-> {model.close();}
+                /*
             e ->
             {
-                /* Don't close the last tab. */
+                // Don't close the last tab.
                 if(this.tabs.size() <= 1)
                 {
                     if(this.model != null)
@@ -45,6 +47,7 @@ public class EditorDocumentViewController
                     e.consume();
                 }
             }
+            */
         );
 
         this.model = new EditorDocumentModel(editor.getEngine(), EditorDocumentViewController.this);
