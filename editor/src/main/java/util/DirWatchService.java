@@ -49,7 +49,7 @@ public class DirWatchService extends Thread {
                     break;
                 } catch (InterruptedException e) {
                     if (stop.get())
-                        break;
+                        return;
                 }
             }
             

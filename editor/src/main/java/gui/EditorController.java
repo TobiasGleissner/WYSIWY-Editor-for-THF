@@ -221,6 +221,8 @@ public class EditorController implements Initializable {
         // Initialize tabs on the left side
         makeTabPaneCollapsable();
 
+        // Register the window close handler
+        mainStage.setOnCloseRequest(e -> this.quit());
     }
 
     // ==========================================================================
@@ -246,12 +248,7 @@ public class EditorController implements Initializable {
     }
 
     @FXML private void onNAMEExit(ActionEvent e) {
-        // TODO
-        System.exit(0);
-        if (dirWatchService != null) {
-            dirWatchService.setStop();
-            dirWatchService.interrupt();
-        }
+        quit();
     }
 
     // ==========================================================================
@@ -1027,4 +1024,12 @@ public class EditorController implements Initializable {
         return tabPaneLeft.getTabMaxHeight()/splitPaneVertical.getWidth();
     }
 
+    private void quit() {
+        // TODO
+        if (dirWatchService != null) {
+            dirWatchService.setStop();
+            dirWatchService.interrupt();
+        }
+        System.exit(0);
+    }
 }
