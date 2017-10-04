@@ -40,7 +40,7 @@ public class SystemOnTPTPProver {
     }
 
     public ProveResult testRemoteProver(String proverName, String proverCommand) throws ProverNotAvailableException, IOException, ProverResultNotInterpretableException {
-        String testProblem = "thf(1,conjecture,$true).";
+        String testProblem = "thf(1,conjecture,$true)."; // TODO this may be FOF etc.
         return prove(testProblem,proverName,proverCommand,5);
     }
 
@@ -85,7 +85,9 @@ public class SystemOnTPTPProver {
     public List<String> getAvailableCustomProvers(List<TPTPDefinitions.TPTPSubDialect> subDialectList){
         List<String> provers = new ArrayList<>();
         for (TPTPDefinitions.TPTPSubDialect d : subDialectList){
-            provers.addAll(getAvailableCustomProvers(d));
+            for (String p : getAvailableCustomProvers(d)){
+                if (!provers.contains(p)) provers.add(p);
+            }
         }
         return provers;
     }
@@ -116,7 +118,9 @@ public class SystemOnTPTPProver {
     public List<String> getAvailableDefaultProvers(List<TPTPDefinitions.TPTPSubDialect> subDialectList){
         List<String> provers = new ArrayList<>();
         for (TPTPDefinitions.TPTPSubDialect d : subDialectList){
-            provers.addAll(getAvailableDefaultProvers(d));
+            for (String p : getAvailableDefaultProvers(d)){
+                if (!provers.contains(p)) provers.add(p);
+            }
         }
         return provers;
     }

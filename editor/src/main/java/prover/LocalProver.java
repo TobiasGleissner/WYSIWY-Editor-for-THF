@@ -59,7 +59,9 @@ public class LocalProver {
     public List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subDialectList){
         List<String> provers = new ArrayList<>();
         for (TPTPDefinitions.TPTPSubDialect d : subDialectList){
-            provers.addAll(getAvailableProvers(d));
+            for (String p : getAvailableProvers(d)){
+                if (!provers.contains(p)) provers.add(p);
+            }
         }
         return provers;
     }
