@@ -255,8 +255,14 @@ public class SystemOnTPTPProver {
             String cpuString = r.substring(cpuIndex + 5).trim();
             nextWhitespace = cpuString.indexOf(" ");
             cpuString = cpuString.substring(0,nextWhitespace);
-            double elapsedTime = Double.parseDouble(cpuString);
-            return new ProveResult(problem, Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER, prover, r, "",status, elapsedTime, timeLimit);
+            double cpu = Double.parseDouble(cpuString);
+
+            int wcIndex = r.indexOf("WC =");
+            String wcString = r.substring(wcIndex + 4).trim();
+            nextWhitespace = cpuString.indexOf(" ");
+            wcString = cpuString.substring(0,nextWhitespace);
+            double wc = Double.parseDouble(wcString);
+            return new ProveResult(problem, Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER, prover, r, "",status, cpu, wc, timeLimit);
         }
         catch (Exception e){
             throw new ProverResultNotInterpretableException(e.toString(),r);

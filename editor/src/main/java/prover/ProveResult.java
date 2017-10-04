@@ -6,19 +6,21 @@ public class ProveResult {
     public String stdout;
     public String stderr;
     public TPTPDefinitions.SZSDeductiveStatus status;
-    public double elapsedTime;
+    public double wc;
+    public double cpu;
     public double timelimit;
     public Prover.ProverType proverType;
 
     public ProveResult(){}
-    public ProveResult(String problem, Prover.ProverType proverType, String prover, String stdout, String stderr, TPTPDefinitions.SZSDeductiveStatus status, double elapsedTime, double timelimit) {
+    public ProveResult(String problem, Prover.ProverType proverType, String prover, String stdout, String stderr, TPTPDefinitions.SZSDeductiveStatus status, double cpu, double wc, double timelimit) {
         this.problem = problem;
         this.proverType = proverType;
         this.prover = prover;
         this.stdout = stdout;
         this.stderr = stderr;
         this.status = status;
-        this.elapsedTime = elapsedTime;
+        this.wc = wc;
+        this.cpu = cpu;
         this.timelimit = timelimit;
     }
 
@@ -31,8 +33,10 @@ public class ProveResult {
         sb.append(prover);
         sb.append("\nStatus:");
         sb.append(status.name());
-        sb.append("\nElapsed time:");
-        sb.append(elapsedTime);
+        sb.append("\nCPU:");
+        sb.append(cpu);
+        sb.append("\nWC:");
+        sb.append(wc);
         sb.append("\nTime limit:");
         sb.append(timelimit);
         //sb.append("\nProblem:");
