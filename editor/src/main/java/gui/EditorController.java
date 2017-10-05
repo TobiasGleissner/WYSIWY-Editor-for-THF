@@ -87,6 +87,7 @@ public class EditorController implements Initializable {
     @FXML private Menu menubarProverSelectProver;
     @FXML private Menu menubarFileReopenFile;
     @FXML private MenuItem menubarFileReopenFileNoFiles;
+    @FXML private MenuItem menubarViewPresentationMode;
 
     // Toolbar
     @FXML private MenuButton toolbarSelectProver;
@@ -877,7 +878,7 @@ public class EditorController implements Initializable {
 
     @FXML public void onViewDefaultFontSize(ActionEvent actionEvent) {
         for (Tab t : thfArea.getTabs()){
-            ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizeEditorDefault);
+            ((EditorDocumentViewController) t.getUserData()).model.style.setDefaultFontSize();
             ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
         }
     }
@@ -901,6 +902,7 @@ public class EditorController implements Initializable {
                 ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.getFontSize());
                 ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
             }
+            menubarViewPresentationMode.setText("Enter Presentation Mode");
             /*
             outputWebView.setVisible(true);
             outputWebView.setManaged(true);
@@ -925,6 +927,7 @@ public class EditorController implements Initializable {
                 ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizePresentationMode);
                 ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
             }
+            menubarViewPresentationMode.setText("Leave Presentation Mode");
             /*
             outputWebView.setVisible(false);
             outputWebView.setManaged(false);

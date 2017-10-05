@@ -155,7 +155,7 @@
                                 </MenuItem>
                                 <MenuItem text="Default Font Size" onAction="#onViewDefaultFontSize">
                                 </MenuItem>
-                                <MenuItem text="Enter Presentation mode" onAction="#onViewEnterPresentationMode">
+                                <MenuItem fx:id="menubarViewPresentationMode" text="Enter Presentation Mode" onAction="#onViewEnterPresentationMode">
                                 </MenuItem>
                             </items>
                         </Menu>
