@@ -217,11 +217,27 @@ public class EditorController implements Initializable {
         addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
         toolbarSelectProver.setText(defaultProver);
 
+        // Add listener for refresh of prover menu lists when changing tabs
+        thfArea.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
+            // Refresh lists of available provers in menubar and toolbar
+            if (model.getSelectedTab() == null)
+                addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
+            else
+                addAvailableProversToMenus(model.getSelectedTab().model.getCompatibleTPTPSubDialects());
+            log.info("Updated prover lists in menu");
+        });
+
         // Initialize tabs on the left side
         makeTabPaneCollapsable();
 
         // Register the window close handler
         mainStage.setOnCloseRequest(e -> this.quit());
+    }
+
+    public Optional<EditorDocumentViewController> getSelectedTab2()
+    {
+        if (thfArea.getSelectionModel().getSelectedItem() == null) return Optional.empty();
+        else return Optional.of((EditorDocumentViewController)thfArea.getSelectionModel().getSelectedItem().getUserData());
     }
 
     // ==========================================================================
@@ -314,7 +330,7 @@ public class EditorController implements Initializable {
         //fileBrowser.setRootDirectories(FXCollections.observableArrayList(rootDirItem));
         fileBrowser.openDirectory(dir);
         //model.openDirectory(dir);
-        
+
         try {
             if (dirWatchService != null) {
                 dirWatchService.setStop();

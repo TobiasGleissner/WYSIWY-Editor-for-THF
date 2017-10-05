@@ -287,8 +287,10 @@ public class PreferencesController implements Initializable {
                 + "' and TPTP dialects='" + dialectString + "'.");
 
         // Refresh lists of available provers in menubar and toolbar
-        if (editor.model.getSelectedTab() == null) editor.addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
-        else editor.addAvailableProversToMenus(editor.model.getSelectedTab().model.getCompatibleTPTPSubDialects());
+        if (editor.model.getSelectedTab() == null)
+            editor.addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
+        else
+            editor.addAvailableProversToMenus(editor.model.getSelectedTab().model.getCompatibleTPTPSubDialects());
 
         log.info("Updated prover lists in menu");
     }

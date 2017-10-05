@@ -28,6 +28,8 @@ public class EditorDocumentViewController
         this.tab.setContent(this.editor);
         this.tab.setUserData(this);
 
+        this.model = new EditorDocumentModel(editor.getEngine(), EditorDocumentViewController.this);
+
         this.tabs = tabs;
         this.tabs.add(this.tab);
 
@@ -49,8 +51,6 @@ public class EditorDocumentViewController
             }
             */
         );
-
-        this.model = new EditorDocumentModel(editor.getEngine(), EditorDocumentViewController.this);
     }
 
     public void setText(String text)
