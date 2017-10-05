@@ -8,6 +8,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.DragEvent;
+import javafx.event.EventHandler;
 
 import jiconfont.icons.FontAwesome;
 import jiconfont.javafx.IconNode;

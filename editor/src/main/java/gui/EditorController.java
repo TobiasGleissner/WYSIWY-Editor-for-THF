@@ -43,10 +43,14 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
-
+import javafx.scene.input.TransferMode;
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.stage.FileChooser;
 
 import com.sun.javafx.webkit.WebConsoleListener;
@@ -306,6 +310,88 @@ public class EditorController implements Initializable {
         //RootDirItem rootDirItem = ResourceItem.createObservedPath(dir.toPath());
         //fileBrowser.setRootDirectories(FXCollections.observableArrayList(rootDirItem));
         fileBrowser.openDirectory(dir);
+        
+        fileBrowser.setCellFactory(new Callback<TreeView<FileWrapper>, TreeCell<FileWrapper>>() {
+            @Override
+            public TreeCell<FileWrapper> call( TreeView<FileWrapper> cellTreeView ) {
+                
+                TreeCell<FileWrapper> treeCell = new TreeCell<FileWrapper>() {
+                    @Override
+                    protected void updateItem(FileWrapper item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!empty && item != null) {
+                            setText(item.toString());
+                            setGraphic(getTreeItem().getGraphic());
+                        }else{
+                            setText(null);
+                            setGraphic(null);
+                        }
+                    }
+                };
+                
+                treeCell.setOnDragDetected(new EventHandler<MouseEvent>() {
+                    public void handle(MouseEvent event) {
+                        Dragboard db = fileBrowser.startDragAndDrop(TransferMode.COPY_OR_MOVE);
+                        
+                        ClipboardContent content = new ClipboardContent();
+                        List<File> fileList = new LinkedList<File>();
+                        fileList.add(treeCell.getItem().getFile());
+                        content.putFiles(fileList);
+                        db.setContent(content);
+                        
+                        //System.out.println(treeCell.getItem().getFile().toString());
+                        
+                        event.consume();
+                    }
+                });
+                
+                treeCell.setOnDragEntered(new EventHandler<DragEvent>() {
+                    public void handle(DragEvent event) {
+                        treeCell.setStyle("-fx-background-color: #EEEEEE;");
+                    }
+                });
+                
+                treeCell.setOnDragExited(new EventHandler<DragEvent>() {
+                    public void handle(DragEvent event) {
+                        treeCell.setStyle("");
+                    }
+                });
+                
+                treeCell.setOnDragOver(new EventHandler<DragEvent>() {
+                    public void handle(DragEvent event) {
+                        if (event.getGestureSource() != treeCell && event.getDragboard().hasFiles()) {
+                            event.acceptTransferModes(TransferMode.COPY);
+                        }
+                        
+                        event.consume();
+                    }
+                });
+                
+                treeCell.setOnDragDropped(new EventHandler<DragEvent>() {
+                    public void handle(DragEvent event) {
+                        Dragboard db = event.getDragboard();
+                        boolean success = false;
+                        boolean selectedItemIsDirectory = treeCell.getItem().getFile().isDirectory();
+                        
+                        File f = null;
+                        if (selectedItemIsDirectory) {
+                            f = treeCell.getItem().getFile();
+                        } else {
+                            treeCell.getItem().getFile().getParent();
+                        }
+                        
+                        if (db.hasFiles()) {
+                            copyFiles(db.getFiles(), selectedItemIsDirectory, f);
+                        }
+                        
+                        event.setDropCompleted(success);
+                        event.consume();
+                    }
+                });
+                
+                return treeCell;
+            }
+        });
         //model.openDirectory(dir);
 
         try {
@@ -335,6 +421,55 @@ public class EditorController implements Initializable {
                 }
             }
         });
+        
+        /*fileBrowser.setOnDragDetected(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                Dragboard db = fileBrowser.startDragAndDrop(TransferMode.ANY);
+                
+                ClipboardContent content = new ClipboardContent();
+                content.putString(fileBrowser.getSelectionModel().getSelectedItem().getValue().toString());
+                db.setContent(content);
+                
+                System.out.println("ABC");
+                
+                event.consume();
+            }
+        }); 
+        
+        fileBrowser.setOnDragOver(new EventHandler<DragEvent>() {
+            public void handle(DragEvent event) {
+                if (event.getGestureSource() != fileBrowser &&
+                        event.getDragboard().hasString()) {
+                    event.acceptTransferModes(TransferMode.ANY);
+                }
+                //System.out.println("CBA");
+                
+                event.consume();
+            }
+        });
+        
+        fileBrowser.setOnDragEntered(new EventHandler<DragEvent>() {
+            public void handle(DragEvent event) {
+                System.out.println("A");
+            }
+        });
+        
+        fileBrowser.setOnDragDropped(new EventHandler<DragEvent>() {
+            public void handle(DragEvent event) {
+                Dragboard db = event.getDragboard();
+                boolean success = false;
+                
+                System.out.println("B");
+                
+                if (db.hasFiles()) {
+                    System.out.println("A "+db.getString());
+                    success = true;
+                }
+                
+                event.setDropCompleted(success);
+                event.consume();
+            }
+        });*/
 
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem newFile = new MenuItem("New file");
@@ -734,7 +869,7 @@ public class EditorController implements Initializable {
             alert.showAndWait();
             return;
         }
-
+        
         File f = null;
 
         if (selectedItemIsDirectory) {
@@ -743,9 +878,15 @@ public class EditorController implements Initializable {
             f = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem().getParent(), false, false).toString());
         }
 
+        copyFiles(files, selectedItemIsDirectory, f);
+    }
+
+    private void copyFiles(List<File> files, boolean selectedItemIsDirectory, File f) {
+        
+        File destination = null;
         for (File file : files) {
             try {
-                File destination = new File (f.toPath().resolve(file.getName()).toString());
+                destination = new File (f.toPath().resolve(file.getName()).toString());
 
                 if (!file.isDirectory() && destination.exists() && !destination.isDirectory()) {
                     String error = "";
@@ -773,11 +914,9 @@ public class EditorController implements Initializable {
                     }
                 }
 
-                boolean noNewFileBrowserEntry = false;
-
-                if (!file.isDirectory() && destination.exists() && !destination.isDirectory() || file.isDirectory() && destination.exists() && destination.isDirectory()) {
-                    noNewFileBrowserEntry = true;
-                }
+                /*if (!file.isDirectory() && destination.exists() && !destination.isDirectory() || file.isDirectory() && destination.exists() && destination.isDirectory()) {
+                    boolean noNewFileBrowserEntry = true;
+                }*/
 
                 if (!file.isDirectory()) {
                     Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -786,21 +925,12 @@ public class EditorController implements Initializable {
                     org.apache.commons.io.FileUtils.copyDirectoryToDirectory(file, destination);
                     destination = new File (f.toPath().resolve(file.getName()).toString());
                 }
-
-                /*if (!noNewFileBrowserEntry) {
-                    FileTreeItem item = new FileTreeItem(new FileWrapper(destination));
-                    item.setGraphic(item.getIconNodeByFile(destination));
-                    if (selectedItemIsDirectory) {
-                        fileBrowser.getSelectionModel().getSelectedItem().getChildren().add(item);
-                    } else {
-                        fileBrowser.getSelectionModel().getSelectedItem().getParent().getChildren().add(item);
-                    }
-                }*/
             } catch (IOException e) {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("ERROR");
                 alert.setHeaderText("Error");
-                alert.setContentText("There was an error pasting the file "+file.getName()+"!");
+                alert.setContentText("There was an error pasting the file "+file.getName()+" (destination: "+destination.toPath().toString()+")!");
+                System.out.println("There was an error pasting the file "+file.getName()+" (destination: "+destination.toPath().toString()+")!");
                 alert.showAndWait();
             } finally {
                 if (selectedItemIsDirectory) {
@@ -810,8 +940,8 @@ public class EditorController implements Initializable {
                 }
             }
         }
+        
     }
-
     public void renameFileOrDir() {
         File source = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false).toString());
         String error = "";

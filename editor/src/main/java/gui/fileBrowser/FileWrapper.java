@@ -12,4 +12,8 @@ public class FileWrapper {
     public String toString(){
         return f.getName();
     }
+    
+    public File getFile() {
+        return f;
+    }
 }
