@@ -21,6 +21,7 @@ import java.util.LinkedList;
 
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
+
 import javafx.concurrent.Worker;
 
 import javafx.beans.value.ChangeListener;
@@ -311,11 +312,11 @@ public class EditorController implements Initializable {
         //RootDirItem rootDirItem = ResourceItem.createObservedPath(dir.toPath());
         //fileBrowser.setRootDirectories(FXCollections.observableArrayList(rootDirItem));
         fileBrowser.openDirectory(dir);
-        
+
         fileBrowser.setCellFactory(new Callback<TreeView<FileWrapper>, TreeCell<FileWrapper>>() {
             @Override
             public TreeCell<FileWrapper> call( TreeView<FileWrapper> cellTreeView ) {
-                
+
                 TreeCell<FileWrapper> treeCell = new TreeCell<FileWrapper>() {
                     @Override
                     protected void updateItem(FileWrapper item, boolean empty) {
@@ -329,66 +330,66 @@ public class EditorController implements Initializable {
                         }
                     }
                 };
-                
+
                 treeCell.setOnDragDetected(new EventHandler<MouseEvent>() {
                     public void handle(MouseEvent event) {
                         Dragboard db = fileBrowser.startDragAndDrop(TransferMode.COPY_OR_MOVE);
-                        
+
                         ClipboardContent content = new ClipboardContent();
                         List<File> fileList = new LinkedList<File>();
                         fileList.add(treeCell.getItem().getFile());
                         content.putFiles(fileList);
                         db.setContent(content);
-                        
+
                         event.consume();
                     }
                 });
-                
+
                 treeCell.setOnDragEntered(new EventHandler<DragEvent>() {
                     public void handle(DragEvent event) {
                         treeCell.setStyle("-fx-background-color: #EEEEEE;");
                     }
                 });
-                
+
                 treeCell.setOnDragExited(new EventHandler<DragEvent>() {
                     public void handle(DragEvent event) {
                         treeCell.setStyle("");
                     }
                 });
-                
+
                 treeCell.setOnDragOver(new EventHandler<DragEvent>() {
                     public void handle(DragEvent event) {
                         if (event.getGestureSource() != treeCell && event.getDragboard().hasFiles()) {
                             event.acceptTransferModes(TransferMode.COPY);
                         }
-                        
+
                         event.consume();
                     }
                 });
-                
+
                 treeCell.setOnDragDropped(new EventHandler<DragEvent>() {
                     public void handle(DragEvent event) {
                         Dragboard db = event.getDragboard();
                         boolean success = false;
                         boolean selectedItemIsDirectory = treeCell.getItem().getFile().isDirectory();
-                        
+
                         File f = null;
                         if (selectedItemIsDirectory) {
                             f = treeCell.getItem().getFile();
                         } else {
                             treeCell.getItem().getFile().getParent();
                         }
-                        
+
                         if (db.hasFiles()) {
                             copyFiles(db.getFiles(), selectedItemIsDirectory, f);
                         }
-                        
+
                         // TODO: get return value of copyFiles!
                         event.setDropCompleted(true);
                         event.consume();
                     }
                 });
-                
+
                 treeCell.setOnDragDone(new EventHandler<DragEvent>() {
                     public void handle(DragEvent event) {
                         if (event.getTransferMode() == TransferMode.MOVE) {
@@ -397,7 +398,7 @@ public class EditorController implements Initializable {
                         event.consume();
                     }
                 });
-                
+
                 return treeCell;
             }
         });
@@ -829,7 +830,7 @@ public class EditorController implements Initializable {
             alert.showAndWait();
             return;
         }
-        
+
         File f = null;
 
         if (selectedItemIsDirectory) {
@@ -842,7 +843,7 @@ public class EditorController implements Initializable {
     }
 
     private void copyFiles(List<File> files, boolean selectedItemIsDirectory, File f) {
-        
+
         File destination = null;
         for (File file : files) {
             try {
@@ -900,7 +901,7 @@ public class EditorController implements Initializable {
                 }
             }
         }
-        
+
     }
     public void renameFileOrDir() {
         File source = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false).toString());
@@ -1085,10 +1086,12 @@ public class EditorController implements Initializable {
 
         List<MenuItem> items = new ArrayList<MenuItem>();
 
-        MenuItem labelItem = new MenuItem(proverType.getString() + " Provers");
-        String style = proverType.equals(Prover.ProverType.LOCAL_PROVER) ? "-fx-opacity: 2;" : "-fx-opacity: 2; -fx-padding: 5 0 0 0;";
-        labelItem.setStyle(style);
-        labelItem.setDisable(true);
+        SeparatorMenuItem labelItem = new SeparatorMenuItem();
+        Label label = new Label(proverType.getString() + " Provers");
+        label.getStyleClass().add("label-separator");
+        String style = proverType.equals(Prover.ProverType.LOCAL_PROVER) ? "-fx-padding: 5 5 5 5;" : "-fx-padding: 10 5 5 5;";
+        label.setStyle(style);
+        labelItem.setContent(label);
         items.add(labelItem);
 
         if (provers.isEmpty()) {
