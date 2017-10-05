@@ -51,35 +51,6 @@ public class EditorModel
         Config.setRecentlyOpenedFiles(recentlyOpenedFiles);
     }
 
-    public void onViewIncreaseFontSize() {
-        for (Tab t : thfArea.getTabs()){
-            ((EditorDocumentViewController) t.getUserData()).model.style.increaseFontSize();
-            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
-        }
-    }
-
-    public void onViewDecreaseFontSize() {
-        for (Tab t : thfArea.getTabs()){
-            ((EditorDocumentViewController) t.getUserData()).model.style.decreaseFontSize();
-            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
-        }
-    }
-
-    public void onViewEnterPresentationMode() {
-        for (Tab t : thfArea.getTabs()){
-            ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizePresentationMode);
-            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
-        }
-        // TODO close side drawer, ...
-    }
-
-    public void onViewDefaultFontSize() {
-        for (Tab t : thfArea.getTabs()){
-            ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizeEditorDefault);
-            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
-        }
-    }
-
     private EditorDocumentViewController getNewTab() {
         EditorDocumentViewController doc;
 

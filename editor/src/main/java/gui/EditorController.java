@@ -1,6 +1,5 @@
 package gui;
 
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import java.io.IOException;
@@ -8,12 +7,10 @@ import java.io.InputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Stack;
 import java.util.ResourceBundle;
 import java.util.Objects;
 import java.util.List;
@@ -38,21 +35,11 @@ import javafx.fxml.Initializable;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.web.WebView;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Tab;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.ContextMenuEvent;
@@ -62,20 +49,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 
-import netscape.javascript.JSObject;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import com.sun.javafx.webkit.WebConsoleListener;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 import org.apache.commons.io.IOUtils;
 
@@ -93,7 +67,6 @@ import gui.preferences.PreferencesController;
 import gui.preferences.PreferencesModel;
 
 public class EditorController implements Initializable {
-
     // ==========================================================================
     // FXML variables
     // ==========================================================================
@@ -110,12 +83,14 @@ public class EditorController implements Initializable {
     // END DEBUG
 
     // Menu
+    @FXML private MenuBar menuBar;
     @FXML private Menu menubarProverSelectProver;
     @FXML private Menu menubarFileReopenFile;
     @FXML private MenuItem menubarFileReopenFileNoFiles;
 
     // Toolbar
     @FXML private MenuButton toolbarSelectProver;
+    @FXML private Button toolbarPresentationMode;
 
     // Tabs left
     @FXML private SplitPane splitPaneVertical;
@@ -146,6 +121,7 @@ public class EditorController implements Initializable {
     private String defaultProver = "Leo-III 1.1";
     private String currentlySelectedProver = defaultProver.replace(" ","---");
     private Prover.ProverType currentlySelectedProverType = Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER;
+    private boolean presentationModeActive = false;
 
     // ==========================================================================
     // Constructors / Init
@@ -886,19 +862,101 @@ public class EditorController implements Initializable {
     }
 
     @FXML public void onViewIncreaseFontSize(ActionEvent actionEvent) {
-        model.onViewIncreaseFontSize();
+        for (Tab t : thfArea.getTabs()){
+            ((EditorDocumentViewController) t.getUserData()).model.style.increaseFontSize();
+            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
+        }
     }
 
     @FXML public void onViewDecreaseFontSize(ActionEvent actionEvent) {
-        model.onViewDecreaseFontSize();
+        for (Tab t : thfArea.getTabs()){
+            ((EditorDocumentViewController) t.getUserData()).model.style.decreaseFontSize();
+            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
+        }
     }
 
     @FXML public void onViewDefaultFontSize(ActionEvent actionEvent) {
-        model.onViewDefaultFontSize();
+        for (Tab t : thfArea.getTabs()){
+            ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizeEditorDefault);
+            ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
+        }
     }
 
+    /*
+    private double leftPaneMaxWidth;
+    private double leftPanePrefWidth;
+    private double leftPaneMinWidth;
+    private double menuBarMaxHeight;
+    private double menuBarPrefHeight;
+    private double menuBarMinHeight;
+    private double outputWebViewMaxHeight;
+    private double outputWebViewPrefHeight;
+    private double outputWebViewMinHeight;
+    private int tabPaneLeftIndex;
+    private Parent tabPaneLeftParent;
+    */
     @FXML public void onViewEnterPresentationMode(ActionEvent actionEvent) {
-        model.onViewEnterPresentationMode();
+        if (presentationModeActive) {
+            for (Tab t : thfArea.getTabs()) {
+                ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.getFontSize());
+                ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
+            }
+            /*
+            outputWebView.setVisible(true);
+            outputWebView.setManaged(true);
+            */
+            /*
+            tabPaneLeftParent.getChildrenUnmodifiable().add(tabPaneLeftIndex,tabPaneLeft);
+            */
+            /*
+            tabPaneLeft.setMaxWidth(leftPaneMaxWidth);
+            tabPaneLeft.setMinWidth(leftPaneMinWidth);
+            tabPaneLeft.setPrefWidth(leftPanePrefWidth);
+            menuBar.setMaxHeight(menuBarMaxHeight);
+            menuBar.setPrefHeight(menuBarPrefHeight);
+            menuBar.setMinHeight(menuBarMinHeight);
+            outputWebView.setMaxHeight(outputWebViewMaxHeight);
+            outputWebView.setMinHeight(outputWebViewMinHeight);
+            outputWebView.setPrefHeight(outputWebViewPrefHeight);
+            */
+
+        } else {
+            for (Tab t : thfArea.getTabs()) {
+                ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizePresentationMode);
+                ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
+            }
+            /*
+            outputWebView.setVisible(false);
+            outputWebView.setManaged(false);
+            */
+            /*
+            tabPaneLeftIndex = tabPaneLeft.getParent().getChildrenUnmodifiable().indexOf(tabPaneLeft);
+            tabPaneLeftParent = tabPaneLeft.getParent();
+            tabPaneLeft.getParent().getChildrenUnmodifiable().remove(tabPaneLeft);
+            */
+            /*
+            leftPaneMaxWidth = tabPaneLeft.getMaxWidth();
+            leftPanePrefWidth = tabPaneLeft.getPrefWidth();
+            leftPaneMinWidth = tabPaneLeft.getMinWidth();
+            tabPaneLeft.setMaxWidth(0);
+            tabPaneLeft.setPrefWidth(0);
+            tabPaneLeft.setMinWidth(0);
+            menuBarMaxHeight = menuBar.getMaxHeight();
+            menuBarPrefHeight = menuBar.getPrefHeight();
+            menuBarMinHeight = menuBar.getMinHeight();
+            menuBar.setMaxHeight(0);
+            menuBar.setPrefHeight(0);
+            menuBar.setMinHeight(0);
+            outputWebViewMaxHeight = outputWebView.getMaxHeight();
+            outputWebViewPrefHeight = outputWebView.getPrefHeight();
+            outputWebViewMinHeight = outputWebView.getMinHeight();
+            outputWebView.setMaxHeight(100);
+            outputWebView.setMinHeight(50);
+            outputWebView.setPrefHeight(100);
+            */
+
+        }
+        presentationModeActive = !presentationModeActive;
     }
 
     // ==========================================================================

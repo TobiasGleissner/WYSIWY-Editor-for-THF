@@ -32,7 +32,7 @@
     <top>
         <VBox BorderPane.alignment="CENTER">
             <children>
-                <MenuBar>
+                <MenuBar fx:id="menuBar">
                     <menus>
 
                         <!-- menuitem NAME -->
@@ -233,6 +233,18 @@
                         <Button onAction="#debugSYN0002" text="SYN0002" />
                         <Button onAction="#debugTrue" text="So True" />
                     </items>
+
+                    <!-- enter/leave presentation mode -->
+                    <!--
+                    <items>
+                        <Button fx:id="toolbarPresentationMode" onAction="#onViewEnterPresentationMode">
+                            &#xf2d3;
+                            <tooltip>
+                                <Tooltip text="Print the THF tree" />
+                            </tooltip>
+                        </Button>
+                    </items>
+                    -->
                 </ToolBar>
 
             </children>
