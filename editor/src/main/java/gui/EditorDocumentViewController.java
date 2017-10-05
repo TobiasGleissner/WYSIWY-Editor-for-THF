@@ -18,6 +18,7 @@ public class EditorDocumentViewController
     public EditorDocumentViewController(Path path, List<Tab> tabs)
     {
         this.editor = new WebView();
+        this.editor.setContextMenuEnabled(false);
         this.editor.getEngine().setJavaScriptEnabled(true);
 
         this.tab = new Tab();
