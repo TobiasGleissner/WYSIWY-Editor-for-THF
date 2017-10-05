@@ -997,7 +997,8 @@ public class EditorController implements Initializable {
         List<MenuItem> items = new ArrayList<MenuItem>();
 
         MenuItem labelItem = new MenuItem(proverType.getString() + " Provers");
-        labelItem.setStyle("-fx-opacity: 2; -fx-padding: 5 0 0 0;");
+        String style = proverType.equals(Prover.ProverType.LOCAL_PROVER) ? "-fx-opacity: 2;" : "-fx-opacity: 2; -fx-padding: 5 0 0 0;";
+        labelItem.setStyle(style);
         labelItem.setDisable(true);
         items.add(labelItem);
 
