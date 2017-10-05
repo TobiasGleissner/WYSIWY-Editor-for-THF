@@ -10,16 +10,28 @@ html, body
 
     counter-reset: line;
 
-    padding-left: 3.5em;
+    margin-left: 3.5em;
 }
 
 #cursor {
-    width: 2px;
+    width: 0px;
     height: 1em;
+    overflow: visible;
+    display: inline-block;
+}
 
+#cursor:before {
+    width: 1px;
+    height: 1em;
+    content: "";
     display: inline-block;
 
-    background-color: black;
+    -webkit-animation: blink 1s linear infinite;
+}
+
+@-webkit-keyframes blink {
+    from { background-color: black; }
+    to   { background-color: none; }
 }
 
 #numbers {
