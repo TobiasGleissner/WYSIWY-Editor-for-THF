@@ -689,7 +689,7 @@
 
                         var next = get_cursor_lr(true, 1, false);
                         if(next[1])
-                            next[1].parentNode.removeChild(next[1]);
+                            next[0].removeChild(next[1]);
 
                         maybe_scroll_to_cursor();
                         start_incremental_parsing_throttled_from_cursor();
@@ -714,8 +714,13 @@
                         }
 
                         var next = get_cursor_lr(false, 1, false);
+                        if(!next[1])
+                            next[1] = next[0].lastChild;
+                        else
+                            next[1] = next[1].previousSibling;
+
                         if(next[1])
-                            next[1].parentNode.removeChild(next[1]);
+                            next[0].removeChild(next[1]);
 
                         maybe_scroll_to_cursor();
                         start_incremental_parsing_throttled_from_cursor();
