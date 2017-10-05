@@ -60,6 +60,8 @@ public class EditorDocumentModel
     private LinkedList<String> css;
     private Queue<Callable<Void>> delayedActions;
     private int parserNodeIdCur = 0;
+    private Set<TPTPDefinitions.TPTPSubDialect> subDialects;
+    private EditorController editorController;
 
     public Collection<Node> getIncludes() {
         return includes.values();
@@ -108,12 +110,14 @@ public class EditorDocumentModel
 
     private JSCallbackListener jsCallbackListener;
 
-    public EditorDocumentModel(WebEngine engine, EditorDocumentViewController view)
+    public EditorDocumentModel(WebEngine engine, EditorDocumentViewController view, EditorController editorController)
     {
         provingHistory.addDocument(this);
+        this.editorController = editorController;
         this.engine = engine;
         this.view = view;
         this.style = new WebKitStyle();
+        this.subDialects = new HashSet<>();
 
         this.delayedActions = new LinkedList<>();
 
@@ -497,6 +501,12 @@ public class EditorDocumentModel
                 continue;
             }
 
+            if (!subDialects.containsAll(parseContext.getDialects())){
+                subDialects.addAll(parseContext.getDialects());
+                editorController.addAvailableProversToMenus(new ArrayList<>(subDialects));
+            }
+
+
             if(node.stopIndex < node.startIndex)
                 node.stopIndex = node.startIndex = 0;
 
@@ -750,7 +760,8 @@ public class EditorDocumentModel
      * @return
      */
     public List<TPTPDefinitions.TPTPSubDialect> getCompatibleTPTPSubDialects(){
-        return TPTPDefinitions.getCompatibleSubDialects(this.classifyByTPTPSubDialect());
+        return new ArrayList<>(subDialects);
+        //return TPTPDefinitions.getCompatibleSubDialects(this.classifyByTPTPSubDialect());
     }
 
     /**

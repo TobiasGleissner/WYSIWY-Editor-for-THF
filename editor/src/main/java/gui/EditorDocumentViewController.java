@@ -15,7 +15,7 @@ public class EditorDocumentViewController
 
     public EditorDocumentModel model;
 
-    public EditorDocumentViewController(Path path, List<Tab> tabs)
+    public EditorDocumentViewController(Path path, List<Tab> tabs, EditorController editorController)
     {
         this.editor = new WebView();
         this.editor.setContextMenuEnabled(false);
@@ -29,7 +29,7 @@ public class EditorDocumentViewController
         this.tab.setContent(this.editor);
         this.tab.setUserData(this);
 
-        this.model = new EditorDocumentModel(editor.getEngine(), EditorDocumentViewController.this);
+        this.model = new EditorDocumentModel(editor.getEngine(), EditorDocumentViewController.this, editorController);
 
         this.tabs = tabs;
         this.tabs.add(this.tab);

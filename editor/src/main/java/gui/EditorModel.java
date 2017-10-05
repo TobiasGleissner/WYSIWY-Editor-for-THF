@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import java.util.Optional;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -19,6 +17,7 @@ public class EditorModel
 {
     private static Logging log = Logging.getInstance();
 
+    public EditorController editorController;
     public TabPane thfArea;
 
     public ObservableList<String> recentlyOpenedFiles;
@@ -54,7 +53,7 @@ public class EditorModel
     private EditorDocumentViewController getNewTab() {
         EditorDocumentViewController doc;
 
-        doc = new EditorDocumentViewController(null, this.thfArea.getTabs());
+        doc = new EditorDocumentViewController(null, this.thfArea.getTabs(), editorController);
         thfArea.getSelectionModel().select(doc.tab);
 
         return doc;

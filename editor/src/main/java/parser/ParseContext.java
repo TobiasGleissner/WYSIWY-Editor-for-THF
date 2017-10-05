@@ -2,9 +2,12 @@ package parser;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import prover.TPTPDefinitions;
 import util.tree.Node;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class ParseContext {
@@ -13,11 +16,22 @@ public class ParseContext {
     private ParserRuleContext parserRuleContext;
     private List<Token> hiddenTokens;
 
+    public Set<TPTPDefinitions.TPTPSubDialect> getDialects() {
+        return dialects;
+    }
+
+    public void setDialects(Set<TPTPDefinitions.TPTPSubDialect> dialects) {
+        this.dialects = dialects;
+    }
+
+    private Set<TPTPDefinitions.TPTPSubDialect> dialects;
+
     public ParseContext() {
         parseError = null;
         root = null;
         parserRuleContext = null;
         hiddenTokens = null;
+        dialects = new HashSet<>();
     }
 
     public List<Token> getHiddenTokens() {

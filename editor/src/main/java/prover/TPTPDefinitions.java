@@ -42,12 +42,12 @@ public class TPTPDefinitions {
     public static List<TPTPSubDialect> getTPTPSubDialectsFromTPTPDialect(TPTPDialect dialect){
         return tptpDialectTPTPSubDialectMap.get(dialect);
     }
-    public static List<TPTPSubDialect> getCompatibleSubDialects(TPTPSubDialect dialect){
+    public static List<TPTPSubDialect> getCompatibleSubDialects(TPTPSubDialect subDialect){
         List<TPTPSubDialect> ret = new ArrayList<>();
-        switch (dialect){
-            case TH1: ret.add(TPTPSubDialect.TH0); ret.add(TPTPSubDialect.TH1); break;
-            case TF1: ret.add(TPTPSubDialect.TF0); ret.add(TPTPSubDialect.TF1); break;
-            default: ret.add(dialect);
+        switch (subDialect){
+            case TH0: ret.add(TPTPSubDialect.TH0); ret.add(TPTPSubDialect.TH1); break;
+            case TF0: ret.add(TPTPSubDialect.TF0); ret.add(TPTPSubDialect.TF1); break;
+            default: ret.add(subDialect);
         }
         return ret;
     }

@@ -35,7 +35,6 @@ import javafx.fxml.Initializable;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.web.WebView;
@@ -131,6 +130,7 @@ public class EditorController implements Initializable {
     public EditorController(EditorModel model, Stage mainStage) {
         this.mainStage = mainStage;
         this.model = model;
+        model.editorController = this;
     }
 
     @Override
@@ -191,14 +191,14 @@ public class EditorController implements Initializable {
         initializeListOfRecentlyOpenedFiles();
 
         // Initialize prover menu lists
-        addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
+        addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>());
         toolbarSelectProver.setText(defaultProver);
 
         // Add listener for refresh of prover menu lists when changing tabs
         thfArea.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
             // Refresh lists of available provers in menubar and toolbar
             if (model.getSelectedTab() == null)
-                addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
+                addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>());
             else
                 addAvailableProversToMenus(model.getSelectedTab().model.getCompatibleTPTPSubDialects());
             log.debug("Updated prover lists in menu");
@@ -974,7 +974,7 @@ public class EditorController implements Initializable {
     }
 
     public void addAvailableProversToMenus(List<TPTPDefinitions.TPTPSubDialect> subdialects) {
-
+        if (subdialects.size() == 0) subdialects.add(TPTPDefinitions.TPTPSubDialect.TH1); // default value for any document
         try {
 
             menubarProverSelectProver.getItems().clear();
