@@ -14,8 +14,8 @@ html, body
 }
 
 #cursor {
-    width: 0px;
-    height: 1em;
+    width: 0;
+    height: 0;
     overflow: visible;
     display: inline-block;
 }
