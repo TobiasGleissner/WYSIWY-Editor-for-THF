@@ -1001,14 +1001,13 @@
 
                 hidden_offset = 0;
 
-                /*
-                Don't try to move the cursor. All range editing operations should work properly even if the cursor is not inside the range.
-
                 var cursor = get_cursor();
                 var range = selection.getRangeAt(0);
-                range.insertNode(cursor);
-                set_cursor(cursor.parentNode, cursor);
-                */
+                if(range.toString().length == 0)
+                {
+                    range.insertNode(cursor);
+                    set_cursor(cursor.parentNode, cursor);
+                }
 
                 undo_helper.append_throttled();
             }
