@@ -227,7 +227,7 @@ public class EditorController implements Initializable {
     // ==========================================================================
 
     @FXML private void onNAMEHide(ActionEvent e) {
-        // TODO
+        mainStage.setIconified(true);
     }
 
     @FXML public void onNAMEPreferences(ActionEvent actionEvent) {
