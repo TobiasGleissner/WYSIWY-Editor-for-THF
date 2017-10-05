@@ -9,15 +9,8 @@ import java.io.FileNotFoundException;
 
 import java.nio.file.Path;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.Collections;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -60,16 +53,15 @@ public class EditorDocumentModel
     public WebEngine engine;
     private Document doc;
     public WebKitStyle style;
-
     private HashMap<Integer, Node> includes;
-
     private EditorDocumentViewController view;
-
     private LinkedList<String> css;
-
     private Queue<Callable<Void>> delayedActions;
-
     private int parserNodeIdCur = 0;
+
+    public Collection<Node> getIncludes() {
+        return includes.values();
+    }
 
     public class JSCallbackListener
     {

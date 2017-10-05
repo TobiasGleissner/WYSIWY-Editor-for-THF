@@ -4,8 +4,12 @@ import exceptions.ProverNotAvailableException;
 import exceptions.ProverResultNotInterpretableException;
 import gui.EditorDocumentModel;
 import gui.Logging;
+import util.tree.Node;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class ProvingHistory {
@@ -36,7 +40,32 @@ public class ProvingHistory {
     }
 
     private String preprocessIncludes(EditorDocumentModel doc){
-        // TODO includes
+        /*
+        StringBuilder sb = new StringBuilder();
+        Path docDirectory = doc.getPath().getParent();
+        Collection<Node> includes = doc.getIncludes();
+        for (Node i : includes){
+            // include.file_name->Single_quoted
+            String includeFile = i.getChild(1).getChild(0).getLabel();
+            includeFile = includeFile.substring(1,includeFile.length()-1);
+            Path includePath = Paths.get(docDirectory.toString(),includeFile);
+            try {
+                String includeContent = new String(Files.readAllBytes(includePath),"UTF-8");
+                sb.append("% included file ");
+                sb.append(includePath);
+                sb.append("\n");
+                sb.append(includeContent);
+            } catch (IOException e) {
+                log.error("Could not include file. Try proving anyway. File='" + includePath + "'.");
+            }
+        }
+        if (includes.size() > 0) {
+            sb.append("\n% problem file\n");
+        }
+        sb.append(doc.getText());
+        System.out.println(sb.toString());
+        return sb.toString();
+        */
         return doc.getText();
     }
 
