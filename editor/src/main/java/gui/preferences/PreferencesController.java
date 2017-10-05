@@ -292,7 +292,7 @@ public class PreferencesController implements Initializable {
         else
             editor.addAvailableProversToMenus(editor.model.getSelectedTab().model.getCompatibleTPTPSubDialects());
 
-        log.info("Updated prover lists in menu");
+        log.debug("Updated prover lists in menu");
     }
 
     @FXML

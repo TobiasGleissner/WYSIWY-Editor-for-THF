@@ -224,7 +224,7 @@ public class EditorController implements Initializable {
                 addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
             else
                 addAvailableProversToMenus(model.getSelectedTab().model.getCompatibleTPTPSubDialects());
-            log.info("Updated prover lists in menu");
+            log.debug("Updated prover lists in menu");
         });
 
         // Initialize tabs on the left side
