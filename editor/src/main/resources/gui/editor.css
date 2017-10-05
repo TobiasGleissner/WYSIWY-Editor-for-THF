@@ -175,8 +175,8 @@
     -fx-border-radius: 2em;
 }
 
-.scroll-bar .thumb{
-    -fx-background-color: -fx-base;
+.scroll-bar .thumb {
+    -fx-background-color: derive(-fx-medium-base,50%);
     -fx-background-insets: 2, 0, 0;
     -fx-background-radius: 2em;
 }
@@ -190,7 +190,7 @@
 
 .scroll-bar .thumb:hover,
 .scroll-bar .thumb:pressed {
-    -fx-background-color: derive(-fx-base,-20%);
+    -fx-background-color: -fx-medium-base;
 }
 
 
