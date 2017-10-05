@@ -149,13 +149,14 @@
                         <!-- menuitem view -->
                         <Menu fx:id="menubarView" text="View">
                             <items>
-                                <MenuItem text="Increase Font Size" onAction="#onViewIncreaseFontSize">
-                                </MenuItem>
-                                <MenuItem text="Decrease Font Size" onAction="#onViewDecreaseFontSize">
-                                </MenuItem>
-                                <MenuItem text="Default Font Size" onAction="#onViewDefaultFontSize">
-                                </MenuItem>
+                                <MenuItem text="Increase Font Size" onAction="#onViewIncreaseFontSize" />
+                                <MenuItem text="Decrease Font Size" onAction="#onViewDecreaseFontSize" />
+                                <MenuItem text="Default Font Size" onAction="#onViewDefaultFontSize" />
+                                <SeparatorMenuItem mnemonicParsing="false" />
                                 <MenuItem fx:id="menubarViewPresentationMode" text="Enter Presentation Mode" onAction="#onViewEnterPresentationMode">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
                                 </MenuItem>
                             </items>
                         </Menu>
@@ -283,7 +284,7 @@
                         </TabPane>
 
                         <!-- thf editor -->
-                        <TabPane fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" />
+                        <TabPane fx:id="thfArea" prefHeight="200.0" prefWidth="400.0" minWidth="400.0" />
                         <!-- <WebView fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" /> -->
 
                         <!-- wysiwyg editor -->
