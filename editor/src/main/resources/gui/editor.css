@@ -243,6 +243,7 @@
 /* === tree view === */
 
 .tree-view {
+    -fx-font-size: 90%;
     -fx-background-color: transparent;
     -fx-background-insets: 0, 1;
     -fx-padding: 1 1 1 1;
