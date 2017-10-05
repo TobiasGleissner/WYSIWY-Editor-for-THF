@@ -890,6 +890,13 @@
 
                         var cursor = get_cursor();
 
+                        var range = get_selected_range();
+                        java.set_clipboard_text(range.toString());
+
+                        range.deleteContents();
+                        if(!document.getElementById("cursor"))
+                            range.insertNode(get_cursor());
+
                         var text_node = document.createTextNode("\n");
                         cursor.parentNode.insertBefore(text_node, cursor);
 
@@ -963,7 +970,11 @@
                 hidden_offset = 0;
 
                 var range = get_selected_range();
+                java.set_clipboard_text(range.toString());
+
                 range.deleteContents();
+                if(!document.getElementById("cursor"))
+                    range.insertNode(get_cursor());
 
                 var new_text = String.fromCharCode(e.charCode);
                 if(new_text.length == 0)
