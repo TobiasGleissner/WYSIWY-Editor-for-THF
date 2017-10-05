@@ -449,7 +449,7 @@
                     node = node.parentNode;
 
                     if(is_editor(node))
-                        return node;
+                        return null;
                 }
 
                 if(node.nodeType == 1 &&
@@ -495,7 +495,7 @@
                     node = node.parentNode;
 
                     if(is_editor(node))
-                        return [node, node.firstChild];
+                        return null;
                 }
 
                 if(node.nodeType == 1 &&
@@ -506,7 +506,7 @@
                 prev_node = node;
             }
 
-            throw 'ERROR: Could not find the next newline node';
+            return null;
         }
 
         /* --- CURSOR MOVEMENT --- */
@@ -607,7 +607,8 @@
 
             var start_node = get_newline_by_line_offset(cursor, go_up ? 1 : 0, go_up);
 
-            return get_pos_by_offset_to_line_from_node(start_node, offset);
+            var ret = get_pos_by_offset_to_line_from_node(start_node, offset);
+            return ret;
         }
 
         function get_cursor()
@@ -750,6 +751,7 @@
 
                         var cursor = get_cursor();
                         var next = get_cursor_ud(true, 1);
+                        if(!next) break;
                         set_cursor(next[0], next[1]);
 
                         maybe_scroll_to_cursor();
@@ -771,6 +773,7 @@
 
                         var cursor = get_cursor();
                         var next = get_cursor_ud(false, 1);
+                        if(!next) break;
                         set_cursor(next[0], next[1]);
 
                         maybe_scroll_to_cursor();
