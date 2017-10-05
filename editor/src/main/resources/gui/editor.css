@@ -167,9 +167,14 @@
     -fx-min-height: 200;
 }
 
-.tab-pane > .tab-header-area {
+.tab-pane:top > .tab-header-area {
     -fx-background-insets: 0;
-    /* -fx-padding: -20 0 0 0; TODO: make this work for vertical an horizontal tabs */
+    -fx-padding: 0 0 0 0;
+}
+
+.tab-pane:left > .tab-header-area {
+    -fx-background-insets: 0;
+    -fx-padding: -20 0 0 0;
 }
 
 .tab-pane:right > .tab {
@@ -187,14 +192,14 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-padding: 0 10 0 10;
-    -fx-border-width:0px;
+    -fx-border-width: 0px;
 }
 
-.tab-pane:right > .tab-header-area > .headers-region > .tab:right {
-    -fx-background-color: -fx-body-color;
+.tab-pane:top > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: derive(-fx-light-base,-2%);
 }
 
-.tab-pane:right > .tab-header-area > .headers-region > .tab:selected:right {
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
     -fx-background-color: white;
 }
 
@@ -202,11 +207,11 @@
     -fx-font-size: 80%;
 }
 
-.tab-pane > .tab-header-area > .headers-region > .tab:selected {
-    -fx-background: white;
+.tab-pane:top > .tab-header-area > .tab-header-background {
+    -fx-background-color: derive(-fx-light-base,-2%);
 }
 
-.tab-pane > .tab-header-area > .tab-header-background {
+.tab-pane:left > .tab-header-area > .tab-header-background {
     -fx-background-color: -fx-body-color;
 }
 
