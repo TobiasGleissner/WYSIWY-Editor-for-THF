@@ -275,6 +275,7 @@ public class EditorController implements Initializable {
                 }
                 for (String fileToAdd : c.getAddedSubList()) {
                     MenuItem item = new MenuItem(fileToAdd);
+                    item.setStyle("-fx-padding: 0;");
                     item.setOnAction(e->model.openFile(new File(fileToAdd)));
                     menubarFileReopenFile.getItems().add(2,item);
                 }
