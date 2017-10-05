@@ -16,7 +16,7 @@ public abstract class Prover {
         },
         SYSTEMONTPTP_DEFAULT_PROVER {
             public String getString() {
-                return "Remote";
+                return "Default Remote";
             }
             public List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subdialects) throws IOException {
                 return SystemOnTPTPProver.getInstance().getAvailableDefaultProvers(subdialects);
@@ -24,7 +24,7 @@ public abstract class Prover {
         },
         SYSTEMONTPTP_CUSTOM_PROVER {
             public String getString() {
-                return "Custom";
+                return "Custom Remote";
             }
             public List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subdialects) throws IOException {
                 return SystemOnTPTPProver.getInstance().getAvailableCustomProvers(subdialects);

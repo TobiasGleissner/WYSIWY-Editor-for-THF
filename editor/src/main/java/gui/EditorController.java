@@ -995,9 +995,10 @@ public class EditorController implements Initializable {
 
         List<MenuItem> items = new ArrayList<MenuItem>();
 
-        MenuItem label = new MenuItem(proverType.getString() + " Provers");
-        label.setDisable(true);
-        items.add(label);
+        MenuItem labelItem = new MenuItem(proverType.getString() + " Provers");
+        labelItem.setStyle("-fx-opacity: 2; -fx-padding: 5 0 0 0;");
+        labelItem.setDisable(true);
+        items.add(labelItem);
 
         if (provers.isEmpty()) {
             MenuItem noProvers = new MenuItem("No provers available");
