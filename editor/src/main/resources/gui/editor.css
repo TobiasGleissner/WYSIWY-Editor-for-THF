@@ -159,7 +159,7 @@
 .decrement-button {
     -fx-background-color: transparent;
     -fx-background-radius: 0em;
-    -fx-padding:0 10 0 0;
+    -fx-padding: 0 10 0 0;
 }
 
 .scroll-bar .increment-arrow,

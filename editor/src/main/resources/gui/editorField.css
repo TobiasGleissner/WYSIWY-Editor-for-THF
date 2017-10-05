@@ -1,15 +1,20 @@
 /* general */
-html, body
-{
+
+html {
+    overflow: auto;
     font-style: normal;
     font-family: monospace;
 }
 
+body {
+    position: absolute;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 #editor {
     white-space: pre-wrap;
-
     counter-reset: line;
-
     margin-left: 3.5em;
 }
 
@@ -25,20 +30,12 @@ html, body
     height: 1em;
     content: "";
     display: inline-block;
-
     -webkit-animation: blink 1s linear infinite;
-}
-
-@-webkit-keyframes blink {
-    from { background-color: black; }
-    to   { background-color: none; }
 }
 
 #numbers {
     float: left;
-
     width: 3em;
-
     border-right: 1px solid #ddd;
     position: relative;
 }
@@ -54,3 +51,33 @@ html, body
 }
 
 /* line numbering */
+
+#-webkit-keyframes blink {
+    from { background-color: black; }
+    to   { background-color: none; }
+}
+
+/* scrollbar */
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-track  {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+::-webkit-scrollbar-thumb {
+    border: 1px solid rgba(236,236,236,1);
+    border-radius: 6px;
+    background: rgba(236,236,236,1);
+}
+
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active {
+    border: 1px solid rgba(190,190,190,1);
+    border-radius: 6px;
+    background: rgba(190,190,190,1);
+}
