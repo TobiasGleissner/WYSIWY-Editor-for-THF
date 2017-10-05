@@ -25,12 +25,17 @@ body {
     display: inline-block;
 }
 
-#cursor:before {
+#cursor::before {
     width: 1px;
     height: 1em;
     content: "";
     display: inline-block;
     -webkit-animation: blink 1s linear infinite;
+}
+
+@-webkit-keyframes blink {
+    from { background-color: black; }
+    to   { background-color: none; }
 }
 
 #numbers {
@@ -48,13 +53,6 @@ body {
 
 *:focus {
     outline: none;
-}
-
-/* line numbering */
-
-#-webkit-keyframes blink {
-    from { background-color: black; }
-    to   { background-color: none; }
 }
 
 /* scrollbar */
