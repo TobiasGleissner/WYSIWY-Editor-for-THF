@@ -723,6 +723,20 @@
         {
             var cursor = get_cursor();
 
+            /* Ensure the cursor only ever gets created in the editor field. */
+            {
+                var it = cursor;
+
+                while(it && !is_editor(it))
+                    it = it.parentNode;
+
+                if(!it)
+                {
+                    cursor.parentElement.removeChild(cursor);
+                    cursor = get_cursor();
+                }
+            }
+
             while(next &&
                   next.nodeType == 3 &&
                   next.textContent.length == 0)
@@ -1003,6 +1017,11 @@
 
                 var cursor = get_cursor();
                 var range = selection.getRangeAt(0);
+
+                var editor = document.getElementById("editor");
+                if(!range.intersectsNode(editor))
+                    return;
+
                 if(range.toString().length == 0)
                 {
                     range.insertNode(cursor);
