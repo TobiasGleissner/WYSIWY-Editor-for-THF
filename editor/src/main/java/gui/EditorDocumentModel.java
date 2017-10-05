@@ -19,6 +19,8 @@ import javafx.concurrent.Worker;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.web.WebEngine;
 
 import org.antlr.v4.runtime.CharStream;
@@ -89,6 +91,18 @@ public class EditorDocumentModel
         public void sleep(Integer ms) {
             try {Thread.sleep(ms.longValue()); }
             catch(InterruptedException e) {}
+        }
+        public String get_clipboard_text()
+        {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            return clipboard.getString();
+        }
+        public void set_clipboard_text(String text)
+        {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(text);
+            clipboard.setContent(content); 
         }
     }
 

@@ -756,6 +756,47 @@
 
                 switch(e.keyCode)
                 {
+                    case 86: /* v */
+                        if(!e.ctrlKey)
+                            break;
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        hidden_offset = 0;
+
+                        var hm_node_id_left = 0;
+                        var hm_node_id_right = 0;
+
+                        var cursor = get_cursor();
+
+                        var text = java.get_clipboard_text();
+                        var text_node = document.createTextNode(text);
+                        cursor.parentNode.insertBefore(text_node, cursor);
+
+                        undo_helper.append_throttled();
+
+                        maybe_scroll_to_cursor();
+                        start_incremental_parsing_throttled_from_cursor();
+                        break;
+                    case 88: /* x */
+                        if(!e.ctrlKey)
+                            break;
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        var range = get_selected_range();
+                        java.set_clipboard_text(range.toString());
+
+                        range.deleteContents();
+                        if(!document.getElementById("cursor"))
+                            range.insertNode(get_cursor());
+
+                        var selection = window.getSelection();
+                        selection.removeAllRanges();
+
+                        maybe_scroll_to_cursor();
+                        start_incremental_parsing_throttled_from_cursor();
+                        break;
                     case 89: /* y */
                         if(!e.ctrlKey)
                             break;
@@ -931,32 +972,6 @@
                 var cursor = get_cursor();
 
                 var text_node = document.createTextNode(new_text);
-                cursor.parentNode.insertBefore(text_node, cursor);
-
-                undo_helper.append_throttled();
-
-                maybe_scroll_to_cursor();
-                start_incremental_parsing_throttled_from_cursor();
-            }
-        );
-
-        document.addEventListener("paste",
-            function(e)
-            {
-                e.stopPropagation();
-                e.preventDefault();
-
-                hidden_offset = 0;
-
-                var hm_node_id_left = 0;
-                var hm_node_id_right = 0;
-
-                var clipboard_data = e.clipboardData;
-                var text = clipboard_data.getData('text/plain');
-
-                var cursor = get_cursor();
-
-                var text_node = document.createTextNode(text);
                 cursor.parentNode.insertBefore(text_node, cursor);
 
                 undo_helper.append_throttled();
