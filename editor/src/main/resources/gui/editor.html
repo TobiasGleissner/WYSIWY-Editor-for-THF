@@ -513,7 +513,7 @@
         var hidden_offset = 0;
         var shift_modifier = false;
 
-        function get_cursor_lr(go_left, offset, supports_shift=true)
+        function get_cursor_lr(go_left, offset, supports_shift)
         {
             hidden_offset = 0;
 
@@ -744,7 +744,7 @@
                         e.preventDefault();
 
                         var cursor = get_cursor();
-                        var next = get_cursor_lr(true, 1);
+                        var next = get_cursor_lr(true, 1, true);
                         if(!next) break;
                         set_cursor(next[0], next[1]);
 
@@ -766,7 +766,7 @@
                         e.preventDefault();
 
                         var cursor = get_cursor();
-                        var next = get_cursor_lr(false, 1);
+                        var next = get_cursor_lr(false, 1, true);
                         if(!next) break;
                         set_cursor(next[0], next[1]);
 
