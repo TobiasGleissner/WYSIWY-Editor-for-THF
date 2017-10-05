@@ -422,55 +422,6 @@ public class EditorController implements Initializable {
                 }
             }
         });
-        
-        /*fileBrowser.setOnDragDetected(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                Dragboard db = fileBrowser.startDragAndDrop(TransferMode.ANY);
-                
-                ClipboardContent content = new ClipboardContent();
-                content.putString(fileBrowser.getSelectionModel().getSelectedItem().getValue().toString());
-                db.setContent(content);
-                
-                System.out.println("ABC");
-                
-                event.consume();
-            }
-        }); 
-        
-        fileBrowser.setOnDragOver(new EventHandler<DragEvent>() {
-            public void handle(DragEvent event) {
-                if (event.getGestureSource() != fileBrowser &&
-                        event.getDragboard().hasString()) {
-                    event.acceptTransferModes(TransferMode.ANY);
-                }
-                //System.out.println("CBA");
-                
-                event.consume();
-            }
-        });
-        
-        fileBrowser.setOnDragEntered(new EventHandler<DragEvent>() {
-            public void handle(DragEvent event) {
-                System.out.println("A");
-            }
-        });
-        
-        fileBrowser.setOnDragDropped(new EventHandler<DragEvent>() {
-            public void handle(DragEvent event) {
-                Dragboard db = event.getDragboard();
-                boolean success = false;
-                
-                System.out.println("B");
-                
-                if (db.hasFiles()) {
-                    System.out.println("A "+db.getString());
-                    success = true;
-                }
-                
-                event.setDropCompleted(success);
-                event.consume();
-            }
-        });*/
 
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem newFile = new MenuItem("New file");
