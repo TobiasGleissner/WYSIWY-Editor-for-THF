@@ -340,8 +340,6 @@ public class EditorController implements Initializable {
                         content.putFiles(fileList);
                         db.setContent(content);
                         
-                        //System.out.println(treeCell.getItem().getFile().toString());
-                        
                         event.consume();
                     }
                 });
@@ -385,7 +383,17 @@ public class EditorController implements Initializable {
                             copyFiles(db.getFiles(), selectedItemIsDirectory, f);
                         }
                         
-                        event.setDropCompleted(success);
+                        // TODO: get return value of copyFiles!
+                        event.setDropCompleted(true);
+                        event.consume();
+                    }
+                });
+                
+                treeCell.setOnDragDone(new EventHandler<DragEvent>() {
+                    public void handle(DragEvent event) {
+                        if (event.getTransferMode() == TransferMode.MOVE) {
+                            treeCell.setText("");
+                        }
                         event.consume();
                     }
                 });
