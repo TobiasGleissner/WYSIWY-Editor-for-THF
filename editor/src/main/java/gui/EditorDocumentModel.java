@@ -652,6 +652,7 @@ public class EditorDocumentModel
 
                     reparse();
                     engine.executeScript("update_line_numbers()");
+                    engine.executeScript("undo_helper.append()");
 
                     if(this.path == null)
                         view.setText("unnamed");
