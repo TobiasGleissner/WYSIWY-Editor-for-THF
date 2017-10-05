@@ -77,8 +77,16 @@
     -fx-background-color: -fx-selection-bar;
 }
 
+.menu-item .label{
+    -fx-padding: 0em 2.5em 0em 0em;
+}
+
 .menu-item:disabled {
      -fx-opacity: 0.7;
+}
+
+.menu-item:disabled .label {
+     -fx-padding: 0;
 }
 
 .menu-item:disabled:hover {
@@ -88,15 +96,11 @@
 .context-menu {
     -fx-background-insets: -1 0 -1 0;
     -fx-padding: 0;
-    /* -fx-pref-width: 200px;
-    -fx-min-width: 200px;
-    -fx-max-width: 400px; */
 }
 
 .context-menu .accelerator-text {
     -fx-padding: 0 0 0 -9;
 }
-
 
 /* === toolbar === */
 
@@ -147,6 +151,47 @@
 
 /* === scrollbar === */
 
+.scroll-bar {
+    -fx-background-color:transparent;
+}
+
+.increment-button,
+.decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-border-radius: 2em;
+}
+
+.scroll-bar .thumb{
+    -fx-background-color: -fx-base;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+
+.scroll-bar:hover .track,
+.scroll-bar:pressed .track {
+    -fx-background-color: white;
+    -fx-opacity: 0.2;
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar .thumb:hover,
+.scroll-bar .thumb:pressed {
+    -fx-background-color: derive(-fx-base,-20%);
+}
 
 
 /* === split panes === */
@@ -167,9 +212,14 @@
     -fx-min-height: 200;
 }
 
-.tab-pane > .tab-header-area {
+.tab-pane:top > .tab-header-area {
     -fx-background-insets: 0;
-    /* -fx-padding: -20 0 0 0; TODO: make this work for vertical an horizontal tabs */
+    -fx-padding: 0 0 0 0;
+}
+
+.tab-pane:left > .tab-header-area {
+    -fx-background-insets: 0;
+    -fx-padding: -20 0 0 0;
 }
 
 .tab-pane:right > .tab {
@@ -187,14 +237,14 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-padding: 0 10 0 10;
-    -fx-border-width:0px;
+    -fx-border-width: 0px;
 }
 
-.tab-pane:right > .tab-header-area > .headers-region > .tab:right {
-    -fx-background-color: -fx-body-color;
+.tab-pane:top > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: derive(-fx-light-base,-2%);
 }
 
-.tab-pane:right > .tab-header-area > .headers-region > .tab:selected:right {
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
     -fx-background-color: white;
 }
 
@@ -202,11 +252,11 @@
     -fx-font-size: 80%;
 }
 
-.tab-pane > .tab-header-area > .headers-region > .tab:selected {
-    -fx-background: white;
+.tab-pane:top > .tab-header-area > .tab-header-background {
+    -fx-background-color: derive(-fx-light-base,-2%);
 }
 
-.tab-pane > .tab-header-area > .tab-header-background {
+.tab-pane:left > .tab-header-area > .tab-header-background {
     -fx-background-color: -fx-body-color;
 }
 
@@ -238,6 +288,7 @@
 /* === tree view === */
 
 .tree-view {
+    -fx-font-size: 90%;
     -fx-background-color: transparent;
     -fx-background-insets: 0, 1;
     -fx-padding: 1 1 1 1;

@@ -373,6 +373,96 @@
             }
         }
 
+        var UNDO_HISTORY_SIZE = 32;
+        var undo_helper =
+        {
+            undo_buffer : [],
+            redo_buffer : [],
+            chain : false,
+
+            append : function()
+            {
+                this.chain = false;
+
+                while(this.undo_buffer.length >= UNDO_HISTORY_SIZE)
+                    this.undo_buffer.shift();
+
+                var editor = document.getElementById("editor");
+                this.undo_buffer.push(editor.cloneNode(true));
+            },
+
+            append_timeout : null,
+            append_throttled : function()
+            {
+                if(this.append_timeout)
+                    clearTimeout(this.append_timeout);
+
+                this.append_timeout = setTimeout(
+                    function()
+                    {
+                        undo_helper.append_timeout = null;
+                        undo_helper.append();
+                    },
+                    500
+                );
+            },
+
+            append_flush : function()
+            {
+                if(!this.append_timeout)
+                    return;
+
+                clearTimeout(this.append_timeout);
+                this.append_timeout = null;
+                this.append();
+            },
+
+            undo : function()
+            {
+                this.append_flush();
+
+                /* If a change was just pushed we don't want to restore the same state. */
+                if(!this.chain)
+                    this.undo_buffer.pop();
+                this.chain = true;
+
+                var editor = document.getElementById("editor");
+                var old_editor = this.undo_buffer.pop();
+
+                if(!old_editor)
+                    return;
+
+                while(this.redo_buffer.length >= UNDO_HISTORY_SIZE)
+                    this.redo_buffer.shift();
+                this.redo_buffer.push(editor);
+
+                editor.parentNode.replaceChild(old_editor, editor);
+            },
+
+            redo : function()
+            {
+                var editor = document.getElementById("editor");
+                var old_editor = this.redo_buffer.pop();
+
+                if(!old_editor)
+                    return;
+
+                while(this.undo_buffer.length >= UNDO_HISTORY_SIZE)
+                    this.undo_buffer.shift();
+                this.undo_buffer.push(editor);
+
+                editor.parentNode.replaceChild(old_editor, editor);
+            },
+
+            debug : function()
+            {
+                java.debug("debug");
+                for(i = 0; i < this.undo_buffer.length; ++i)
+                    java.debug("[" + i + "]: contents = '" + this.undo_buffer[i].textContent + "'");
+            },
+        };
+
+        /* --- CURSOR HELPER FUNCTIONS --- */
         function is_editor(node)
         {
             if(!node || node.nodeType != 1)
@@ -449,7 +539,7 @@
                     node = node.parentNode;
 
                     if(is_editor(node))
-                        return node;
+                        return null;
                 }
 
                 if(node.nodeType == 1 &&
@@ -495,7 +585,7 @@
                     node = node.parentNode;
 
                     if(is_editor(node))
-                        return [node, node.firstChild];
+                        return null;
                 }
 
                 if(node.nodeType == 1 &&
@@ -506,18 +596,17 @@
                 prev_node = node;
             }
 
-            throw 'ERROR: Could not find the next newline node';
+            return null;
         }
 
         /* --- CURSOR MOVEMENT --- */
         var hidden_offset = 0;
-        var shift_modifier = false;
 
-        function get_cursor_lr(go_left, offset, supports_shift=true)
+        function get_cursor_lr(go_left, offset, mark)
         {
             hidden_offset = 0;
 
-            if(shift_modifier && supports_shift)
+            if(mark)
             {
                 var range = get_selected_range();
                 var selection = window.getSelection();
@@ -607,7 +696,8 @@
 
             var start_node = get_newline_by_line_offset(cursor, go_up ? 1 : 0, go_up);
 
-            return get_pos_by_offset_to_line_from_node(start_node, offset);
+            var ret = get_pos_by_offset_to_line_from_node(start_node, offset);
+            return ret;
         }
 
         function get_cursor()
@@ -632,6 +722,20 @@
         function set_cursor(par, next)
         {
             var cursor = get_cursor();
+
+            /* Ensure the cursor only ever gets created in the editor field. */
+            {
+                var it = cursor;
+
+                while(it && !is_editor(it))
+                    it = it.parentNode;
+
+                if(!it)
+                {
+                    cursor.parentElement.removeChild(cursor);
+                    cursor = get_cursor();
+                }
+            }
 
             while(next &&
                   next.nodeType == 3 &&
@@ -662,10 +766,70 @@
         document.addEventListener("keydown",
             function(e)
             {
+                // java.debug("key_code = " + e.keyCode);
+
                 switch(e.keyCode)
                 {
-                    case 16: /* SHIFT */
-                        shift_modifier = true;
+                    case 86: /* v */
+                        if(!e.ctrlKey)
+                            break;
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        hidden_offset = 0;
+
+                        var hm_node_id_left = 0;
+                        var hm_node_id_right = 0;
+
+                        var cursor = get_cursor();
+
+                        var text = java.get_clipboard_text();
+                        var text_node = document.createTextNode(text);
+                        cursor.parentNode.insertBefore(text_node, cursor);
+
+                        undo_helper.append_throttled();
+
+                        maybe_scroll_to_cursor();
+                        start_incremental_parsing_throttled_from_cursor();
+                        break;
+                    case 88: /* x */
+                        if(!e.ctrlKey)
+                            break;
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        var range = get_selected_range();
+                        java.set_clipboard_text(range.toString());
+
+                        range.deleteContents();
+                        if(!document.getElementById("cursor"))
+                            range.insertNode(get_cursor());
+
+                        var selection = window.getSelection();
+                        selection.removeAllRanges();
+
+                        maybe_scroll_to_cursor();
+                        start_incremental_parsing_throttled_from_cursor();
+                        break;
+                    case 89: /* y */
+                        if(!e.ctrlKey)
+                            break;
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        undo_helper.redo();
+                        maybe_scroll_to_cursor();
+                        start_incremental_parsing_throttled_from_cursor();
+                        break;
+                    case 90: /* z */
+                        if(!e.ctrlKey)
+                            break;
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        undo_helper.undo();
+                        maybe_scroll_to_cursor();
+                        start_incremental_parsing_throttled_from_cursor();
                         break;
                     case 8: /* BACKSPACE */
                         e.stopPropagation();
@@ -682,14 +846,18 @@
 
                             var selection = window.getSelection();
                             selection.removeAllRanges();
+
+                            undo_helper.append_throttled();
+                            maybe_scroll_to_cursor();
                             start_incremental_parsing_throttled_from_cursor();
                             break;
                         }
 
                         var next = get_cursor_lr(true, 1, false);
                         if(next[1])
-                            next[1].parentNode.removeChild(next[1]);
+                            next[0].removeChild(next[1]);
 
+                        undo_helper.append_throttled();
                         maybe_scroll_to_cursor();
                         start_incremental_parsing_throttled_from_cursor();
                         break;
@@ -708,14 +876,23 @@
 
                             var selection = window.getSelection();
                             selection.removeAllRanges();
+
+                            undo_helper.append_throttled();
+                            maybe_scroll_to_cursor();
                             start_incremental_parsing_throttled_from_cursor();
                             break;
                         }
 
                         var next = get_cursor_lr(false, 1, false);
-                        if(next[1])
-                            next[1].parentNode.removeChild(next[1]);
+                        if(!next[1])
+                            next[1] = next[0].lastChild;
+                        else
+                            next[1] = next[1].previousSibling;
 
+                        if(next[1])
+                            next[0].removeChild(next[1]);
+
+                        undo_helper.append_throttled();
                         maybe_scroll_to_cursor();
                         start_incremental_parsing_throttled_from_cursor();
                         break;
@@ -727,8 +904,17 @@
 
                         var cursor = get_cursor();
 
+                        var range = get_selected_range();
+                        java.set_clipboard_text(range.toString());
+
+                        range.deleteContents();
+                        if(!document.getElementById("cursor"))
+                            range.insertNode(get_cursor());
+
                         var text_node = document.createTextNode("\n");
                         cursor.parentNode.insertBefore(text_node, cursor);
+
+                        undo_helper.append_throttled();
 
                         maybe_scroll_to_cursor();
                         start_incremental_parsing_throttled_from_cursor();
@@ -738,9 +924,11 @@
                         e.preventDefault();
 
                         var cursor = get_cursor();
-                        var next = get_cursor_lr(true, 1);
+                        var next = get_cursor_lr(true, 1, e.shiftKey);
                         if(!next) break;
                         set_cursor(next[0], next[1]);
+
+                        undo_helper.append_throttled();
 
                         maybe_scroll_to_cursor();
                         break;
@@ -750,7 +938,10 @@
 
                         var cursor = get_cursor();
                         var next = get_cursor_ud(true, 1);
+                        if(!next) break;
                         set_cursor(next[0], next[1]);
+
+                        undo_helper.append_throttled();
 
                         maybe_scroll_to_cursor();
                         break;
@@ -759,9 +950,11 @@
                         e.preventDefault();
 
                         var cursor = get_cursor();
-                        var next = get_cursor_lr(false, 1);
+                        var next = get_cursor_lr(false, 1, e.shiftKey);
                         if(!next) break;
                         set_cursor(next[0], next[1]);
+
+                        undo_helper.append_throttled();
 
                         maybe_scroll_to_cursor();
                         break;
@@ -771,21 +964,12 @@
 
                         var cursor = get_cursor();
                         var next = get_cursor_ud(false, 1);
+                        if(!next) break;
                         set_cursor(next[0], next[1]);
 
-                        maybe_scroll_to_cursor();
-                        break;
-                }
-            }
-        );
+                        undo_helper.append_throttled();
 
-        document.addEventListener("keyup",
-            function(e)
-            {
-                switch(e.keyCode)
-                {
-                    case 16: /* SHIFT */
-                        shift_modifier = false;
+                        maybe_scroll_to_cursor();
                         break;
                 }
             }
@@ -800,38 +984,22 @@
                 hidden_offset = 0;
 
                 var range = get_selected_range();
+                java.set_clipboard_text(range.toString());
+
                 range.deleteContents();
+                if(!document.getElementById("cursor"))
+                    range.insertNode(get_cursor());
 
                 var new_text = String.fromCharCode(e.charCode);
+                if(new_text.length == 0)
+                    return;
+
                 var cursor = get_cursor();
 
                 var text_node = document.createTextNode(new_text);
                 cursor.parentNode.insertBefore(text_node, cursor);
 
-                maybe_scroll_to_cursor();
-                start_incremental_parsing_throttled_from_cursor();
-                line_number_update_throttled();
-            }
-        );
-
-        document.addEventListener("paste",
-            function(e)
-            {
-                e.stopPropagation();
-                e.preventDefault();
-
-                hidden_offset = 0;
-
-                var hm_node_id_left = 0;
-                var hm_node_id_right = 0;
-
-                var clipboard_data = e.clipboardData;
-                var text = clipboard_data.getData('text/plain');
-
-                var cursor = get_cursor();
-
-                var text_node = document.createTextNode(text);
-                cursor.parentNode.insertBefore(text_node, cursor);
+                undo_helper.append_throttled();
 
                 maybe_scroll_to_cursor();
                 start_incremental_parsing_throttled_from_cursor();
@@ -849,8 +1017,18 @@
 
                 var cursor = get_cursor();
                 var range = selection.getRangeAt(0);
-                range.insertNode(cursor);
-                set_cursor(cursor.parentNode, cursor);
+
+                var editor = document.getElementById("editor");
+                if(!range.intersectsNode(editor))
+                    return;
+
+                if(range.toString().length == 0)
+                {
+                    range.insertNode(cursor);
+                    set_cursor(cursor.parentNode, cursor);
+                }
+
+                undo_helper.append_throttled();
             }
         );
 

@@ -19,6 +19,8 @@ import javafx.concurrent.Worker;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.web.WebEngine;
 
 import org.antlr.v4.runtime.CharStream;
@@ -58,6 +60,8 @@ public class EditorDocumentModel
     private LinkedList<String> css;
     private Queue<Callable<Void>> delayedActions;
     private int parserNodeIdCur = 0;
+    private Set<TPTPDefinitions.TPTPSubDialect> subDialects;
+    private EditorController editorController;
 
     public Collection<Node> getIncludes() {
         return includes.values();
@@ -90,16 +94,30 @@ public class EditorDocumentModel
             try {Thread.sleep(ms.longValue()); }
             catch(InterruptedException e) {}
         }
+        public String get_clipboard_text()
+        {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            return clipboard.getString();
+        }
+        public void set_clipboard_text(String text)
+        {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(text);
+            clipboard.setContent(content); 
+        }
     }
 
     private JSCallbackListener jsCallbackListener;
 
-    public EditorDocumentModel(WebEngine engine, EditorDocumentViewController view)
+    public EditorDocumentModel(WebEngine engine, EditorDocumentViewController view, EditorController editorController)
     {
         provingHistory.addDocument(this);
+        this.editorController = editorController;
         this.engine = engine;
         this.view = view;
         this.style = new WebKitStyle();
+        this.subDialects = new HashSet<>();
 
         this.delayedActions = new LinkedList<>();
 
@@ -483,6 +501,12 @@ public class EditorDocumentModel
                 continue;
             }
 
+            if (!subDialects.containsAll(parseContext.getDialects())){
+                subDialects.addAll(parseContext.getDialects());
+                editorController.addAvailableProversToMenus(new ArrayList<>(subDialects));
+            }
+
+
             if(node.stopIndex < node.startIndex)
                 node.stopIndex = node.startIndex = 0;
 
@@ -652,6 +676,7 @@ public class EditorDocumentModel
 
                     reparse();
                     engine.executeScript("update_line_numbers()");
+                    engine.executeScript("undo_helper.append()");
 
                     if(this.path == null)
                         view.setText("unnamed");
@@ -735,7 +760,8 @@ public class EditorDocumentModel
      * @return
      */
     public List<TPTPDefinitions.TPTPSubDialect> getCompatibleTPTPSubDialects(){
-        return TPTPDefinitions.getCompatibleSubDialects(this.classifyByTPTPSubDialect());
+        return new ArrayList<>(subDialects);
+        //return TPTPDefinitions.getCompatibleSubDialects(this.classifyByTPTPSubDialect());
     }
 
     /**

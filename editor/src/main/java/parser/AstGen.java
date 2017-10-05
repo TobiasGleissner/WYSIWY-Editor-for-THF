@@ -64,6 +64,9 @@ public class AstGen {
         // set hidden tokens (comments, etc.)
         parseContext.setHiddenTokens(treeListener.getHiddenTokens());
 
+        // set found dialects
+        parseContext.setDialects(treeListener.dialects);
+
         // create and return ParseContext
         parseContext.setParserRuleContext(parserRuleContext);
         parseContext.setRoot(treeListener.getRootNode());

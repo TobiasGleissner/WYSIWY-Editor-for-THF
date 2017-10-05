@@ -1,32 +1,46 @@
 /* general */
-html, body
-{
+
+html {
+    overflow: auto;
     font-style: normal;
     font-family: monospace;
 }
 
+body {
+    position: absolute;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 #editor {
     white-space: pre-wrap;
-
     counter-reset: line;
-
-    padding-left: 3.5em;
+    margin-left: 3.5em;
 }
 
 #cursor {
-    width: 2px;
+    width: 0;
     height: 1em;
-
+    overflow: visible;
     display: inline-block;
+}
 
-    background-color: black;
+#cursor::before {
+    width: 1px;
+    height: 1em;
+    content: "";
+    display: inline-block;
+    -webkit-animation: blink 1s linear infinite;
+}
+
+@-webkit-keyframes blink {
+    from { background-color: black; }
+    to   { background-color: none; }
 }
 
 #numbers {
     float: left;
-
     width: 3em;
-
     border-right: 1px solid #ddd;
     position: relative;
 }
@@ -41,4 +55,27 @@ html, body
     outline: none;
 }
 
-/* line numbering */
+/* scrollbar */
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-track  {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+::-webkit-scrollbar-thumb {
+    border: 1px solid rgba(236,236,236,1);
+    border-radius: 6px;
+    background: rgba(236,236,236,1);
+}
+
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active {
+    border: 1px solid rgba(190,190,190,1);
+    border-radius: 6px;
+    background: rgba(190,190,190,1);
+}

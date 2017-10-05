@@ -176,7 +176,11 @@
                         <!-- menuitem help -->
                         <Menu text="Help">
                             <items>
-                                <MenuItem text="About" onAction="#onHelpAbout" />
+                                <MenuItem text="About" onAction="#onHelpAbout">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                    </accelerator>
+                                </MenuItem>
                             </items>
                         </Menu>
 

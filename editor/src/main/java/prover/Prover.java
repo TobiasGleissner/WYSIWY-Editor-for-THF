@@ -14,20 +14,20 @@ public abstract class Prover {
                 return LocalProver.getInstance().getAvailableProvers(subdialects);
             }
         },
-        SYSTEMONTPTP_DEFAULT_PROVER {
-            public String getString() {
-                return "Remote";
-            }
-            public List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subdialects) throws IOException {
-                return SystemOnTPTPProver.getInstance().getAvailableDefaultProvers(subdialects);
-            }
-        },
         SYSTEMONTPTP_CUSTOM_PROVER {
             public String getString() {
-                return "Custom";
+                return "Custom Remote";
             }
             public List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subdialects) throws IOException {
                 return SystemOnTPTPProver.getInstance().getAvailableCustomProvers(subdialects);
+            }
+        },
+        SYSTEMONTPTP_DEFAULT_PROVER {
+            public String getString() {
+                return "Default Remote";
+            }
+            public List<String> getAvailableProvers(List<TPTPDefinitions.TPTPSubDialect> subdialects) throws IOException {
+                return SystemOnTPTPProver.getInstance().getAvailableDefaultProvers(subdialects);
             }
         };
 

@@ -35,7 +35,6 @@ import javafx.fxml.Initializable;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.web.WebView;
@@ -135,6 +134,7 @@ public class EditorController implements Initializable {
     public EditorController(EditorModel model, Stage mainStage) {
         this.mainStage = mainStage;
         this.model = model;
+        model.editorController = this;
     }
 
     @Override
@@ -195,14 +195,14 @@ public class EditorController implements Initializable {
         initializeListOfRecentlyOpenedFiles();
 
         // Initialize prover menu lists
-        addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
+        addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>());
         toolbarSelectProver.setText(defaultProver);
 
         // Add listener for refresh of prover menu lists when changing tabs
         thfArea.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
             // Refresh lists of available provers in menubar and toolbar
             if (model.getSelectedTab() == null)
-                addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>(){{add(TPTPDefinitions.TPTPSubDialect.TH1);}});
+                addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>());
             else
                 addAvailableProversToMenus(model.getSelectedTab().model.getCompatibleTPTPSubDialects());
             log.debug("Updated prover lists in menu");
@@ -279,6 +279,7 @@ public class EditorController implements Initializable {
                 }
                 for (String fileToAdd : c.getAddedSubList()) {
                     MenuItem item = new MenuItem(fileToAdd);
+                    item.setStyle("-fx-padding: 0;");
                     item.setOnAction(e->model.openFile(new File(fileToAdd)));
                     menubarFileReopenFile.getItems().add(2,item);
                 }
@@ -1103,7 +1104,7 @@ public class EditorController implements Initializable {
     }
 
     public void addAvailableProversToMenus(List<TPTPDefinitions.TPTPSubDialect> subdialects) {
-
+        if (subdialects.size() == 0) subdialects.add(TPTPDefinitions.TPTPSubDialect.TH1); // default value for any document
         try {
 
             menubarProverSelectProver.getItems().clear();
@@ -1125,9 +1126,11 @@ public class EditorController implements Initializable {
 
         List<MenuItem> items = new ArrayList<MenuItem>();
 
-        MenuItem label = new MenuItem(proverType.getString() + " Provers");
-        label.setDisable(true);
-        items.add(label);
+        MenuItem labelItem = new MenuItem(proverType.getString() + " Provers");
+        String style = proverType.equals(Prover.ProverType.LOCAL_PROVER) ? "-fx-opacity: 2;" : "-fx-opacity: 2; -fx-padding: 5 0 0 0;";
+        labelItem.setStyle(style);
+        labelItem.setDisable(true);
+        items.add(labelItem);
 
         if (provers.isEmpty()) {
             MenuItem noProvers = new MenuItem("No provers available");

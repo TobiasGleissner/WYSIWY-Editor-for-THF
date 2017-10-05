@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
+import prover.TPTPDefinitions;
 import util.tree.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -24,11 +25,21 @@ public class DefaultTreeListener implements ParseTreeListener {
     private Node nodeptr = null;
     private Node root = null;
     private Predicate<String> filter = null;
-
+    public Set<TPTPDefinitions.TPTPSubDialect> dialects;
     private CommonTokenStream tokens;
 
     public List<Token> getHiddenTokens() {
         return hiddenTokens;
+    }
+
+    private static HashMap<String, TPTPDefinitions.TPTPSubDialect> ruleToDialect;
+    static{
+        ruleToDialect = new HashMap<>();
+        ruleToDialect.put("thf_annotated", TPTPDefinitions.TPTPSubDialect.TH0);
+        ruleToDialect.put("tff_annotated", TPTPDefinitions.TPTPSubDialect.TF0);
+        ruleToDialect.put("fof_annotated", TPTPDefinitions.TPTPSubDialect.FOF);
+        ruleToDialect.put("cnf_annotated", TPTPDefinitions.TPTPSubDialect.CNF);
+
     }
 
     private List<Token> hiddenTokens;
@@ -55,6 +66,7 @@ public class DefaultTreeListener implements ParseTreeListener {
         this.rmap = null;
         this.tokens = tokens;
         this.hiddenTokens = new ArrayList<>();
+        this.dialects = new HashSet();
     }
 
     public String getRuleByKey(int key) {
@@ -99,6 +111,7 @@ public class DefaultTreeListener implements ParseTreeListener {
             n.stopIndex = ctx.getStop() == null ? 0 : ctx.getStop().getStopIndex();
             nodeptr.addChild(n);
             nodeptr = n;
+            if (ruleToDialect.containsKey(rule)) dialects.add(ruleToDialect.get(rule));
         }
     }
 
