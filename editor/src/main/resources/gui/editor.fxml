@@ -164,6 +164,8 @@
                         <!-- menuitem prover -->
                         <Menu text="Prover">
                             <items>
+                                <MenuItem fx:id="menubarProverConfiguration" text="Configure Provers" onAction="#onProverConfiguration"/>
+                                <CheckMenuItem fx:id="menubarProverEnableSmartFilter" text="Filter Provers" onAction="#onProverSmartFilter"/>
                                 <Menu fx:id="menubarProverSelectProver" text="Select Prover" />
                                 <SeparatorMenuItem mnemonicParsing="false" />
                                 <MenuItem onAction="#onRunSelectedProver" text="Run selected Prover">

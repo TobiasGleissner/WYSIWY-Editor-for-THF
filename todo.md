@@ -5,6 +5,9 @@
 * presentation mode: hide menu, hide left pane, adjust output height
 * star for unsaved content in tab
 * checkbox for show all provers
+* run prover from file browser
+* save directory on file open
+* proving history
 
 # output
 * sentence for prover output
@@ -13,3 +16,6 @@
 
 # parser
 * on reparse after an edit a dialect may be gone which is not reflected in the documents dialectset
+
+# misc
+* put Config somewhere else
