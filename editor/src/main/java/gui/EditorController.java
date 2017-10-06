@@ -257,9 +257,18 @@ public class EditorController implements Initializable {
     }
 
     @FXML private void onFileOpenFile(ActionEvent e) {
-
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open thf file");
+
+        if(!model.recentlyOpenedFiles.isEmpty())
+        {
+            String topFileStr = model.recentlyOpenedFiles.get(model.recentlyOpenedFiles.size()-1);
+            File topFile = new File(topFileStr);
+            File dir = topFile.getParentFile();
+            if(dir.isDirectory())
+                fileChooser.setInitialDirectory(dir);
+        }
+
         File selectedFile = fileChooser.showOpenDialog(mainStage);
         if(selectedFile == null)
             return;
