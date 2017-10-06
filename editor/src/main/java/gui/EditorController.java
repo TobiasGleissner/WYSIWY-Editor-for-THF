@@ -1234,7 +1234,7 @@ public class EditorController implements Initializable {
                 try {
                     currentlySetTimeout = Integer.parseInt(proverTimeout.getText());
                 } catch (NumberFormatException e) {
-                    log.error("Not a valid number for timeout");
+                    log.error("Not an integer. Please enter a valid number for timeout!");
                     proverTimeout.setText("200");
                     currentlySetTimeout = 200;
                 }
