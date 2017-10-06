@@ -23,6 +23,7 @@ public class Logging {
     public enum LogLevel{DEBUG,PROVER,FINE,INFO,WARNING,ERROR}
     private static Logging instance;
     private Node tableNode;
+    private Node proverTableNode;
     private Document doc;
     private double fontSizeOutput;
     public WebEngine outputEngine;
@@ -44,12 +45,19 @@ public class Logging {
     public void init(){
         this.doc = outputEngine.getDocument();
         this.tableNode = doc.getElementById("table");
+        this.proverTableNode = doc.getElementById("prover_table");
         this.fontSizeOutput = Config.fontSizeOutputDefault;
         updateCssOutputDoc();
     }
 
     public void log(String msg,LogLevel logLevel){
-        tableNode.appendChild(createRecord(msg,logLevel));
+        Node record = createRecord(msg, logLevel);
+
+        if(logLevel.equals(LogLevel.PROVER))
+            proverTableNode.appendChild(record);
+        else
+            tableNode.appendChild(record);
+
         scroll();
     }
 
@@ -75,6 +83,7 @@ public class Logging {
         sb.append(p.proveResult.prover);
         message.setTextContent(sb.toString());
         messageContainer.appendChild(message);
+
         scroll();
     }
 
@@ -112,7 +121,10 @@ public class Logging {
 
     private Element createRecordSkeleton(LogLevel logLevel){
         Element tr = doc.createElement("tr");
-        tableNode.appendChild(tr);
+        if(logLevel.equals(LogLevel.PROVER))
+            proverTableNode.appendChild(tr);
+        else
+            tableNode.appendChild(tr);
         Element loglvl = doc.createElement("td");
         loglvl.setAttribute("class",logLevel.name().toLowerCase());
         loglvl.setTextContent(logLevel.name());

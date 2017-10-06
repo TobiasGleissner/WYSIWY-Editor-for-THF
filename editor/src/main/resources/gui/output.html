@@ -8,9 +8,77 @@
     .error {color:red;}
 
     .szsstatus {color:blue;}
+
+    body, html {
+        margin: 0;
+        padding: 0;
+
+        font-style: normal;
+        font-family: monospace;
+    }
+
+    .tabcontent {
+        display: none;
+    }
+
+    div.tab {
+        background-color: #e0e0e0;
+
+        margin: 0;
+        padding: 0 0.5em 0 0.5em;
+    }
+
+    div.tab button {
+        background-color: inherit;
+        border: none;
+        outline: none;
+        cursor: pointer;
+
+        margin: 0;
+        padding: 0.5em;
+    }
+
+    div.tab button.active {
+        background-color: #ffffff;
+    }
 </style>
+<script>
+    function open_table(event, name)
+    {
+        var tabs = document.getElementsByClassName("tabcontent");
+        for(var i = 0; i < tabs.length; i++)
+        {
+            if(tabs[i].getAttribute('id').toLowerCase() == name)
+                tabs[i].style.display = "initial";
+            else
+                tabs[i].style.display = "none";
+        }
+
+        var tab_buttons = document.getElementsByClassName("tablink");
+        for(var i = 0; i < tab_buttons.length; i++)
+            tab_buttons[i].className = "tablink";
+
+        event.currentTarget.className += " active";
+    }
+
+    window.addEventListener("load",
+        function(e)
+        {
+            /* activate the first tab */
+            document.getElementsByClassName("tablink")[0].click();
+        }
+    );
+</script>
 </html>
 <body>
-<table id="table">
+<div class="tab">
+    <button class="tablink" onclick="open_table(event, 'table');">General Log</button>
+    <button class="tablink" onclick="open_table(event, 'prover_table');">Prover Log</button>
+</div>
+
+<table id="table" class="tabcontent">
+</table>
+
+<table id="prover_table" class="tabcontent">
 </table>
 </body>
