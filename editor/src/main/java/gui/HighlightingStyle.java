@@ -1,7 +1,7 @@
 package gui;
 
 public enum HighlightingStyle {
-    NORMAL              ("Normal Text",         "body",             null,      null),
+    NORMAL              ("Normal Text",         "normal",           null,      null),
     FORMULA_ROLE        ("Formula Role",        "formula_role",     "#CA6000", null),
     VARIABLE            ("Variable",            "variable",         "#04859D", null),
     CONSTANT            ("Constant",            "constant",         "#008500", null),
