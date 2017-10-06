@@ -9,6 +9,7 @@
 * run prover from file browser
 * save directory on file open
 * proving history
+* show proving output window on proving
 
 # output
 * sentence for prover output
@@ -21,3 +22,9 @@
 # misc
 * put Config somewhere else
 * better logging, exchange logging which just prints exceptions for user readable output
+
+# editor
+* limit file size
+* watch external file change on disk of opened files
+
+# project name

@@ -197,25 +197,28 @@
                 <!-- toolbar -->
                 <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
+                        <!--
                         <Button onAction="#onTestPref">
-                            &#xf0fc; <!-- BEER -->
+                            &#xf0fc;
                             <tooltip>
                                 <Tooltip text="Button Testing Preferences" />
                             </tooltip>
                         </Button>
                         <Button onAction="#onReparse">
-                            &#xf236; <!-- BED -->
+                            &#xf236;
                            <tooltip>
                                <Tooltip text="Parse again" />
                            </tooltip>
                         </Button>
                         <Button onAction="#onPrintTree">
-                            &#xf004; <!-- HEART -->
+                            &#xf004;
                             <tooltip>
                                 <Tooltip text="Print the THF tree" />
                             </tooltip>
                          </Button>
+                    -->
                     <!-- start debug buttons -->
+                        <!--
                         <HBox prefWidth="20" />
                         <Button onAction="#debugALG0157" text="ALG0157" />
                         <Button onAction="#debugCOM1601" text="COM1601" />
@@ -224,6 +227,7 @@
                         <Button onAction="#debugSYN0001" text="SYN0001" />
                         <Button onAction="#debugSYN0002" text="SYN0002" />
                         <Button onAction="#debugTrue" text="So True" />
+                        -->
                     <!-- end debug buttons -->
                         <Pane HBox.hgrow="ALWAYS" />
                         <MenuButton fx:id="toolbarSelectProver" mnemonicParsing="false">
@@ -291,11 +295,13 @@
                                         <FileTreeView fx:id="fileBrowser"/>
                                     </content>
                                 </Tab>
+                                <!--
                                 <Tab fx:id="tabPaneLeftStructure" text="Structure">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                     </content>
                                 </Tab>
+                                -->
                             </tabs>
                         </TabPane>
 
