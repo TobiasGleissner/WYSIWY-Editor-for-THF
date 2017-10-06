@@ -63,6 +63,14 @@ public class Config {
         flush();
     }
 
+    public static String getLastOpenedDirectory() {
+        return prefs.get("lastOpenedDirectory", null);
+    }
+    public static void setLastOpenedDirectory(String path) {
+        prefs.put("lastOpenedDirectory", path);
+        flush();
+    }
+
     // editor
     public static double getFontSize() {
         return prefs.getDouble("fontSize", fontSizeEditorDefault);
