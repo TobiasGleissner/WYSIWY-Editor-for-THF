@@ -2,14 +2,14 @@ package gui;
 
 public enum HighlightingStyle {
     NORMAL              ("Normal Text",         "body",             null,      null),
-    FORMULA_ROLE        ("Formula Role",        "formula_role",     "#FF7C00", null),
+    FORMULA_ROLE        ("Formula Role",        "formula_role",     "#CA6000", null),
     VARIABLE            ("Variable",            "variable",         "#04859D", null),
-    CONSTANT            ("Constant",            "constant",         "#00CC00", null),
-    DEFINED_CONSTANT    ("Defined Constant",    "defined_constant", "#269926", null),
+    CONSTANT            ("Constant",            "constant",         "#008500", null),
+    DEFINED_CONSTANT    ("Defined Constant",    "defined_constant", "#008500", null),
     SYSTEM_CONSTANT     ("System Constant",     "system_constant",  "#008500", null),
-    TYPE                ("Type",                "type",             "#EE0000", null),
-    DEFINED_TYPE        ("Defined Type",        "defined_type",     "#AA0000", null),
-    SYSTEM_TYPE         ("System Type",         "system_constant",  "#680000", null),
+    TYPE                ("Type",                "type",             "#DD0000", null),
+    DEFINED_TYPE        ("Defined Type",        "defined_type",     "#DD0000", null),
+    SYSTEM_TYPE         ("System Type",         "system_constant",  "#DD0000", null),
     COMMENT             ("Comment",             "comment",          "#777777", null);
 
     private String desc;
