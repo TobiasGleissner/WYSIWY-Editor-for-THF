@@ -1,0 +1,9 @@
+#labelStack {
+    -fx-padding: 10;
+}
+#devLabel {
+    -fx-font: 12px "Serif";
+}
+.developer {
+    -fx-font: 16px "Serif";
+}

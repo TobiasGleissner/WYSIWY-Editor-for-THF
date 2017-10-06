@@ -1140,18 +1140,16 @@ public class EditorController implements Initializable {
     // ==========================================================================
 
     @FXML private void onHelpAbout(ActionEvent e){
-        /*
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/about.fxml"));
-        loader.setControllerFactory(t->new PreferencesController(new PreferencesModel(), this, stage));
         Scene scene = null;
         try {
             scene = new Scene(loader.load());
             stage.setScene(scene);
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
     }
 
     // ==========================================================================
