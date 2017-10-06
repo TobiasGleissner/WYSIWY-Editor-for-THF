@@ -24,10 +24,6 @@ public class AstGen {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         tokens.fill();
 
-        // get all non-default channel tokens as list
-        //List<Token> hiddenTokens = tokens.getHiddenTokensToRight(0);
-        //if (hiddenTokens != null) hiddenTokens.forEach(System.out::println);
-
         parser.TptpParser parser = new parser.TptpParser(tokens);
         parser.removeErrorListeners(); // only for production
         ParseContext parseContext = new ParseContext();

@@ -134,12 +134,14 @@ public class EditorController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // DEBUG
+        /*
         WebConsoleListener.setDefaultListener(new WebConsoleListener(){
             @Override
             public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
                 System.out.println("Console: [" + sourceId + ":" + lineNumber + "] " + message);
             }
         });
+        */
         // END DEBUG
 
         // Pass some members on to the model
@@ -474,13 +476,6 @@ public class EditorController implements Initializable {
         MenuItem runProver = new MenuItem("Run prover");
         contextMenuFile.getItems().addAll(copyFile, copyFileName, copyPathFile, copyRelPathFile, copyContent, renameFile, pasteFile, deleteFile, runProver);
 
-        runProver.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Run prover ...");
-            }
-        });
-
         newFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -521,6 +516,7 @@ public class EditorController implements Initializable {
                         continue;
                     }
                 }
+                log.error(error);
             }
         });
         newDirectory.setOnAction(new EventHandler<ActionEvent>() {
@@ -906,7 +902,7 @@ public class EditorController implements Initializable {
                 alert.setTitle("ERROR");
                 alert.setHeaderText("Error");
                 alert.setContentText("There was an error pasting the file "+file.getName()+" (destination: "+destination.toPath().toString()+")!");
-                System.out.println("There was an error pasting the file "+file.getName()+" (destination: "+destination.toPath().toString()+")!");
+                log.error("There was an error pasting the file "+file.getName()+" (destination: "+destination.toPath().toString()+")!");
                 alert.showAndWait();
             }
         }
