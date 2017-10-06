@@ -450,7 +450,7 @@ public class EditorDocumentModel
             }
             catch(IOException e)
             {
-                log.error(e.getMessage());
+                log.debug(e.getMessage());
                 hasError = true;
             }
 
@@ -462,13 +462,13 @@ public class EditorDocumentModel
             }
             catch(ParseException e)
             {
-                log.error(e.getMessage());
+                log.debug(e.getMessage());
                 hasError = true;
             }
 
             if(!hasError && parseContext.hasParseError())
             {
-                log.error("unable to parse: " + parseContext.getParseError());
+                log.debug("unable to parse: " + parseContext.getParseError());
                 hasError = true;
             }
 

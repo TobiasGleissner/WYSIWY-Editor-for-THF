@@ -19,3 +19,4 @@
 
 # misc
 * put Config somewhere else
+* better logging, exchange logging which just prints exceptions for user readable output
