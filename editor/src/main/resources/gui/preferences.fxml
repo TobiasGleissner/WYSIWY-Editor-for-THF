@@ -12,49 +12,49 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ComboBox?>
 <AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.preferences.PreferencesController">
-   <children>
-      <TabPane prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE">
-         <tabs>
-            <Tab text="General">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-               </content>
-            </Tab>
-            <Tab text="Provers">
-               <content>
-                   <VBox>
-                       <children>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                             <children>
-                                 <Label layoutX="363.0" layoutY="21.0" text="Name:" />
-                                 <TextField fx:id="proverNameTextField" layoutX="484.0" layoutY="14.0" prefHeight="30.0" prefWidth="303.0" />
-                                 <Label fx:id="nameTakenWarning" layoutX="484.0" layoutY="48.0" text="Name already taken" />
+    <children>
+        <TabPane prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="General">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                    </content>
+                </Tab>
+                <Tab text="Provers">
+                    <content>
+                        <VBox>
+                            <children>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children>
+                                        <Label layoutX="363.0" layoutY="21.0" text="Name:" />
+                                        <TextField fx:id="proverNameTextField" layoutX="484.0" layoutY="14.0" prefHeight="30.0" prefWidth="303.0" />
+                                        <Label fx:id="nameTakenWarning" layoutX="484.0" layoutY="48.0" text="Name already taken" />
 
-                                 <Label layoutX="363.0" layoutY="75.0" text="Prover command" />
-                                 <TextField fx:id="proverCommandTextField" layoutX="484.0" layoutY="71.0" prefHeight="40.0" prefWidth="303.0" />
-                                 <Label layoutX="484.0" layoutY="123.0" text="Indicate filename with %s and timeout with %d" />
+                                        <Label layoutX="363.0" layoutY="75.0" text="Prover command" />
+                                        <TextField fx:id="proverCommandTextField" layoutX="484.0" layoutY="71.0" prefHeight="40.0" prefWidth="303.0" />
+                                        <Label layoutX="484.0" layoutY="123.0" text="Indicate filename with %s and timeout with %d" />
 
-                                 <Label fx:id="proverSystemOnTPTPNameLabel" layoutX="363.0" layoutY="170.0" text="SystemOnTPTP Name:" />
-                                 <ComboBox fx:id="proverSystemOnTPTPNameComboBox" layoutX="484.0" layoutY="170.0" prefHeight="30.0" prefWidth="303.0" />
+                                        <Label fx:id="proverSystemOnTPTPNameLabel" layoutX="363.0" layoutY="170.0" text="SystemOnTPTP Name:" />
+                                        <ComboBox fx:id="proverSystemOnTPTPNameComboBox" layoutX="484.0" layoutY="170.0" prefHeight="30.0" prefWidth="303.0" />
 
-                                 <Button fx:id="newLocalProverButton" layoutX="10.0" layoutY="20.0" mnemonicParsing="false" onAction="#onNewLocalProver" text="New local prover" />
-                                 <Button fx:id="newRemoteProverButton" layoutX="10.0" layoutY="60.0" mnemonicParsing="false" onAction="#onNewRemoteProver" text="New remote prover" />
-                                 <Button fx:id="deleteProverButton" layoutX="10.0" layoutY="100.0" mnemonicParsing="false" onAction="#onDeleteProver" text="Delete" />
-                                 <TreeView fx:id="proverTree" layoutX="10.0" layoutY="140.0" />
+                                        <Button fx:id="newLocalProverButton" layoutX="10.0" layoutY="20.0" mnemonicParsing="false" onAction="#onNewLocalProver" text="New local prover" />
+                                        <Button fx:id="newRemoteProverButton" layoutX="10.0" layoutY="60.0" mnemonicParsing="false" onAction="#onNewRemoteProver" text="New remote prover" />
+                                        <Button fx:id="deleteProverButton" layoutX="10.0" layoutY="100.0" mnemonicParsing="false" onAction="#onDeleteProver" text="Delete" />
+                                        <TreeView fx:id="proverTree" layoutX="10.0" layoutY="140.0" />
 
-                                 <Button fx:id="testProverCommandButton" layoutX="617.0" layoutY="220.0" mnemonicParsing="false" onAction="#onTestProver" text="Test Prover Command" />
-                                 <Button fx:id="applyButton" layoutX="491.0" layoutY="220.0" mnemonicParsing="false" onAction="#onApplyProvers" text="Apply" />
+                                        <Button fx:id="testProverCommandButton" layoutX="617.0" layoutY="220.0" mnemonicParsing="false" onAction="#onTestProver" text="Test Prover Command" />
+                                        <Button fx:id="applyButton" layoutX="491.0" layoutY="220.0" mnemonicParsing="false" onAction="#onApplyProvers" text="Apply" />
 
-                                 <Label layoutX="363.0" layoutY="484.0" text="Supported dialects" />
-                                 <ListView fx:id="subDialectListView" layoutX="484.0" layoutY="270.0" />
-                             </children>
-                          </AnchorPane>
-                           <AnchorPane />
-                       </children>
-                   </VBox>
-               </content>
-            </Tab>
-         </tabs>
-      </TabPane>
-   </children>
+                                        <Label layoutX="363.0" layoutY="484.0" text="Supported dialects" />
+                                        <ListView fx:id="subDialectListView" layoutX="484.0" layoutY="270.0" />
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane />
+                            </children>
+                        </VBox>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
 </AnchorPane>
