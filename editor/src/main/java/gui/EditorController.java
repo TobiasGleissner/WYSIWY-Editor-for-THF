@@ -315,9 +315,22 @@ public class EditorController implements Initializable {
     @FXML private void onDirectoryOpen(ActionEvent e) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Open directory");
+
+        String lastOpenedDirectory = Config.getLastOpenedDirectory();
+        if(lastOpenedDirectory != null)
+        {
+            File dir = new File(lastOpenedDirectory);
+            if(dir.isDirectory())
+                directoryChooser.setInitialDirectory(dir);
+        }
+
         dir = directoryChooser.showDialog(mainStage);
         if(dir == null)
             return;
+
+        lastOpenedDirectory = dir.toString();
+        Config.setLastOpenedDirectory(lastOpenedDirectory);
+
         //RootDirItem rootDirItem = ResourceItem.createObservedPath(dir.toPath());
         //fileBrowser.setRootDirectories(FXCollections.observableArrayList(rootDirItem));
         fileBrowser.openDirectory(dir);
