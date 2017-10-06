@@ -22,8 +22,9 @@ import java.util.stream.Collectors;
 public class Logging {
     public enum LogLevel{DEBUG,PROVER,FINE,INFO,WARNING,ERROR}
     private static Logging instance;
-    private Node tableNode;
+    private Node defaultTableNode;
     private Node proverTableNode;
+    private Node debugTableNode;
     private Document doc;
     private double fontSizeOutput;
     public WebEngine outputEngine;
@@ -44,20 +45,24 @@ public class Logging {
 
     public void init(){
         this.doc = outputEngine.getDocument();
-        this.tableNode = doc.getElementById("table");
+        this.defaultTableNode = doc.getElementById("default_table");
         this.proverTableNode = doc.getElementById("prover_table");
+        this.debugTableNode = doc.getElementById("debug_table");
         this.fontSizeOutput = Config.fontSizeOutputDefault;
         updateCssOutputDoc();
     }
 
+    private Node getLevelNode(LogLevel logLevel) {
+        switch(logLevel)
+        {
+            case PROVER: return this.proverTableNode;
+            case DEBUG:  return this.debugTableNode;
+            default:     return this.defaultTableNode;
+        }
+    }
+
     public void log(String msg,LogLevel logLevel){
-        Node record = createRecord(msg, logLevel);
-
-        if(logLevel.equals(LogLevel.PROVER))
-            proverTableNode.appendChild(record);
-        else
-            tableNode.appendChild(record);
-
+        getLevelNode(logLevel).appendChild(createRecord(msg, logLevel));
         scroll();
     }
 
@@ -121,10 +126,7 @@ public class Logging {
 
     private Element createRecordSkeleton(LogLevel logLevel){
         Element tr = doc.createElement("tr");
-        if(logLevel.equals(LogLevel.PROVER))
-            proverTableNode.appendChild(tr);
-        else
-            tableNode.appendChild(tr);
+        getLevelNode(logLevel).appendChild(tr);
         Element loglvl = doc.createElement("td");
         loglvl.setAttribute("class",logLevel.name().toLowerCase());
         loglvl.setTextContent(logLevel.name());

@@ -107,13 +107,17 @@
 </html>
 <body>
 <div class="tab">
-    <button class="tablink" onclick="open_table(event, 'table');">General Log</button>
+    <button class="tablink" onclick="open_table(event, 'default_table');">General Log</button>
     <button class="tablink" onclick="open_table(event, 'prover_table');">Prover Log</button>
+    <button class="tablink" onclick="open_table(event, 'debug_table');">Debug Log</button>
 </div>
 
-<table id="table" class="tabcontent">
+<table id="default_table" class="tabcontent">
 </table>
 
 <table id="prover_table" class="tabcontent">
+</table>
+
+<table id="debug_table" class="tabcontent">
 </table>
 </body>
