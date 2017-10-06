@@ -746,6 +746,7 @@ public class EditorController implements Initializable {
     @FXML private void onFileClose(ActionEvent e) {
         TabPaneBehavior behavior = ((TabPaneSkin) model.getSelectedTab().tab.getTabPane().getSkin()).getBehavior();
         if (behavior.canCloseTab(model.getSelectedTab().tab)) {
+            ((EditorDocumentViewController) model.getSelectedTab().tab.getUserData()).model.close();
             behavior.closeTab(model.getSelectedTab().tab);
         }
     }
@@ -1134,7 +1135,18 @@ public class EditorController implements Initializable {
     // ==========================================================================
 
     @FXML private void onHelpAbout(ActionEvent e){
-
+        /*
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/about.fxml"));
+        loader.setControllerFactory(t->new PreferencesController(new PreferencesModel(), this, stage));
+        Scene scene = null;
+        try {
+            scene = new Scene(loader.load());
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
     }
 
     // ==========================================================================
