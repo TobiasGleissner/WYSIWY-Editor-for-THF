@@ -155,13 +155,19 @@
     -fx-background-color: -fx-body-color, -fx-medium-base;
 }
 
-.tool-bar-text-field {
-    -font-size: 70%;
+.text-field {
+    -fx-font-size: 85%;
+    -fx-background-color: -fx-dark-base , -fx-lighter-base , -fx-lighter-base;
+    -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 3 -1;
+    -fx-padding: 1 3 1 3;
 }
 
-.tool-bar:horizontal .label {
-    -font-size: 50%;
+.text-field:focused {
+    -fx-background-color: -fx-medium-base, -fx-lighter-base , -fx-lighter-base;
+    -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -2 3 -2;
+    -fx-padding: 1 3 1 3;
 }
+
 
 /* === scrollbar === */
 
