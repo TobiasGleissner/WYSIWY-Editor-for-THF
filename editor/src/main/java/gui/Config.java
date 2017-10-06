@@ -172,5 +172,21 @@ public class Config {
         flush();
     }
 
+    // Colors
+    public static void setColor(String cssName, boolean bg, String cssColor) {
+        if(cssColor == null)
+            cssColor = "null";
 
+        prefs.put(cssName + (bg ? "_bg" : "_fg"), cssColor);
+        flush();
+    }
+
+    public static String getColorInternal(String cssName, boolean bg, String def) {
+        String ret = prefs.get(cssName + (bg ? "_bg" : "_fg"), def);
+
+        if(ret == "null")
+            return null;
+        else
+            return ret;
+    }
 }

@@ -19,8 +19,6 @@ public class WebKitStyle {
     static{
         InputStream cssInputStream = WebKitStyle.class.getResourceAsStream("/gui/editorField.css");
         defaultCss = new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
-        cssInputStream = WebKitStyle.class.getResourceAsStream("/gui/editorHighlighting.css");
-        defaultCss += new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
     }
 
     public WebKitStyle(){
@@ -32,7 +30,7 @@ public class WebKitStyle {
         updateCss();
     }
 
-    private void updateCss(){
+    public void updateCss(){
         Element style = doc.getElementById("style");
         StringBuilder sb = new StringBuilder();
 
@@ -41,6 +39,19 @@ public class WebKitStyle {
         sb.append(fontSizeEditor);
         sb.append("cm;\n");
         sb.append("}\n");
+
+        for(HighlightingStyle t : HighlightingStyle.values())
+        {
+            sb.append("." + t.getCssName() + " {\n");
+
+            if(t.getColor(false) != null)
+                sb.append("    color: " + t.getColor(false) + ";\n");
+            if(t.getColor(true) != null)
+                sb.append("    background-color: " + t.getColor(true) + ";\n");
+
+            sb.append("}\n");
+        }
+
         sb.append(defaultCss);
 
         String st = sb.toString();

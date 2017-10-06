@@ -15,6 +15,9 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.paint.Color;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.layout.GridPane;
 import util.RandomString;
 
 import java.io.IOException;
@@ -26,8 +29,10 @@ import prover.ProveResult;
 import prover.SystemOnTPTPProver;
 import prover.TPTPDefinitions;
 import prover.LocalProver;
+
 import gui.EditorController;
 import gui.EditorDocumentModel;
+import gui.HighlightingStyle;
 
 public class PreferencesController implements Initializable {
     private PreferencesModel model;
@@ -60,6 +65,9 @@ public class PreferencesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Color choosers
+        initColorPane();
+
         // Provers
         this.lp = LocalProver.getInstance();
         try {
@@ -403,5 +411,70 @@ public class PreferencesController implements Initializable {
         subDialectListView.getSelectionModel().clearSelection();
         log.info("Removed prover with name='" + oldName + "' and command='" + oldCommand
                 + "' and TPTP dialects='" + oldDialectString + "'.");
+    }
+
+    @FXML public GridPane colorPane;
+
+    private void initColorPane()
+    {
+        int rowIndex = 1;
+
+        for(HighlightingStyle t : HighlightingStyle.values())
+        {
+            Label name = new Label(t.toString());
+            colorPane.setRowIndex(name, rowIndex);
+            colorPane.setColumnIndex(name, 0);
+            colorPane.getChildren().add(name);
+
+            String fgColor = t.getColor(false);
+            String bgColor = t.getColor(true);
+
+            ColorPicker pickerFG = null;
+            if(fgColor != null)
+                pickerFG = new ColorPicker(Color.web(fgColor));
+            else
+                pickerFG = new ColorPicker();
+
+            colorPane.setRowIndex(pickerFG, rowIndex);
+            colorPane.setColumnIndex(pickerFG, 1);
+            colorPane.getChildren().add(pickerFG);
+
+            ColorPicker pickerBG = null;
+            if(bgColor != null)
+                pickerBG = new ColorPicker(Color.web(bgColor));
+            else
+                pickerBG = new ColorPicker();
+            colorPane.setRowIndex(pickerBG, rowIndex);
+            colorPane.setColumnIndex(pickerBG, 2);
+            colorPane.getChildren().add(pickerBG);
+
+            final ColorPicker pickerFG_ = pickerFG;
+            final ColorPicker pickerBG_ = pickerBG;
+
+            pickerFG.setOnAction(
+                e -> {
+                    t.setColor(false, colorToWeb(pickerFG_.getValue()));
+                    this.editor.updateCss();
+                }
+            );
+
+            pickerBG.setOnAction(
+                e -> {
+                    t.setColor(true,  colorToWeb(pickerBG_.getValue()));
+                    this.editor.updateCss();
+                }
+            );
+
+            rowIndex++;
+        }
+    }
+
+    private static String colorToWeb(Color color) {
+        return String.format("#%02X%02X%02X%02X",
+           (int)(color.getRed() * 255),
+           (int)(color.getGreen() * 255),
+           (int)(color.getBlue() * 255),
+           (int)(color.getOpacity() * 255)
+        );
     }
 }

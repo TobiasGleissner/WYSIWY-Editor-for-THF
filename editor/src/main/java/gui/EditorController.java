@@ -993,6 +993,12 @@ public class EditorController implements Initializable {
         }
     }
 
+    public void updateCss() {
+        for (Tab t : thfArea.getTabs()){
+            ((EditorDocumentViewController) t.getUserData()).model.style.updateCss();
+        }
+    }
+
     /*
     private double leftPaneMaxWidth;
     private double leftPanePrefWidth;

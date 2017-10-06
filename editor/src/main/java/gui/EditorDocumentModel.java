@@ -34,9 +34,12 @@ import org.w3c.dom.Text;
 
 import netscape.javascript.JSObject;
 
+import gui.HighlightingStyle;
+
 import prover.Prover;
 import prover.ProvingHistory;
 import prover.TPTPDefinitions;
+
 import util.tree.Node;
 import util.SpanElement;
 
@@ -154,21 +157,13 @@ public class EditorDocumentModel
             ex.printStackTrace();
         }
 
-        // Extract css classes for syntax highlighting from our css file.
+        // Find all css classes for syntax highlighting.
         this.css = new LinkedList<String>();
-        Scanner scanner;
-        scanner = new Scanner(getClass().getResourceAsStream("/gui/editorHighlighting.css"));
-        String match = null;
-        Pattern pattern = Pattern.compile("\\n\\s*(\\.[^\\. ]+)\\s*\\{");
-        while ((match = scanner.findWithinHorizon(pattern, 0)) != null) {
-            Matcher matcher = pattern.matcher(match);
-            matcher.find();
-            css.add(matcher.group(1).substring(1));
-            css.add("functor");
-            css.add("defined_functor");
-            css.add("system_functor");
-        }
-        scanner.close();
+        for(HighlightingStyle t : HighlightingStyle.values())
+            css.add(t.getCssName());
+        css.add("functor");
+        css.add("defined_functor");
+        css.add("system_functor");
 
         this.includes = new HashMap<>();
     }
