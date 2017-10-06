@@ -376,15 +376,14 @@ public class EditorController implements Initializable {
                         if (selectedItemIsDirectory) {
                             f = treeCell.getItem().getFile();
                         } else {
-                            treeCell.getItem().getFile().getParent();
+                            f = treeCell.getItem().getFile().getParentFile();
                         }
                         
                         if (db.hasFiles()) {
-                            copyFiles(db.getFiles(), selectedItemIsDirectory, f);
+                            success = copyFiles(db.getFiles(), selectedItemIsDirectory, f);
                         }
                         
-                        // TODO: get return value of copyFiles!
-                        event.setDropCompleted(true);
+                        event.setDropCompleted(success);
                         event.consume();
                     }
                 });
@@ -841,7 +840,7 @@ public class EditorController implements Initializable {
         copyFiles(files, selectedItemIsDirectory, f);
     }
 
-    private void copyFiles(List<File> files, boolean selectedItemIsDirectory, File f) {
+    private boolean copyFiles(List<File> files, boolean selectedItemIsDirectory, File f) {
         
         File destination = null;
         for (File file : files) {
@@ -859,7 +858,7 @@ public class EditorController implements Initializable {
 
                         Optional<String> result = dialog.showAndWait();
                         if (!result.isPresent())
-                            return;
+                            return false;
                         name = result.get();
                         if (name.equals("") || name == null) {
                             error = "\n\nERROR: Please enter a file name!";
@@ -900,7 +899,7 @@ public class EditorController implements Initializable {
                 }
             }
         }
-        
+        return true;
     }
     public void renameFileOrDir() {
         File source = new File(getPathToSelectedItem(fileBrowser.getSelectionModel().getSelectedItem(), false, false).toString());
