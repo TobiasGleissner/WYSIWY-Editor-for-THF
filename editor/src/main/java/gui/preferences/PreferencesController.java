@@ -35,6 +35,7 @@ import gui.EditorDocumentModel;
 import gui.HighlightingStyle;
 
 public class PreferencesController implements Initializable {
+
     private PreferencesModel model;
     private EditorController editor;
     private Stage stage;
@@ -49,22 +50,27 @@ public class PreferencesController implements Initializable {
     @FXML public Label proverSystemOnTPTPNameLabel;
     @FXML public TreeView<String> proverTree;
     @FXML public ListView<String> subDialectListView;
+    @FXML public TabPane tabPane;
+    @FXML public Tab tabProvers;
 
     private TreeItem<String> rootLocalProvers;
     private TreeItem<String> rootRemoteProvers;
     private TreeItem<String> dummyRoot;
     private String currentProver;
     private TreeItem<String> currentItem;
+    private String select;
 
-
-    public PreferencesController(PreferencesModel model, EditorController editor, Stage stage){
+    public PreferencesController(PreferencesModel model, EditorController editor, Stage stage, String select){
         this.model = model;
         this.editor = editor;
         this.stage = stage;
+        this.select = select;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        if (select != null && select.equals("prover")) tabPane.getSelectionModel().select(tabProvers);
+
         // Color choosers
         initColorPane();
 

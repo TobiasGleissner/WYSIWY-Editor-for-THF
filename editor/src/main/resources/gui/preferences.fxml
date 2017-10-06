@@ -16,7 +16,7 @@
 <?import javafx.scene.control.ComboBox?>
 <AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.preferences.PreferencesController">
     <children>
-        <TabPane prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane fx:id="tabPane" prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
                 <Tab text="General">
                     <content>
@@ -28,7 +28,7 @@
                         </GridPane>
                     </content>
                 </Tab>
-                <Tab text="Provers">
+                <Tab fx:id="tabProvers" text="Provers">
                     <content>
                         <VBox>
                             <children>

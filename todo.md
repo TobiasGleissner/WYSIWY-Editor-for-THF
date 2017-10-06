@@ -1,5 +1,6 @@
 # prover
 * include directives
+* preferences: implement test provers for non-THF provers
 
 # gui
 * presentation mode: hide menu, hide left pane, adjust output height

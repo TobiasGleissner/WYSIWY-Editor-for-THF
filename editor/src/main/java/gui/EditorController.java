@@ -236,7 +236,7 @@ public class EditorController implements Initializable {
     @FXML public void onNAMEPreferences(ActionEvent actionEvent) {
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/preferences.fxml"));
-        loader.setControllerFactory(t->new PreferencesController(new PreferencesModel(), this, stage));
+        loader.setControllerFactory(t->new PreferencesController(new PreferencesModel(), this, stage, null));
         Scene scene = null;
         try {
             scene = new Scene(loader.load());
@@ -1248,7 +1248,17 @@ public class EditorController implements Initializable {
     }
 
     @FXML public void onProverConfiguration(ActionEvent actionEvent) {
-        onNAMEPreferences(actionEvent);
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/preferences.fxml"));
+        loader.setControllerFactory(t->new PreferencesController(new PreferencesModel(), this, stage, "prover"));
+        Scene scene = null;
+        try {
+            scene = new Scene(loader.load());
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML public void onProverSmartFilter(ActionEvent actionEvent) {
