@@ -8,17 +8,21 @@
 <?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.TextFlow?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.web.WebView?>
@@ -199,39 +203,20 @@
                                 <Tooltip text="Button Testing Preferences" />
                             </tooltip>
                         </Button>
-                    </items>
-                    <items>
                         <Button onAction="#onReparse">
                             &#xf236; <!-- BED -->
                            <tooltip>
                                <Tooltip text="Parse again" />
                            </tooltip>
                         </Button>
-                    </items>
-                    <items>
                         <Button onAction="#onPrintTree">
                             &#xf004; <!-- HEART -->
                             <tooltip>
                                 <Tooltip text="Print the THF tree" />
                             </tooltip>
                          </Button>
-                    </items>
-                    <items>
+                    <!-- start debug buttons -->
                         <HBox prefWidth="20" />
-                    </items>
-                    <items>
-                        <MenuButton fx:id="toolbarSelectProver" mnemonicParsing="false">
-                            <tooltip><Tooltip text="Select Prover" /></tooltip>
-                        </MenuButton>
-                        <Button onAction="#onRunSelectedProver" mnemonicParsing="false">
-                            &#xf04b; <!-- PLAY -->
-                            <tooltip>
-                                <Tooltip text="Run selected Prover" />
-                            </tooltip>
-                        </Button>
-                    </items>
-                    <!-- debug buttons -->
-                    <items>
                         <Button onAction="#debugALG0157" text="ALG0157" />
                         <Button onAction="#debugCOM1601" text="COM1601" />
                         <Button onAction="#debugLCL6331" text="LCL6331" />
@@ -239,6 +224,35 @@
                         <Button onAction="#debugSYN0001" text="SYN0001" />
                         <Button onAction="#debugSYN0002" text="SYN0002" />
                         <Button onAction="#debugTrue" text="So True" />
+                    <!-- end debug buttons -->
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <MenuButton fx:id="toolbarSelectProver" mnemonicParsing="false">
+                            <tooltip>
+                                <Tooltip text="Select Prover" />
+                            </tooltip>
+                        </MenuButton>
+                        <HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" spacing="5">
+                            <padding>
+                                <Insets top="0" left="5" bottom="10" right="5"></Insets>
+                            </padding>
+                            <TextField fx:id="proverTimeout" prefWidth="34.0" alignment="CENTER_RIGHT" text="200">
+                                <tooltip>
+                                    <Tooltip text="Timeout" />
+                                </tooltip>
+                            </TextField>
+                            <Label maxWidth="Infinity" style="-fx-font-size: 90%" alignment="CENTER_RIGHT" text="s">
+                                <tooltip>
+                                    <Tooltip text="Timeout" />
+                                </tooltip>
+                            </Label>
+                        </HBox>
+                        <Button onAction="#onRunSelectedProver" alignment="CENTER_LEFT" mnemonicParsing="false">
+                            &#xf04b; <!-- PLAY -->
+                            <tooltip>
+                                <Tooltip text="Run selected Prover" />
+                            </tooltip>
+                        </Button>
+                        <HBox prefWidth="20" />
                     </items>
 
                     <!-- enter/leave presentation mode -->
@@ -286,7 +300,7 @@
                         </TabPane>
 
                         <!-- thf editor -->
-                        <TabPane fx:id="thfArea" prefHeight="200.0" prefWidth="400.0" minWidth="400.0" />
+                        <TabPane fx:id="thfArea" prefHeight="200.0" prefWidth="500.0" minWidth="500.0" />
                         <!-- <WebView fx:id="thfArea" prefHeight="200.0" prefWidth="200.0" /> -->
 
                         <!-- wysiwyg editor -->
