@@ -68,6 +68,7 @@ public class EditorDocumentModel
     private int parserNodeIdCur = 0;
     private Set<TPTPDefinitions.TPTPSubDialect> subDialects;
     private EditorController editorController;
+    private boolean edited = false;
 
     public Collection<Node> getIncludes() {
         return includes.values();
@@ -199,6 +200,7 @@ public class EditorDocumentModel
     public void reparse()
     {
         reparseArea(-1, -1);
+        edited = false;
     }
 
     /**
@@ -384,6 +386,7 @@ public class EditorDocumentModel
         }
 
         String text = content.toString();
+        edited = true;
         return reparseString(text, editor, sibling, cursorStartOffset, cursorEndOffset, isFirst);
     }
 
@@ -738,6 +741,9 @@ public class EditorDocumentModel
      * Cleanup document specific stuff on File > close
      */
     public int close(){
+        if (!edited)
+            return 2;
+        
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Save changes?");
         alert.setHeaderText("");
@@ -796,6 +802,10 @@ public class EditorDocumentModel
      */
     public Path getPath(){
         return path;
+    }
+    
+    public boolean getEdited() {
+        return edited;
     }
 
     // ------- DEBUG FUNCTIONS -------
