@@ -18,7 +18,10 @@ import javafx.concurrent.Worker;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.web.WebEngine;
@@ -734,8 +737,29 @@ public class EditorDocumentModel
     /**
      * Cleanup document specific stuff on File > close
      */
-    public void close(){
+    public int close(){
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Save changes?");
+        alert.setHeaderText("");
+        alert.setContentText("Save changes?");
+
+        ButtonType yes = new ButtonType("Yes");
+        ButtonType no = new ButtonType("No");
+        ButtonType cancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(yes, no, cancel);
+        int returnValue;
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == yes) {
+            returnValue = 1;
+        } else if (result.get() == no) {
+            returnValue = 2;
+        } else {
+            return 0;
+        }
         provingHistory.remove(this);
+        return returnValue;
     }
 
     /**

@@ -35,7 +35,17 @@ public class EditorDocumentViewController
         this.tabs.add(this.tab);
 
         this.tab.setOnCloseRequest(
-                e-> {model.close();}
+                e-> 
+                {
+                    int close = model.close();
+                    if (close == 0) {
+                        e.consume();
+                    } else if (close == 1) {
+                        // Save on exit
+                        editorController.model.saveFile(model);
+                    }
+                }
+                    
                 /*
             e ->
             {

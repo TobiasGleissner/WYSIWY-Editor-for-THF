@@ -746,7 +746,6 @@ public class EditorController implements Initializable {
     @FXML private void onFileClose(ActionEvent e) {
         TabPaneBehavior behavior = ((TabPaneSkin) model.getSelectedTab().tab.getTabPane().getSkin()).getBehavior();
         if (behavior.canCloseTab(model.getSelectedTab().tab)) {
-            ((EditorDocumentViewController) model.getSelectedTab().tab.getUserData()).model.close();
             behavior.closeTab(model.getSelectedTab().tab);
         }
     }
