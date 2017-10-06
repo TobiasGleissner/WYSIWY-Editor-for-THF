@@ -1032,14 +1032,21 @@
             }
         );
 
-        window.addEventListener("resize",
+        window.addEventListener("load",
             function(e)
             {
-                line_number_update_throttled();
+                var body = document.getElementsByTagName("body")[0];
+
+                body.addEventListener("scroll",
+                    function(e)
+                    {
+                        line_number_update_throttled();
+                    }
+                );
             }
         );
 
-        window.addEventListener("scroll",
+        window.addEventListener("resize",
             function(e)
             {
                 line_number_update_throttled();

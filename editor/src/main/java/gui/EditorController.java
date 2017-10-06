@@ -11,13 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ResourceBundle;
-import java.util.Objects;
-import java.util.List;
-import java.util.Optional;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
@@ -92,6 +86,7 @@ public class EditorController implements Initializable {
     @FXML private Menu menubarFileReopenFile;
     @FXML private MenuItem menubarFileReopenFileNoFiles;
     @FXML private MenuItem menubarViewPresentationMode;
+    @FXML private CheckMenuItem menubarProverEnableSmartFilter;
 
     // Toolbar
     @FXML private MenuButton toolbarSelectProver;
@@ -194,6 +189,9 @@ public class EditorController implements Initializable {
 
         // Initialize recently opened files
         initializeListOfRecentlyOpenedFiles();
+
+        // Initialize prover menu filter enabled
+        menubarProverEnableSmartFilter.setSelected(Config.getProverFilterEnabled());
 
         // Initialize prover menu lists
         addAvailableProversToMenus(new ArrayList<TPTPDefinitions.TPTPSubDialect>());
@@ -1098,10 +1096,14 @@ public class EditorController implements Initializable {
             toolbarSelectProver.getItems().clear();
 
             for (Prover.ProverType type : Prover.ProverType.values()) {
+                List<String> proversToAdd;
+                if (menubarProverEnableSmartFilter.isSelected()) proversToAdd = type.getAvailableProvers(subdialects);
+                else proversToAdd = type.getAvailableProvers(Arrays.asList(TPTPDefinitions.TPTPSubDialect.values()));
+
                 // add list of provers to menubar
-                menubarProverSelectProver.getItems().addAll(getMenuItemsForAvailableProvers(type,type.getAvailableProvers(subdialects)));
+                menubarProverSelectProver.getItems().addAll(getMenuItemsForAvailableProvers(type,proversToAdd));
                 // add list of provers to toolbar
-                toolbarSelectProver.getItems().addAll(getMenuItemsForAvailableProvers(type,type.getAvailableProvers(subdialects)));
+                toolbarSelectProver.getItems().addAll(getMenuItemsForAvailableProvers(type,proversToAdd));
             }
 
         } catch (IOException e) {
@@ -1229,5 +1231,15 @@ public class EditorController implements Initializable {
             dirWatchService.interrupt();
         }
         System.exit(0);
+    }
+
+    @FXML public void onProverConfiguration(ActionEvent actionEvent) {
+        onNAMEPreferences(actionEvent);
+    }
+
+    @FXML public void onProverSmartFilter(ActionEvent actionEvent) {
+        Config.setProverFilterEnabled(menubarProverEnableSmartFilter.isSelected());
+        if (model.getSelectedTab() != null) addAvailableProversToMenus(model.getSelectedTab().model.getCompatibleTPTPSubDialects());
+        else addAvailableProversToMenus(new ArrayList<>());
     }
 }

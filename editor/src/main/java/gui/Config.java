@@ -43,6 +43,16 @@ public class Config {
         }
     }
 
+    // gui states
+    public static boolean getProverFilterEnabled() {
+        return prefs.getBoolean("proverFilterEnabled", false);
+    }
+
+    public static void setProverFilterEnabled(boolean enabled) {
+        prefs.put("proverFilterEnabled", String.valueOf(enabled));
+        flush();
+    }
+
     // user actions
     public static ObservableList<String> getRecentlyOpenedFiles(){
         int numFiles = prefs.getInt("recentlyOpenedFilesLen",0);
