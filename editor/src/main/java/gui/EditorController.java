@@ -369,7 +369,7 @@ public class EditorController implements Initializable {
 
                 treeCell.setOnDragEntered(new EventHandler<DragEvent>() {
                     public void handle(DragEvent event) {
-                        treeCell.setStyle("-fx-background-color: #EEEEEE;");
+                        treeCell.setStyle("-fx-background-color: -fx-dark-base;");
                     }
                 });
 
