@@ -155,6 +155,13 @@
     -fx-background-color: -fx-body-color, -fx-medium-base;
 }
 
+.tool-bar-text-field {
+    -font-size: 70%;
+}
+
+.tool-bar:horizontal .label {
+    -font-size: 50%;
+}
 
 /* === scrollbar === */
 
