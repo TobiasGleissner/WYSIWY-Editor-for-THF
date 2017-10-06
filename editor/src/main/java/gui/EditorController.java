@@ -41,7 +41,6 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -55,7 +54,6 @@ import jiconfont.icons.FontAwesome;
 import jiconfont.javafx.IconNode;
 
 import gui.fileStructure.StructureTreeView;
-import gui.fileBrowser.FileTreeItem;
 import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
 import prover.Prover;
@@ -503,7 +501,6 @@ public class EditorController implements Initializable {
                     name = result.get();
                     if (name.equals("") || name == null) {
                         error = "\n\nERROR: Please enter a file name!";
-                        System.out.println("A");
                         continue;
                     }
                     if (name.contains("../") || name.contains("..\\")) {
@@ -546,7 +543,6 @@ public class EditorController implements Initializable {
                     name = result.get();
                     if (name.equals("") || name == null) {
                         error = "\n\nERROR: Please enter a directory name!";
-                        System.out.println("A");
                         continue;
                     }
                     if (name.contains("/") || name.contains("\\")) {
@@ -912,12 +908,6 @@ public class EditorController implements Initializable {
                 alert.setContentText("There was an error pasting the file "+file.getName()+" (destination: "+destination.toPath().toString()+")!");
                 System.out.println("There was an error pasting the file "+file.getName()+" (destination: "+destination.toPath().toString()+")!");
                 alert.showAndWait();
-            } finally {
-                if (selectedItemIsDirectory) {
-                    ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem()).sortChildren(false);
-                } else {
-                    ((FileTreeItem) fileBrowser.getSelectionModel().getSelectedItem().getParent()).sortChildren(false);
-                }
             }
         }
         return true;
