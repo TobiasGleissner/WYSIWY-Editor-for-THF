@@ -240,7 +240,7 @@
                                     <Tooltip text="Timeout" />
                                 </tooltip>
                             </TextField>
-                            <Label maxWidth="Infinity" style="-fx-font-size: 90%" alignment="CENTER_RIGHT" text="ms">
+                            <Label maxWidth="Infinity" style="-fx-font-size: 90%" alignment="CENTER_RIGHT" text="s">
                                 <tooltip>
                                     <Tooltip text="Timeout" />
                                 </tooltip>

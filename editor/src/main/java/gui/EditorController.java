@@ -88,6 +88,7 @@ public class EditorController implements Initializable {
 
     // Toolbar
     @FXML private MenuButton toolbarSelectProver;
+    @FXML private TextField proverTimeout;
     @FXML private Button toolbarPresentationMode;
 
     // Tabs left
@@ -118,6 +119,7 @@ public class EditorController implements Initializable {
     static FontAwesome iconUncollapse = FontAwesome.ANGLE_DOUBLE_UP;
     private String defaultProver = "Leo-III 1.1";
     private String currentlySelectedProver = defaultProver.replace(" ","---");
+    private int currentlySetTimeout = 200;
     private Prover.ProverType currentlySelectedProverType = Prover.ProverType.SYSTEMONTPTP_DEFAULT_PROVER;
     private boolean presentationModeActive = false;
 
@@ -212,6 +214,9 @@ public class EditorController implements Initializable {
 
         // Register the window close handler
         mainStage.setOnCloseRequest(e -> this.quit());
+
+        // Add listener for changes to prover timeout
+        listenToProverTimeoutUpdates();
     }
 
     public Optional<EditorDocumentViewController> getSelectedTab2()
@@ -1072,7 +1077,7 @@ public class EditorController implements Initializable {
 
     @FXML private void onRunSelectedProver() {
         if (model.getSelectedTab() == null) log.error("Could not run Prover: There is no opened document.");
-        else model.getSelectedTab().model.prove(currentlySelectedProver,currentlySelectedProverType,200);
+        else model.getSelectedTab().model.prove(currentlySelectedProver,currentlySelectedProverType,currentlySetTimeout);
     }
 
     public void addAvailableProversToMenus(List<TPTPDefinitions.TPTPSubDialect> subdialects) {
@@ -1221,6 +1226,20 @@ public class EditorController implements Initializable {
 
     private double getMinDividerPosition() {
         return tabPaneLeft.getTabMaxHeight()/splitPaneVertical.getWidth();
+    }
+
+    private void listenToProverTimeoutUpdates() {
+        proverTimeout.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                try {
+                    currentlySetTimeout = Integer.parseInt(proverTimeout.getText());
+                } catch (NumberFormatException e) {
+                    log.error("Not a valid number for timeout");
+                    proverTimeout.setText("200");
+                    currentlySetTimeout = 200;
+                }
+            }
+        });
     }
 
     private void quit() {
