@@ -435,38 +435,63 @@ public class PreferencesController implements Initializable {
             String fgColor = t.getColor(false);
             String bgColor = t.getColor(true);
 
-            ColorPicker pickerFG = null;
-            if(fgColor != null)
-                pickerFG = new ColorPicker(Color.web(fgColor));
-            else
-                pickerFG = new ColorPicker();
+            Color fg = null;
+            try {
+                fg = fgColor == null ? Color.WHITE : Color.web(fgColor);
+            } catch (IllegalArgumentException e) {
+                fg = Color.WHITE;
+            }
 
+            Color bg = null;
+            try {
+                bg = bgColor == null ? Color.WHITE : Color.web(bgColor);
+            } catch (IllegalArgumentException e) {
+                bg = Color.WHITE;
+            }
+
+            ColorPicker pickerFG = new ColorPicker(fg);
             colorPane.setRowIndex(pickerFG, rowIndex);
             colorPane.setColumnIndex(pickerFG, 1);
             colorPane.getChildren().add(pickerFG);
 
-            ColorPicker pickerBG = null;
-            if(bgColor != null)
-                pickerBG = new ColorPicker(Color.web(bgColor));
-            else
-                pickerBG = new ColorPicker();
+            ColorPicker pickerBG = new ColorPicker(bg);
             colorPane.setRowIndex(pickerBG, rowIndex);
             colorPane.setColumnIndex(pickerBG, 2);
             colorPane.getChildren().add(pickerBG);
 
-            final ColorPicker pickerFG_ = pickerFG;
-            final ColorPicker pickerBG_ = pickerBG;
+            Button reset = new Button("Reset");
+            colorPane.setRowIndex(reset, rowIndex);
+            colorPane.setColumnIndex(reset, 3);
+            colorPane.getChildren().add(reset);
 
             pickerFG.setOnAction(
                 e -> {
-                    t.setColor(false, colorToWeb(pickerFG_.getValue()));
+                    t.setColor(false, colorToWeb(pickerFG.getValue()));
                     this.editor.updateCss();
                 }
             );
 
             pickerBG.setOnAction(
                 e -> {
-                    t.setColor(true,  colorToWeb(pickerBG_.getValue()));
+                    t.setColor(true,  colorToWeb(pickerBG.getValue()));
+                    this.editor.updateCss();
+                }
+            );
+
+            reset.setOnAction(
+                e -> {
+                    String defaultFG = t.getDefaultFG();
+                    String defaultBG = t.getDefaultBG();
+
+                    t.setColor(false, defaultFG);
+                    t.setColor(true,  defaultBG);
+
+                    Color fg_ = defaultFG == null ? Color.WHITE : Color.web(defaultFG);
+                    Color bg_ = defaultBG == null ? Color.WHITE : Color.web(defaultBG);
+
+                    pickerFG.setValue(fg_);
+                    pickerBG.setValue(bg_);
+
                     this.editor.updateCss();
                 }
             );
