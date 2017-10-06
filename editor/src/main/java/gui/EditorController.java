@@ -393,6 +393,8 @@ public class EditorController implements Initializable {
                     public void handle(DragEvent event) {
                         Dragboard db = event.getDragboard();
                         boolean success = false;
+                        if (treeCell.getItem() == null)
+                            return;
                         boolean selectedItemIsDirectory = treeCell.getItem().getFile().isDirectory();
 
                         File f = null;
