@@ -85,6 +85,7 @@ public class EditorModel
         try {
             Files.write(m.getPath(),m.getText().getBytes());
             log.info("Saved editor content to file " + m.getPath() + ".");
+            m.setEdited(false);
         } catch (IOException e1) {
             e1.printStackTrace();
             log.error("Could not save editor content to file " + m.getPath() + ".");

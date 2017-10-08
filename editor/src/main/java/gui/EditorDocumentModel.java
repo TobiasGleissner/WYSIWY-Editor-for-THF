@@ -807,6 +807,10 @@ public class EditorDocumentModel
     public boolean getEdited() {
         return edited;
     }
+    
+    public void setEdited(boolean value) {
+        this.edited = value;
+    }
 
     // ------- DEBUG FUNCTIONS -------
     private void debugPrintHTMLImmediately() {
