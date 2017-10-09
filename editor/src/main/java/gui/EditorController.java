@@ -23,6 +23,7 @@ import javafx.beans.value.ObservableValue;
 
 import javafx.collections.ListChangeListener;
 
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -32,6 +33,7 @@ import javafx.event.ActionEvent;
 
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.Clipboard;
@@ -103,6 +105,7 @@ public class EditorController implements Initializable {
     @FXML private TabPane thfArea;
 
     // Output
+    @FXML public AnchorPane parentOutputWebView;
     @FXML public WebView outputWebView;
 
     // ==========================================================================
@@ -217,6 +220,7 @@ public class EditorController implements Initializable {
 
         // Add listener for changes to prover timeout
         listenToProverTimeoutUpdates();
+
     }
 
     public Optional<EditorDocumentViewController> getSelectedTab2()
@@ -1009,61 +1013,16 @@ public class EditorController implements Initializable {
                 ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.getFontSize());
                 ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
             }
-            menubarViewPresentationMode.setText("Enter Presentation Mode");
-            /*
-            outputWebView.setVisible(true);
-            outputWebView.setManaged(true);
-            */
-            /*
-            tabPaneLeftParent.getChildrenUnmodifiable().add(tabPaneLeftIndex,tabPaneLeft);
-            */
-            /*
-            tabPaneLeft.setMaxWidth(leftPaneMaxWidth);
-            tabPaneLeft.setMinWidth(leftPaneMinWidth);
-            tabPaneLeft.setPrefWidth(leftPanePrefWidth);
-            menuBar.setMaxHeight(menuBarMaxHeight);
-            menuBar.setPrefHeight(menuBarPrefHeight);
-            menuBar.setMinHeight(menuBarMinHeight);
-            outputWebView.setMaxHeight(outputWebViewMaxHeight);
-            outputWebView.setMinHeight(outputWebViewMinHeight);
-            outputWebView.setPrefHeight(outputWebViewPrefHeight);
-            */
+            parentOutputWebView.getChildren().add(outputWebView);
 
+            menubarViewPresentationMode.setText("Enter Presentation Mode");
         } else {
             for (Tab t : thfArea.getTabs()) {
                 ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizePresentationMode);
                 ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
             }
             menubarViewPresentationMode.setText("Leave Presentation Mode");
-            /*
-            outputWebView.setVisible(false);
-            outputWebView.setManaged(false);
-            */
-            /*
-            tabPaneLeftIndex = tabPaneLeft.getParent().getChildrenUnmodifiable().indexOf(tabPaneLeft);
-            tabPaneLeftParent = tabPaneLeft.getParent();
-            tabPaneLeft.getParent().getChildrenUnmodifiable().remove(tabPaneLeft);
-            */
-            /*
-            leftPaneMaxWidth = tabPaneLeft.getMaxWidth();
-            leftPanePrefWidth = tabPaneLeft.getPrefWidth();
-            leftPaneMinWidth = tabPaneLeft.getMinWidth();
-            tabPaneLeft.setMaxWidth(0);
-            tabPaneLeft.setPrefWidth(0);
-            tabPaneLeft.setMinWidth(0);
-            menuBarMaxHeight = menuBar.getMaxHeight();
-            menuBarPrefHeight = menuBar.getPrefHeight();
-            menuBarMinHeight = menuBar.getMinHeight();
-            menuBar.setMaxHeight(0);
-            menuBar.setPrefHeight(0);
-            menuBar.setMinHeight(0);
-            outputWebViewMaxHeight = outputWebView.getMaxHeight();
-            outputWebViewPrefHeight = outputWebView.getPrefHeight();
-            outputWebViewMinHeight = outputWebView.getMinHeight();
-            outputWebView.setMaxHeight(100);
-            outputWebView.setMinHeight(50);
-            outputWebView.setPrefHeight(100);
-            */
+            parentOutputWebView.getChildren().remove(outputWebView);
 
         }
         presentationModeActive = !presentationModeActive;
@@ -1172,50 +1131,36 @@ public class EditorController implements Initializable {
     // Tabs left
     // ==========================================================================
 
+    private boolean collapsed;
+    private double oldDividers;
     private void makeTabPaneCollapsable() {
         IconNode icon = new IconNode(iconCollapse);
         icon.getStyleClass().add("tabpane-icon");
         tabPaneLeftCollapse.setGraphic(icon);
+        collapsed = false;
 
         tabPaneLeft.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-            @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
-                if (oldTab != tabPaneLeftCollapse) {
-                    double orgDividerPosition = splitPaneVertical.getDividers().get(0).positionProperty().getValue();
-                    double minDividerPosition = getMinDividerPosition();
-                    if(newTab == tabPaneLeftCollapse) {
-                        if (minDividerPosition/orgDividerPosition<0.95) {
-                            lastSelectedTabBeforeCollapse = oldTab;
-                            splitPaneVertical.setDividerPosition(0,minDividerPosition+(1/splitPaneVertical.getWidth()));
-                            tabPaneLeft.getSelectionModel().select(tabPaneLeftDummy);
-                        } else {
-                            splitPaneVertical.setDividerPosition(0,0.2);
-                            tabPaneLeft.getSelectionModel().select(lastSelectedTabBeforeCollapse);
-                        }
-                    } else if (newTab != tabPaneLeftCollapse && newTab != tabPaneLeftDummy) {
-                        if (minDividerPosition/orgDividerPosition>=0.95) {
-                            splitPaneVertical.setDividerPosition(0,0.2);
-                        }
+                if (newTab == tabPaneLeftCollapse){
+                    IconNode icon;
+                    tabPaneLeft.getSelectionModel().select(oldTab);
+                    if (collapsed){
+                        splitPaneVertical.setDividerPosition(0,oldDividers);
+                        icon = new IconNode(iconCollapse);
+                    } else {
+                        oldDividers = splitPaneVertical.getDividerPositions()[0];
+                        double minimalDivider = getMinDividerPosition();
+                        splitPaneVertical.setDividerPosition(0,minimalDivider);
+                        icon = new IconNode(iconUncollapse);
                     }
+                    icon.getStyleClass().add("tabpane-icon");
+                    tabPaneLeftCollapse.setGraphic(icon);
+                    collapsed = !collapsed;
                 }
+
             }
         });
 
-        splitPaneVertical.getDividers().get(0).positionProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                IconNode icon;
-                if(getMinDividerPosition()/(double)newValue<0.95) {
-                    icon = new IconNode(iconCollapse);
-                    splitPaneVertical.setResizableWithParent(tabPaneLeft, Boolean.TRUE);
-                } else {
-                    icon = new IconNode(iconUncollapse);
-                    splitPaneVertical.setResizableWithParent(tabPaneLeft, Boolean.FALSE);
-                }
-                icon.getStyleClass().add("tabpane-icon");
-                tabPaneLeftCollapse.setGraphic(icon);
-            }
-        });
 
         tabPaneLeft.getSelectionModel().select(2);
 
@@ -1265,5 +1210,9 @@ public class EditorController implements Initializable {
         Config.setProverFilterEnabled(menubarProverEnableSmartFilter.isSelected());
         if (model.getSelectedTab() != null) addAvailableProversToMenus(model.getSelectedTab().model.getCompatibleTPTPSubDialects());
         else addAvailableProversToMenus(new ArrayList<>());
+    }
+
+    public void onasd(Event event) {
+        System.out.println("ASD");
     }
 }
