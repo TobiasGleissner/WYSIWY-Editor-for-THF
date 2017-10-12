@@ -17,8 +17,9 @@ public class Config {
     // misc
     public static final String name = "editor";
     public static final String USER_AGENT = "thf_editor";
-    public static int maxRecentlyOpenedFiles = 5;
+    public static final int maxRecentlyOpenedFiles = 5;
     public static final double fontSizeOutputDefault = 0.3;
+    public static final long maxFileSize = 200000; // bytes
 
     // editor
     public static final double fontSizeIncrementStep = 0.1;

@@ -21,7 +21,6 @@
 * better logging, exchange logging which just prints exceptions for user readable output
 
 # editor
-* limit file size
 * watch external file change on disk of opened files
 
 # project name
