@@ -2,11 +2,12 @@
 * include directives
 
 # gui
-* presentation mode: hide menu, hide left pane, adjust output height
 * star for unsaved content in tab
 * run prover from file browser
 * proving history
 * show proving output window on proving
+* add window description shown above menu
+* toolbar menu: new, open, close etc.
 
 # output
 * sentence for prover output

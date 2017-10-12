@@ -44,11 +44,10 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.stage.FileChooser;
-
-import com.sun.javafx.webkit.WebConsoleListener;
 
 import org.apache.commons.io.IOUtils;
 
@@ -81,6 +80,7 @@ public class EditorController implements Initializable {
     // END DEBUG
 
     // Menu
+    @FXML private AnchorPane menuBarParent;
     @FXML private MenuBar menuBar;
     @FXML private Menu menubarProverSelectProver;
     @FXML private Menu menubarFileReopenFile;
@@ -95,6 +95,7 @@ public class EditorController implements Initializable {
 
     // Tabs left
     @FXML private SplitPane splitPaneVertical;
+    @FXML private AnchorPane tabPaneLeftParent;
     @FXML private TabPane tabPaneLeft;
     @FXML private Tab tabPaneLeftCollapse;
     @FXML private Tab tabPaneLeftDummy;
@@ -105,7 +106,7 @@ public class EditorController implements Initializable {
     @FXML private TabPane thfArea;
 
     // Output
-    @FXML public AnchorPane parentOutputWebView;
+    @FXML public AnchorPane outputWebviewParent;
     @FXML public WebView outputWebView;
 
     // ==========================================================================
@@ -994,35 +995,37 @@ public class EditorController implements Initializable {
         }
     }
 
-    /*
-    private double leftPaneMaxWidth;
-    private double leftPanePrefWidth;
-    private double leftPaneMinWidth;
-    private double menuBarMaxHeight;
-    private double menuBarPrefHeight;
-    private double menuBarMinHeight;
-    private double outputWebViewMaxHeight;
-    private double outputWebViewPrefHeight;
-    private double outputWebViewMinHeight;
-    private int tabPaneLeftIndex;
-    private Parent tabPaneLeftParent;
-    */
+    private double oldOutputWebviewHeight;
+    private double oldOutputDividerPosition;
     @FXML public void onViewEnterPresentationMode(ActionEvent actionEvent) {
         if (presentationModeActive) {
             for (Tab t : thfArea.getTabs()) {
                 ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.getFontSize());
                 ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
             }
-            parentOutputWebView.getChildren().add(outputWebView);
-
+            //outputWebviewParent.getChildren().add(outputWebView);
+            menuBarParent.getChildren().add(menuBar);
+            tabPaneLeftParent.getChildren().add(tabPaneLeft);
+            splitPaneVertical.setDividerPosition(0, oldOutputDividerPosition);
+            splitPaneVertical.lookupAll(".split-pane-divider").forEach(div->div.setMouseTransparent(false));
+            outputWebView.setPrefHeight(oldOutputWebviewHeight);
             menubarViewPresentationMode.setText("Enter Presentation Mode");
+            toolbarPresentationMode.setTooltip(new Tooltip("Enter Presentation Mode"));
         } else {
             for (Tab t : thfArea.getTabs()) {
                 ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizePresentationMode);
                 ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
             }
+            //outputWebviewParent.getChildren().remove(outputWebView);
+            menuBarParent.getChildren().remove(menuBar);
+            tabPaneLeftParent.getChildren().remove(tabPaneLeft);
+            oldOutputDividerPosition = splitPaneVertical.getDividerPositions()[0];
+            splitPaneVertical.setDividerPosition(0,0);
+            splitPaneVertical.lookupAll(".split-pane-divider").forEach(div->div.setMouseTransparent(true));
+            oldOutputWebviewHeight = outputWebView.getPrefHeight();
+            outputWebView.setPrefHeight(Screen.getPrimary().getVisualBounds().getHeight()/10.0);
             menubarViewPresentationMode.setText("Leave Presentation Mode");
-            parentOutputWebView.getChildren().remove(outputWebView);
+            toolbarPresentationMode.setTooltip(new Tooltip("Leave Presentation Mode"));
 
         }
         presentationModeActive = !presentationModeActive;
@@ -1132,7 +1135,7 @@ public class EditorController implements Initializable {
     // ==========================================================================
 
     private boolean collapsed;
-    private double oldDividers;
+    private double oldLeftPaneDividers;
     private void makeTabPaneCollapsable() {
         IconNode icon = new IconNode(iconCollapse);
         icon.getStyleClass().add("tabpane-icon");
@@ -1145,10 +1148,10 @@ public class EditorController implements Initializable {
                     IconNode icon;
                     tabPaneLeft.getSelectionModel().select(oldTab);
                     if (collapsed){
-                        splitPaneVertical.setDividerPosition(0,oldDividers);
+                        splitPaneVertical.setDividerPosition(0, oldLeftPaneDividers);
                         icon = new IconNode(iconCollapse);
                     } else {
-                        oldDividers = splitPaneVertical.getDividerPositions()[0];
+                        oldLeftPaneDividers = splitPaneVertical.getDividerPositions()[0];
                         double minimalDivider = getMinDividerPosition();
                         splitPaneVertical.setDividerPosition(0,minimalDivider);
                         icon = new IconNode(iconUncollapse);

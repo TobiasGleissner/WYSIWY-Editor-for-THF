@@ -31,7 +31,8 @@
 
     <top>
         <VBox>
-            <MenuBar fx:id="menuBar">
+            <AnchorPane fx:id="menuBarParent" styleClass="parentContainer">
+            <MenuBar fx:id="menuBar" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
 
                 <!-- menuitem NAME -->
                 <Menu text="NAME">
@@ -176,49 +177,59 @@
                 </Menu>
 
             </MenuBar>
+            </AnchorPane>
 
             <!-- toolbar -->
             <ToolBar prefHeight="40.0">
 
-                    <!-- left spacing -->
-                    <Pane prefWidth="4.0" HBox.hgrow="NEVER" />
+                <!-- left spacing -->
+                <Pane prefWidth="4.0" HBox.hgrow="NEVER" />
 
-                    <!-- left toolbar menu -->
+                <!-- left toolbar menu -->
+                <!-- file new etc. -->
 
-                    <!-- second spacing -->
-                    <Pane prefWidth="100.0" HBox.hgrow="SOMETIMES" />
+                <!-- enter/leave presentation mode -->
+                <Button fx:id="toolbarPresentationMode" onAction="#onViewEnterPresentationMode">
+                    &#xf108;
+                    <tooltip>
+                        <Tooltip text="Enter Presentation Mode" />
+                    </tooltip>
+                </Button>
 
-                    <!-- start debug buttons -->
-                    <!--
-                    <Button onAction="#onTestPref">
-                        &#xf0fc;
-                        <tooltip>
-                            <Tooltip text="Button Testing Preferences" />
-                        </tooltip>
-                    </Button>
-                    <Button onAction="#onReparse">
-                        &#xf236;
-                       <tooltip>
-                           <Tooltip text="Parse again" />
-                       </tooltip>
-                    </Button>
-                    <Button onAction="#onPrintTree">
-                        &#xf004;
-                        <tooltip>
-                            <Tooltip text="Print the THF tree" />
-                        </tooltip>
-                     </Button>
+                <!-- second spacing -->
+                <Pane prefWidth="100.0" HBox.hgrow="SOMETIMES" />
+
+                <!-- start debug buttons -->
+                <!--
+                <Button onAction="#onTestPref">
+                    &#xf0fc;
+                    <tooltip>
+                        <Tooltip text="Button Testing Preferences" />
+                    </tooltip>
+                </Button>
+                <Button onAction="#onReparse">
+                    &#xf236;
+                   <tooltip>
+                       <Tooltip text="Parse again" />
+                   </tooltip>
+                </Button>
+                <Button onAction="#onPrintTree">
+                    &#xf004;
+                    <tooltip>
+                        <Tooltip text="Print the THF tree" />
+                    </tooltip>
+                 </Button>
                 -->
-                    <!--
-                    <HBox prefWidth="20" />
-                    <Button onAction="#debugALG0157" text="ALG0157" />
-                    <Button onAction="#debugCOM1601" text="COM1601" />
-                    <Button onAction="#debugLCL6331" text="LCL6331" />
-                    <Button onAction="#debugLCL6341" text="LCL6341" />
-                    <Button onAction="#debugSYN0001" text="SYN0001" />
-                    <Button onAction="#debugSYN0002" text="SYN0002" />
-                    <Button onAction="#debugTrue" text="So True" />
-                    -->
+                <!--
+                <HBox prefWidth="20" />
+                <Button onAction="#debugALG0157" text="ALG0157" />
+                <Button onAction="#debugCOM1601" text="COM1601" />
+                <Button onAction="#debugLCL6331" text="LCL6331" />
+                <Button onAction="#debugLCL6341" text="LCL6341" />
+                <Button onAction="#debugSYN0001" text="SYN0001" />
+                <Button onAction="#debugSYN0002" text="SYN0002" />
+                <Button onAction="#debugTrue" text="So True" />
+                -->
                 <!-- end debug buttons -->
 
 
@@ -253,17 +264,6 @@
                 <!-- right spacing -->
                 <Pane prefWidth="4.0" HBox.hgrow="NEVER" />
 
-                <!-- enter/leave presentation mode -->
-                <!--
-                <items>
-                    <Button fx:id="toolbarPresentationMode" onAction="#onViewEnterPresentationMode">
-                        &#xf2d3;
-                        <tooltip>
-                            <Tooltip text="Print the THF tree" />
-                        </tooltip>
-                    </Button>
-                </items>
-                -->
             </ToolBar>
 
         </VBox>
@@ -272,20 +272,22 @@
     <center>
         <SplitPane fx:id="splitPaneVertical" prefHeight="Infinity">
             <!-- tabs left -->
-            <TabPane fx:id="tabPaneLeft" side="LEFT" tabClosingPolicy="UNAVAILABLE">
-                <Tab fx:id="tabPaneLeftDummy" />
-                <Tab fx:id="tabPaneLeftCollapse" styleClass="tab-collapse" />
-                <Tab fx:id="tabPaneLeftProject" text="Project">
-                    <FileTreeView fx:id="fileBrowser"/>
-                </Tab>
-                <!--
-                <Tab fx:id="tabPaneLeftStructure" text="Structure">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                </Tab>
-                -->
-            </TabPane>
+            <AnchorPane fx:id="tabPaneLeftParent">
+                <TabPane fx:id="tabPaneLeft" side="LEFT" tabClosingPolicy="UNAVAILABLE" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
+                    <Tab fx:id="tabPaneLeftDummy" />
+                    <Tab fx:id="tabPaneLeftCollapse" styleClass="tab-collapse" />
+                    <Tab fx:id="tabPaneLeftProject" text="Project">
+                        <FileTreeView fx:id="fileBrowser"/>
+                    </Tab>
+                    <!--
+                    <Tab fx:id="tabPaneLeftStructure" text="Structure">
+                        <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                    </Tab>
+                    -->
+                </TabPane>
+            </AnchorPane>
 
             <!-- thf editor -->
             <TabPane fx:id="thfArea" />
@@ -295,7 +297,7 @@
 
     <bottom>
         <!-- prover output -->
-        <AnchorPane fx:id="parentOutputWebView">
+        <AnchorPane fx:id="outputWebviewParent" styleClass="parentContainer">
             <WebView AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" fx:id="outputWebView" prefHeight="250.0" />
         </AnchorPane>
     </bottom>
