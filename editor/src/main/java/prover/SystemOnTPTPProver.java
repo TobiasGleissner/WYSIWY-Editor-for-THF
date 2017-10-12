@@ -4,6 +4,7 @@ import exceptions.NameAlreadyInUseException;
 import exceptions.ProverNotAvailableException;
 import exceptions.ProverResultNotInterpretableException;
 import gui.Config;
+import javafx.util.Pair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -39,9 +40,29 @@ public class SystemOnTPTPProver {
         */
     }
 
-    public ProveResult testRemoteProver(String proverName, String proverCommand) throws ProverNotAvailableException, IOException, ProverResultNotInterpretableException {
-        String testProblem = "thf(1,conjecture,$true)."; // TODO this may be FOF etc.
-        return prove(testProblem,proverName,proverCommand,5);
+    /**
+     * Tests whether a prover is working at all and for certain TPTPDialects
+     * @param proverName SystemOnTPTP Name of the HttpProver
+     * @param proverCommand SystemOnTPTP ProverCommand of the HttpProver
+     * @param dialects a collection of TPTPDialects for testing the prover
+     * @return List of Pairs of TPTPDialect and Proof Results which may contain exceptions
+     * A null valued ProofResult indicates no support for testing
+     */
+    public Collection<Pair<TPTPDefinitions.TPTPDialect,ProveResult>> testRemoteProver(String proverName, String proverCommand, Collection<TPTPDefinitions.TPTPDialect> dialects) {
+        Collection<Pair<TPTPDefinitions.TPTPDialect,ProveResult>> ret = new LinkedList<>();
+        for (TPTPDefinitions.TPTPDialect d : dialects){
+            ProveResult pr = null;
+            try {
+                String testProblem = Prover.getTrueFormula(d);
+                if (testProblem == null) pr = null; // no test formula available
+                else pr = prove(testProblem,proverName,proverCommand,10);
+            } catch (ProverNotAvailableException | ProverResultNotInterpretableException e) {
+                pr = new ProveResult();
+                pr.e = e;
+            }
+            ret.add(new Pair<>(d,pr));
+        }
+        return ret;
     }
 
     /**

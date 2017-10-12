@@ -10,6 +10,7 @@ public class ProveResult {
     public double cpu;
     public double timelimit;
     public Prover.ProverType proverType;
+    public Exception e = null;
 
     public ProveResult(){}
     public ProveResult(String problem, Prover.ProverType proverType, String prover, String stdout, String stderr, TPTPDefinitions.SZSDeductiveStatus status, double cpu, double wc, double timelimit) {
@@ -22,6 +23,10 @@ public class ProveResult {
         this.wc = wc;
         this.cpu = cpu;
         this.timelimit = timelimit;
+    }
+
+    public boolean hasException(){
+        return e != null;
     }
 
     @Override

@@ -1,13 +1,10 @@
 # prover
 * include directives
-* preferences: implement test provers for non-THF provers
 
 # gui
 * presentation mode: hide menu, hide left pane, adjust output height
 * star for unsaved content in tab
-* checkbox for show all provers
 * run prover from file browser
-* save directory on file open
 * proving history
 * show proving output window on proving
 
@@ -17,7 +14,7 @@
 * tabs for separate output of logging and theorem proving (may include complete proving history)
 
 # parser
-* on reparse after an edit a dialect may be gone which is not reflected in the documents dialectset
+* on reparse after an edit a dialect may be gone which is not reflected in the documents dialect set
 
 # misc
 * put Config somewhere else

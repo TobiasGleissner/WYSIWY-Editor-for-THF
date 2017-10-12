@@ -43,4 +43,16 @@ public abstract class Prover {
             default: return "unknown";
         }
     }
+
+    public static String getTrueFormula(TPTPDefinitions.TPTPDialect dialect){
+        switch (dialect){
+            case FOF: return "fof(1,conjecture,$true).";
+            case CNF: return "cnf(1,conjecture,$true)."; // not working
+            case TCF: return null;
+            case TFF: return "tff(1,conjecture,$true).";
+            case TFX: return null;
+            case THF: return "thf(1,conjecture,$true).";
+        }
+        return null;
+    }
 }

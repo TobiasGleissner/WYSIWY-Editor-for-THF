@@ -4,6 +4,7 @@ import exceptions.NameAlreadyInUseException;
 import exceptions.ProverNotAvailableException;
 import exceptions.ProverResultNotInterpretableException;
 import gui.Config;
+import javafx.util.Pair;
 import util.RandomString;
 
 import java.io.*;
@@ -144,9 +145,21 @@ public class LocalProver {
         Config.setLocalProvers(allProversListed);
     }
 
-    public ProveResult testLocalProver(String proverCommand) throws ProverNotAvailableException, IOException, ProverResultNotInterpretableException {
-        String testProblem = "thf(1,conjecture,$true).";
-        return proveHelper(testProblem,proverCommand,5);
+    public Collection<Pair<TPTPDefinitions.TPTPDialect,ProveResult>> testLocalProver(String proverCommand, Collection<TPTPDefinitions.TPTPDialect> dialects) {
+        Collection<Pair<TPTPDefinitions.TPTPDialect,ProveResult>> ret = new LinkedList<>();
+        for (TPTPDefinitions.TPTPDialect d : dialects){
+            ProveResult pr = null;
+            try {
+                String testProblem = Prover.getTrueFormula(d);
+                if (testProblem == null) pr = null; // no test formula available
+                else pr = proveHelper(testProblem,proverCommand,10);
+            } catch (ProverNotAvailableException | ProverResultNotInterpretableException | IOException e) {
+                pr = new ProveResult();
+                pr.e = e;
+            }
+            ret.add(new Pair<>(d,pr));
+        }
+        return ret;
     }
 
     private ProveResult proveHelper(String problem, String proverCommand, int timeLimit) throws IOException, ProverNotAvailableException, ProverResultNotInterpretableException {

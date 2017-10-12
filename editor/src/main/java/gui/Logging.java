@@ -88,7 +88,6 @@ public class Logging {
         sb.append(p.proveResult.prover);
         message.setTextContent(sb.toString());
         messageContainer.appendChild(message);
-
         scroll();
     }
 
@@ -119,7 +118,11 @@ public class Logging {
     private Node createRecord(String msg, LogLevel logLevel){
         Element tr = createRecordSkeleton(logLevel);
         Element message = doc.createElement("td");
-        message.setTextContent(msg);
+        String[] lines = msg.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            message.appendChild(doc.createTextNode(lines[i]));
+            if (i < lines.length - 1 ) message.appendChild(doc.createElement("br"));
+        }
         tr.appendChild(message);
         return tr;
     }

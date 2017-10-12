@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.GridPane;
+import javafx.util.Pair;
 import util.RandomString;
 
 import java.io.IOException;
@@ -309,24 +310,53 @@ public class PreferencesController implements Initializable {
         log.debug("Updated prover lists in menu");
     }
 
-    @FXML
-    public void onTestProver(ActionEvent actionEvent){
+    @FXML public void onTestProver(ActionEvent actionEvent){
         if (currentProver != null){
+            Collection<TPTPDefinitions.TPTPDialect> dialects = new HashSet<>(); // collects TPTPDialects for testing
+            getSelectedTPTPSubDialects().stream()
+                    .map(TPTPDefinitions::getTPTPDialectFromTPTPSubDialect)
+                    .forEach(dialects::add);
+            if (dialects.isEmpty()){
+                log.error("Select at least one TPTPSubDialect.");
+                return;
+            }
             String proverCommand = proverCommandTextField.getText();
             if (currentItem.getParent().equals(rootLocalProvers)) {
-                try {
-                    ProveResult pr = lp.testLocalProver(proverCommand);
-                    log.info("Prover command working. Command='" + proverCommand + "'.");
-                } catch (ProverNotAvailableException | IOException | ProverResultNotInterpretableException e) {
-                    log.warning("Prover command not working. Command='" + proverCommand + "'.");
+                Collection<Pair<TPTPDefinitions.TPTPDialect,ProveResult>> testResults = lp.testLocalProver(proverCommand, dialects);
+                for (Pair<TPTPDefinitions.TPTPDialect,ProveResult> r : testResults){
+                    if (r.getValue() == null) {
+                        log.warning("This dialect is not supported by the testing function. "
+                                + "\n TPTPDialect='" + r.getKey() + "'.");
+                    } else if (r.getValue().hasException()){
+                        log.warning("Prover configuration not working for "
+                                + "\n TPTPDialect='" + r.getKey()
+                                + "' \n Command='" + proverCommand
+                                + "' \n ErrorMessage='" + r.getValue().e + "'.");
+                    } else {
+                        log.info("Prover configuration working for "
+                                + "\n TPTPDialect='" + r.getKey()
+                                + "' \n Command='" + proverCommand + "'.");
+                    }
                 }
             } else if (currentItem.getParent().equals(rootRemoteProvers)) {
-                try {
-                    String systemOnTPTPName = proverSystemOnTPTPNameComboBox.getValue();
-                    ProveResult pr = rp.testRemoteProver(systemOnTPTPName,proverCommand);
-                    log.info("Prover command working. Command='" + proverCommand + "'.");
-                } catch (ProverNotAvailableException | IOException | ProverResultNotInterpretableException e) {
-                    log.warning("Prover command not working. Command='" + proverCommand + "'.");
+                String systemOnTPTPName = proverSystemOnTPTPNameComboBox.getValue();
+                Collection<Pair<TPTPDefinitions.TPTPDialect,ProveResult>> testResults = rp.testRemoteProver(systemOnTPTPName,proverCommand,dialects);
+                for (Pair<TPTPDefinitions.TPTPDialect,ProveResult> r : testResults){
+                    if (r.getValue() == null) {
+                        log.warning("This dialect is not supported by the testing function. "
+                                + "\nTPTPDialect='" + r.getKey() + "'.");
+                    } else if (r.getValue().hasException()){
+                        log.warning("Prover configuration not working for "
+                                + "\nTPTPDialect='" + r.getKey()
+                                + "' \nSystemOnTPTPName='" + systemOnTPTPName
+                                + "' \nCommand='" + proverCommand
+                                + "' \nErrorMessage='" + r.getValue().e + "'.");
+                    } else {
+                        log.info("Prover configuration working for "
+                                + "\nTPTPDialect='" + r.getKey()
+                                + "' \nSystemOnTPTPName='" + systemOnTPTPName
+                                + "' \nCommand='" + proverCommand + "'.");
+                    }
                 }
             }
 
