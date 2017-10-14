@@ -66,7 +66,7 @@ public class DefaultTreeListener implements ParseTreeListener {
         this.rmap = null;
         this.tokens = tokens;
         this.hiddenTokens = new ArrayList<>();
-        this.dialects = new HashSet();
+        this.dialects = new HashSet<>();
     }
 
     public String getRuleByKey(int key) {

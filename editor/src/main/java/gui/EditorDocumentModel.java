@@ -704,19 +704,8 @@ public class EditorDocumentModel
      */
     public void openFile(File file) {
         try {
-            String mime = null;
-            try {
-                mime = Files.probeContentType(file.toPath()); // TODO do something with mime type
-            } catch (IOException e) {
-                //e.printStackTrace();
-            }
-            if (file.length() > Config.maxFileSize){
-                log.error("The size of the file exceeds the limit of 200 kb. FileSize='" + file.length() + "'.");
-                return;
-            }
             InputStream stream = new FileInputStream(file);
             openStream(stream, file.toPath());
-            log.info("Opened " + file.getAbsolutePath());
         } catch(FileNotFoundException e) {
             log.error(e.getMessage());
         }
