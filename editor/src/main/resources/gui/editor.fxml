@@ -267,7 +267,7 @@
                 </Button>
 
                 <!-- right spacing -->
-                <Pane prefWidth="4.0" HBox.hgrow="NEVER" />
+                <Pane prefWidth="13" HBox.hgrow="NEVER" />
 
             </ToolBar>
 
