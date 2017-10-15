@@ -76,16 +76,6 @@ public class EditorModel
             log.warning("File already opened. File='" + file + "'.");
             return;
         }
-        String mime = null;
-        try {
-            mime = Files.probeContentType(file.toPath()); // TODO do something with mime type
-        } catch (IOException e) {
-            //e.printStackTrace();
-        }
-        if (file.length() > Config.maxFileSize){
-            log.error("The size of the file exceeds the limit of 200 kb. FileSize='" + file.length() + "'.");
-            return;
-        }
         getNewTab().model.openFile(file);
         updateRecentlyOpenedFiles(file);
         log.info("Opened file='" + file + "'.");

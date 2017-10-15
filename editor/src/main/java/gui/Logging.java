@@ -22,12 +22,21 @@ import java.util.stream.Collectors;
 public class Logging {
     public enum LogLevel{DEBUG,PROVER,FINE,INFO,WARNING,ERROR}
     private static Logging instance;
-    private Node tableNode;
+    private Node defaultTableNode;
+    private Node proverTableNode;
+    private Node debugTableNode;
     private Document doc;
     private double fontSizeOutput;
     public WebEngine outputEngine;
 
+    private static String defaultCss;
+    static {
+        InputStream cssInputStream = WebKitStyle.class.getResourceAsStream("/gui/editorField.css");
+        defaultCss = new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
+    }
+
     private Logging(){}
+
 
     public static Logging getInstance(){
         if (instance == null) instance = new Logging();
@@ -36,16 +45,27 @@ public class Logging {
 
     public void init(){
         this.doc = outputEngine.getDocument();
-        this.tableNode = doc.getElementById("table");
+        this.defaultTableNode = doc.getElementById("default_table");
+        this.proverTableNode = doc.getElementById("prover_table");
+        this.debugTableNode = doc.getElementById("debug_table");
         this.fontSizeOutput = Config.fontSizeOutputDefault;
-        setFontSize(Config.fontSizeOutputDefault);
+        updateCssOutputDoc();
     }
 
+    private Node getLevelNode(LogLevel logLevel) {
+        switch(logLevel)
+        {
+            case PROVER: return this.proverTableNode;
+            case DEBUG:  return this.debugTableNode;
+            default:     return this.defaultTableNode;
+        }
+    }
 
     public void log(String msg,LogLevel logLevel){
-        //tableNode.appendChild(createRecord(msg,logLevel));
-        //scroll();
+        getLevelNode(logLevel).appendChild(createRecord(msg, logLevel));
+        scroll();
     }
+
     public void prover(ProvingEntry p){
         Element tr = createRecordSkeleton(LogLevel.PROVER);
         Element messageContainer = doc.createElement("td");
@@ -109,7 +129,7 @@ public class Logging {
 
     private Element createRecordSkeleton(LogLevel logLevel){
         Element tr = doc.createElement("tr");
-        tableNode.appendChild(tr);
+        getLevelNode(logLevel).appendChild(tr);
         Element loglvl = doc.createElement("td");
         loglvl.setAttribute("class",logLevel.name().toLowerCase());
         loglvl.setTextContent(logLevel.name());
@@ -121,14 +141,12 @@ public class Logging {
     }
 
     private String getCurrentTime(){
-        //SimpleDateFormat date_format = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
-        SimpleDateFormat date_format = new SimpleDateFormat("HH:mm:ss");
-        return date_format.format(new Date());
+            SimpleDateFormat date_format = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
+            return date_format.format(new Date());
     }
 
-    public void setFontSize(double fontSizeOutput){
-        this.fontSizeOutput = fontSizeOutput;
-        Element style = doc.getElementById("fontSizeStyle");
+    private void updateCssOutputDoc() {
+        Element style = doc.getElementById("style");
         StringBuilder sb = new StringBuilder();
 
         sb.append("*{\n");
@@ -136,6 +154,7 @@ public class Logging {
         sb.append(fontSizeOutput);
         sb.append("cm;\n");
         sb.append("}\n");
+        sb.append(style.getTextContent());
 
         String st = sb.toString();
         style.setTextContent(st);

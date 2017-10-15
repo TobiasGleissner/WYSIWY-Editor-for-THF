@@ -14,7 +14,7 @@ public class WebKitStyle {
     private double fontSizeEditor;
 
     private static final double fontSizeIncrementStep = Config.fontSizeIncrementStep;
-    private static final double fontSizePresentationMode = Config.fontSizeEditorPresentationMode;
+    private static final double fontSizePresentationMode = Config.fontSizePresentationMode;
     private static String defaultCss;
     static{
         InputStream cssInputStream = WebKitStyle.class.getResourceAsStream("/gui/editorField.css");
