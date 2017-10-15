@@ -1039,7 +1039,7 @@ public class EditorController implements Initializable {
             menuBarParent.getChildren().remove(menuBar);
             tabPaneLeftParent.getChildren().remove(tabPaneLeft);
             oldOutputDividerPosition = splitPaneVertical.getDividerPositions()[0];
-            splitPaneVertical.setDividerPosition(0,0);
+            splitPaneVertical.setDividerPosition(0, 0);
             splitPaneVertical.lookupAll(".split-pane-divider").forEach(div->div.setMouseTransparent(true));
             oldOutputWebviewHeight = outputWebView.getPrefHeight();
             outputWebView.setPrefHeight(Screen.getPrimary().getVisualBounds().getHeight()/10.0);
@@ -1172,7 +1172,7 @@ public class EditorController implements Initializable {
                     } else {
                         oldLeftPaneDividers = splitPaneVertical.getDividerPositions()[0];
                         double minimalDivider = getMinDividerPosition();
-                        splitPaneVertical.setDividerPosition(0,minimalDivider);
+                        splitPaneVertical.setDividerPosition(0, minimalDivider);
                         icon = new IconNode(iconUncollapse);
                     }
                     icon.getStyleClass().add("tabpane-icon");
@@ -1183,13 +1183,27 @@ public class EditorController implements Initializable {
             }
         });
 
+        splitPaneVertical.getDividers().get(0).positionProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                IconNode icon;
+                if(getMinDividerPosition()/(double)newValue<0.95) {
+                    icon = new IconNode(iconCollapse);
+                    splitPaneVertical.setResizableWithParent(tabPaneLeftParent, Boolean.TRUE);
+                } else {
+                    icon = new IconNode(iconUncollapse);
+                    splitPaneVertical.setResizableWithParent(tabPaneLeftParent, Boolean.FALSE);
+                }
+                icon.getStyleClass().add("tabpane-icon");
+                tabPaneLeftCollapse.setGraphic(icon);
+            }
+        });
 
         tabPaneLeft.getSelectionModel().select(2);
-
     }
 
     private double getMinDividerPosition() {
-        return tabPaneLeft.getTabMaxHeight()/splitPaneVertical.getWidth();
+        return (tabPaneLeft.getTabMaxHeight()/splitPaneVertical.getWidth());
     }
 
     private void listenToProverTimeoutUpdates() {

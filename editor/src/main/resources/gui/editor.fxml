@@ -29,7 +29,7 @@
 <?import gui.fileStructure.StructureTreeView?>
 
 <?import javafx.scene.web.WebView?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600" prefWidth="1000" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="600" prefHeight="600" prefWidth="1000" stylesheets="@editor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EditorController">
 
     <top>
         <VBox>
@@ -184,9 +184,6 @@
             <!-- toolbar -->
             <ToolBar prefHeight="40.0">
 
-                <!-- left spacing -->
-                <Pane prefWidth="4.0" HBox.hgrow="NEVER" />
-
                 <!-- left toolbar menu -->
                 <!-- file new etc. -->
 
@@ -198,8 +195,8 @@
                     </tooltip>
                 </Button>
 
-                <!-- second spacing -->
-                <Pane prefWidth="100.0" HBox.hgrow="SOMETIMES" />
+                <!-- spacing -->
+                <Pane prefWidth="100.0" HBox.hgrow="ALWAYS" />
 
                 <!-- start debug buttons -->
                 <!--
