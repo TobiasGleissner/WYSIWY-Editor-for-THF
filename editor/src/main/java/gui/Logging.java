@@ -29,14 +29,7 @@ public class Logging {
     private double fontSizeOutput;
     public WebEngine outputEngine;
 
-    private static String defaultCss;
-    static {
-        InputStream cssInputStream = WebKitStyle.class.getResourceAsStream("/gui/editorField.css");
-        defaultCss = new BufferedReader(new InputStreamReader(cssInputStream)).lines().collect(Collectors.joining("\n"));
-    }
-
     private Logging(){}
-
 
     public static Logging getInstance(){
         if (instance == null) instance = new Logging();
@@ -49,7 +42,7 @@ public class Logging {
         this.proverTableNode = doc.getElementById("prover_table");
         this.debugTableNode = doc.getElementById("debug_table");
         this.fontSizeOutput = Config.fontSizeOutputDefault;
-        updateCssOutputDoc();
+        setFontSize(Config.fontSizeOutputDefault);
     }
 
     private Node getLevelNode(LogLevel logLevel) {
@@ -141,12 +134,14 @@ public class Logging {
     }
 
     private String getCurrentTime(){
-            SimpleDateFormat date_format = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
-            return date_format.format(new Date());
+        //SimpleDateFormat date_format = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
+        SimpleDateFormat date_format = new SimpleDateFormat("HH:mm:ss");
+        return date_format.format(new Date());
     }
 
-    private void updateCssOutputDoc() {
-        Element style = doc.getElementById("style");
+    public void setFontSize(double fontSizeOutput){
+        this.fontSizeOutput = fontSizeOutput;
+        Element style = doc.getElementById("fontSizeStyle");
         StringBuilder sb = new StringBuilder();
 
         sb.append("*{\n");
@@ -154,7 +149,6 @@ public class Logging {
         sb.append(fontSizeOutput);
         sb.append("cm;\n");
         sb.append("}\n");
-        sb.append(style.getTextContent());
 
         String st = sb.toString();
         style.setTextContent(st);

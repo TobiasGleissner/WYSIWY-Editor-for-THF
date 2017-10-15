@@ -18,13 +18,16 @@ public class Config {
     public static final String name = "editor";
     public static final String USER_AGENT = "thf_editor";
     public static final int maxRecentlyOpenedFiles = 5;
-    public static final double fontSizeOutputDefault = 0.3;
     public static final long maxFileSize = 200000; // bytes
 
     // editor
     public static final double fontSizeIncrementStep = 0.1;
     public static final double fontSizeEditorDefault = 0.4;
-    public static final double fontSizePresentationMode = 1.0;
+    public static final double fontSizeEditorPresentationMode = 1.0;
+
+    // output
+    public static final double fontSizeOutputDefault = 0.3;
+    public static final double fontSizeOutputPresentationMode = 0.7;
 
     // prover remote
     public static final String urlSystemOnTPTP = "http://www.cs.miami.edu/~tptp/cgi-bin/SystemOnTPTP"; // default value, get url from preferences

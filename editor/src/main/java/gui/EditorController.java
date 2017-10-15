@@ -738,6 +738,8 @@ public class EditorController implements Initializable {
             contextMenu.hide();
             contextMenuFile.hide();
         });
+
+        log.info("Opened directory='" + dir + "'.");
     }
 
     @FXML private void onFileSave(ActionEvent e) {
@@ -1018,6 +1020,7 @@ public class EditorController implements Initializable {
                 ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.getFontSize());
                 ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
             }
+            log.setFontSize(Config.fontSizeOutputDefault);
             //outputWebviewParent.getChildren().add(outputWebView);
             menuBarParent.getChildren().add(menuBar);
             tabPaneLeftParent.getChildren().add(tabPaneLeft);
@@ -1028,9 +1031,10 @@ public class EditorController implements Initializable {
             toolbarPresentationMode.setTooltip(new Tooltip("Enter Presentation Mode"));
         } else {
             for (Tab t : thfArea.getTabs()) {
-                ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizePresentationMode);
+                ((EditorDocumentViewController) t.getUserData()).model.style.setFontSizeEditor(Config.fontSizeEditorPresentationMode);
                 ((EditorDocumentViewController) t.getUserData()).model.engine.executeScript("update_line_numbers()");
             }
+            log.setFontSize(Config.fontSizeOutputPresentationMode);
             //outputWebviewParent.getChildren().remove(outputWebView);
             menuBarParent.getChildren().remove(menuBar);
             tabPaneLeftParent.getChildren().remove(tabPaneLeft);
