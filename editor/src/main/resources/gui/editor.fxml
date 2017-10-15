@@ -278,7 +278,7 @@
     </top>
 
     <center>
-        <SplitPane fx:id="splitPaneVertical" dividerPositions="0.2" prefHeight="Infinity">
+        <SplitPane fx:id="splitPaneVertical" dividerPositions="0.25" prefHeight="Infinity">
             <!-- tabs left -->
             <AnchorPane fx:id="tabPaneLeftParent">
                 <TabPane fx:id="tabPaneLeft" side="LEFT" tabClosingPolicy="UNAVAILABLE" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
