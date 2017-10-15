@@ -63,9 +63,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.antlr:*</include>
-                                    <include>org.fxmisc.*</include>
-                                    <include>org.reactfx:*</include>
-                                    <!--<include>de.jensd:fontawesomefx:jar:</include>-->
+                                    <include>org.controlsfx:*</include>
                                     <include>org.jsoup:jsoup:jar:</include>
                                     <include>commons-io:commons-io:jar:</include>
                                     <include>com.github.jiconfont:jiconfont*</include>
