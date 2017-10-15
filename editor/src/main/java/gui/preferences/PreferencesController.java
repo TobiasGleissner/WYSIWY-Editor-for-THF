@@ -18,7 +18,11 @@ import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.GridPane;
+<<<<<<< HEAD
 import javafx.util.Pair;
+=======
+import org.controlsfx.control.CheckComboBox;
+>>>>>>> changes subdialect selection in preferences window
 import util.RandomString;
 
 import java.io.IOException;
@@ -50,7 +54,7 @@ public class PreferencesController implements Initializable {
     @FXML public ComboBox<String> proverSystemOnTPTPNameComboBox;
     @FXML public Label proverSystemOnTPTPNameLabel;
     @FXML public TreeView<String> proverTree;
-    @FXML public ListView<String> subDialectListView;
+    @FXML public CheckComboBox<String> subDialectCheckComboBox;
     @FXML public TabPane tabPane;
     @FXML public Tab tabProvers;
 
@@ -84,11 +88,10 @@ public class PreferencesController implements Initializable {
         }
 
         // TPTP SubDialects
-        subDialectListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         List<String> subDialects = Arrays.stream(TPTPDefinitions.TPTPSubDialect.values())
                 .map(Enum::name)
                 .collect(Collectors.toList());
-        subDialectListView.setItems(FXCollections.observableArrayList(subDialects));
+        subDialectCheckComboBox.getItems().addAll(FXCollections.observableArrayList(subDialects));
 
         // Tree
         proverTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -121,7 +124,7 @@ public class PreferencesController implements Initializable {
                     if (node instanceof Text || (node instanceof TreeCell && ((TreeCell) node).getText() != null)) {
                         TreeItem<String> tempCurrentItem = proverTree.getSelectionModel().getSelectedItem();
                         if (tempCurrentItem.equals(rootLocalProvers) | tempCurrentItem.equals(rootRemoteProvers) || tempCurrentItem.equals(dummyRoot)) {
-                            subDialectListView.getSelectionModel().clearSelection();
+                            subDialectCheckComboBox.getCheckModel().getCheckedIndices().stream().forEach(i->subDialectCheckComboBox.getCheckModel().clearCheck(i));
                             proverTree.getSelectionModel().clearSelection();
                             proverNameTextField.setText("");
                             proverCommandTextField.setText("");
@@ -137,11 +140,11 @@ public class PreferencesController implements Initializable {
             }
         });
 
-        subDialectListView.addEventFilter(MouseEvent.MOUSE_PRESSED, evt -> {
+        subDialectCheckComboBox.addEventFilter(MouseEvent.MOUSE_PRESSED, evt -> {
             Node node = evt.getPickResult().getIntersectedNode();
             // go up from the target node until a list cell is found or it's clear
             // it was not a cell that was clicked
-            while (node != null && node != subDialectListView && !(node instanceof ListCell)) {
+            while (node != null && node != subDialectCheckComboBox && !(node instanceof ListCell)) {
                 node = node.getParent();
             }
             // if is part of a cell or the cell,
@@ -207,17 +210,17 @@ public class PreferencesController implements Initializable {
 
     private void showProver(String prover){
         proverNameTextField.setText(prover);
-        subDialectListView.getSelectionModel().clearSelection();
+        subDialectCheckComboBox.getCheckModel().getCheckedIndices().stream().forEach(i->subDialectCheckComboBox.getCheckModel().clearCheck(i));
         String proverCmd = null;
         if (currentItem.getParent().equals(rootLocalProvers)) {
             proverCmd = lp.getProverCommand(prover);
-            lp.getProverSubDialects(currentProver).forEach(sd -> subDialectListView.getSelectionModel().select(sd.name()));
+            lp.getProverSubDialects(currentProver).forEach(sd -> subDialectCheckComboBox.getCheckModel().check(sd.name()));
             proverSystemOnTPTPNameComboBox.setVisible(false);
             proverSystemOnTPTPNameLabel.setVisible(false);
         }
         else if (currentItem.getParent().equals(rootRemoteProvers)) {
             proverCmd = rp.getCustomProverCommand(prover);
-            rp.getCustomProverSubDialects(currentProver).forEach(sd -> subDialectListView.getSelectionModel().select(sd.name()));
+            rp.getCustomProverSubDialects(currentProver).forEach(sd -> subDialectCheckComboBox.getCheckModel().check(sd.name()));
             proverSystemOnTPTPNameComboBox.setVisible(true);
             proverSystemOnTPTPNameComboBox.getSelectionModel().select(rp.getCustomProverSystemOnTPTPName(prover));
             proverSystemOnTPTPNameLabel.setVisible(true);
@@ -231,7 +234,7 @@ public class PreferencesController implements Initializable {
             currentItem = null;
             proverCommandTextField.setText("");
             proverNameTextField.setText("");
-            subDialectListView.getSelectionModel().clearSelection();
+            subDialectCheckComboBox.getCheckModel().getCheckedIndices().stream().forEach(i->subDialectCheckComboBox.getCheckModel().clearCheck(i));
             return;
         }
         currentItem = rootLocalProvers.getChildren().get(0);
@@ -241,7 +244,7 @@ public class PreferencesController implements Initializable {
     }
 
     private List<TPTPDefinitions.TPTPSubDialect> getSelectedTPTPSubDialects(){
-        return subDialectListView.getSelectionModel().getSelectedItems().stream()
+        return subDialectCheckComboBox.getCheckModel().getCheckedItems().stream()
                 .map(TPTPDefinitions.TPTPSubDialect::valueOf)
                 .collect(Collectors.toList());
     }
@@ -444,7 +447,7 @@ public class PreferencesController implements Initializable {
         proverNameTextField.setText("");
         proverCommandTextField.setText("");
         proverTree.getSelectionModel().clearSelection();
-        subDialectListView.getSelectionModel().clearSelection();
+        subDialectCheckComboBox.getCheckModel().getCheckedIndices().stream().forEach(i->subDialectCheckComboBox.getCheckModel().clearCheck(i));
         log.info("Removed prover with name='" + oldName + "' and command='" + oldCommand
                 + "' and TPTP dialects='" + oldDialectString + "'.");
     }

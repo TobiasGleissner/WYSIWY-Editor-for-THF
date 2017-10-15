@@ -6,25 +6,28 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.shape.Rectangle?>
+<?import org.controlsfx.control.CheckComboBox?>
+<?import javafx.geometry.Insets?>
 
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ComboBox?>
-<AnchorPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.preferences.PreferencesController">
+<AnchorPane prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@preferences.css" fx:controller="gui.preferences.PreferencesController">
     <children>
-        <TabPane fx:id="tabPane" prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane fx:id="tabPane" prefHeight="600.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
                 <Tab text="General">
                     <content>
                         <!-- TOOD: Beautify -->
                         <GridPane fx:id="colorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                            <Label          GridPane.rowIndex="0" GridPane.columnIndex="0" text="Element:"/>
-                            <Label          GridPane.rowIndex="0" GridPane.columnIndex="1" text="Foreground:"/>
-                            <Label          GridPane.rowIndex="0" GridPane.columnIndex="2" text="Background:"/>
+                            <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="Element:"/>
+                            <Label GridPane.rowIndex="0" GridPane.columnIndex="1" text="Foreground:"/>
+                            <Label GridPane.rowIndex="0" GridPane.columnIndex="2" text="Background:"/>
                         </GridPane>
                     </content>
                 </Tab>
@@ -32,32 +35,46 @@
                     <content>
                         <VBox>
                             <children>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                    <children>
-                                        <Label layoutX="363.0" layoutY="21.0" text="Name:" />
-                                        <TextField fx:id="proverNameTextField" layoutX="484.0" layoutY="14.0" prefHeight="30.0" prefWidth="303.0" />
-                                        <Label fx:id="nameTakenWarning" layoutX="484.0" layoutY="48.0" text="Name already taken" />
+                                <GridPane alignment="CENTER_LEFT" hgap="10" vgap="10">
+                                    <padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
 
-                                        <Label layoutX="363.0" layoutY="75.0" text="Prover command" />
-                                        <TextField fx:id="proverCommandTextField" layoutX="484.0" layoutY="71.0" prefHeight="40.0" prefWidth="303.0" />
-                                        <Label layoutX="484.0" layoutY="123.0" text="Indicate filename with %s and timeout with %d" />
+                                <!-- <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children> -->
 
-                                        <Label fx:id="proverSystemOnTPTPNameLabel" layoutX="363.0" layoutY="170.0" text="SystemOnTPTP Name:" />
-                                        <ComboBox fx:id="proverSystemOnTPTPNameComboBox" layoutX="484.0" layoutY="170.0" prefHeight="30.0" prefWidth="303.0" />
+                                    <TreeView fx:id="proverTree" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" />
 
-                                        <Button fx:id="newLocalProverButton" layoutX="10.0" layoutY="20.0" mnemonicParsing="false" onAction="#onNewLocalProver" text="New local prover" />
-                                        <Button fx:id="newRemoteProverButton" layoutX="10.0" layoutY="60.0" mnemonicParsing="false" onAction="#onNewRemoteProver" text="New remote prover" />
-                                        <Button fx:id="deleteProverButton" layoutX="10.0" layoutY="100.0" mnemonicParsing="false" onAction="#onDeleteProver" text="Delete" />
-                                        <TreeView fx:id="proverTree" layoutX="10.0" layoutY="140.0" />
+                                    <Button fx:id="newLocalProverButton" GridPane.columnIndex="0" GridPane.rowIndex="1" mnemonicParsing="false" onAction="#onNewLocalProver">
+                                        &#xf067; <!-- PLUS -->
+                                    </Button>
+                                    <Button fx:id="newRemoteProverButton" GridPane.columnIndex="0" GridPane.rowIndex="1" mnemonicParsing="false" onAction="#onNewRemoteProver" text="New remote prover" />
+                                    <Button fx:id="deleteProverButton" GridPane.columnIndex="0" GridPane.rowIndex="1" mnemonicParsing="false" onAction="#onDeleteProver">
+                                        &#xf068; <!-- MINUS -->
+                                        <tooltip>
+                                            <Tooltip text="Delete Prover" />
+                                        </tooltip>
+                                    </Button>
 
-                                        <Button fx:id="testProverCommandButton" layoutX="617.0" layoutY="220.0" mnemonicParsing="false" onAction="#onTestProver" text="Test Prover Command" />
-                                        <Button fx:id="applyButton" layoutX="491.0" layoutY="220.0" mnemonicParsing="false" onAction="#onApplyProvers" text="Apply" />
+                                    <Label GridPane.columnIndex="1" GridPane.rowIndex="0" text="Name:" />
+                                    <TextField fx:id="proverNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefHeight="30.0" prefWidth="303.0" />
+                                    <Label fx:id="nameTakenWarning" GridPane.columnIndex="1" GridPane.rowIndex="0" text="Name already taken" />
 
-                                        <Label layoutX="363.0" layoutY="484.0" text="Supported dialects" />
-                                        <ListView fx:id="subDialectListView" layoutX="484.0" layoutY="270.0" />
-                                    </children>
+                                    <Label GridPane.columnIndex="1" GridPane.rowIndex="0" text="Prover command" />
+                                    <TextField fx:id="proverCommandTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefHeight="40.0" prefWidth="303.0" />
+                                    <Label GridPane.columnIndex="1" GridPane.rowIndex="0" text="Indicate filename with %s and timeout with %d" />
+
+                                    <Label fx:id="proverSystemOnTPTPNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" text="SystemOnTPTP Name:" />
+                                    <ComboBox fx:id="proverSystemOnTPTPNameComboBox" GridPane.columnIndex="1" GridPane.rowIndex="0" prefHeight="30.0" prefWidth="303.0" />
+
+                                    <Label GridPane.columnIndex="1" GridPane.rowIndex="0" text="Supported dialects" />
+                                    <CheckComboBox fx:id="subDialectCheckComboBox" prefHeight="25.0" prefWidth="192.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                                    <Button fx:id="testProverCommandButton" GridPane.columnIndex="1" GridPane.rowIndex="1" mnemonicParsing="false" onAction="#onTestProver" text="Test Prover Command" />
+                                    <Button fx:id="applyButton" GridPane.columnIndex="1" GridPane.rowIndex="1" mnemonicParsing="false" onAction="#onApplyProvers" text="Apply" />
+
+                                </GridPane>
+                                <!--    </children>
                                 </AnchorPane>
-                                <AnchorPane />
+                                <AnchorPane /> -->
                             </children>
                         </VBox>
                     </content>
