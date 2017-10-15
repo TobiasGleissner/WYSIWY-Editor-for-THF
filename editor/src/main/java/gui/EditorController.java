@@ -30,6 +30,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.Clipboard;
@@ -54,6 +55,7 @@ import gui.fileStructure.StructureTreeView;
 import gui.fileBrowser.FileTreeView;
 import gui.fileBrowser.FileWrapper;
 import prover.Prover;
+import prover.ProvingHistory;
 import prover.TPTPDefinitions;
 import util.DirWatchService;
 import gui.preferences.PreferencesController;
@@ -88,6 +90,8 @@ public class EditorController implements Initializable {
     @FXML private MenuButton toolbarSelectProver;
     @FXML private TextField proverTimeout;
     @FXML private Button toolbarPresentationMode;
+    @FXML private StackPane proverProgBox;
+    @FXML private Label proverProgNum;
 
     // Tabs left
     @FXML private SplitPane splitPaneVertical;
@@ -218,6 +222,18 @@ public class EditorController implements Initializable {
         // Add listener for changes to prover timeout
         listenToProverTimeoutUpdates();
 
+        // Add a progess indicator to threaded prover instances.
+        ProvingHistory h = ProvingHistory.getInstance();
+        h.running.addListener((ListChangeListener.Change<? extends Thread> c) -> {
+            int len = h.running.size();
+
+            if(len == 0) {
+                proverProgBox.setVisible(false);
+            } else {
+                proverProgBox.setVisible(true);
+                proverProgNum.setText("" + len);
+            }
+        });
     }
 
     public Optional<EditorDocumentViewController> getSelectedTab2()
