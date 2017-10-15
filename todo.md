@@ -1,6 +1,7 @@
 # prover
 * include directives
 * some kind of feedback that the prover is currently running
+* threading
 
 # gui
 * star for unsaved content in tab

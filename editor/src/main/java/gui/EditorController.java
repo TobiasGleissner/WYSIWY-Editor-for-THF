@@ -13,9 +13,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
-import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
-
 import javafx.concurrent.Worker;
 
 import javafx.beans.value.ChangeListener;
@@ -23,7 +20,6 @@ import javafx.beans.value.ObservableValue;
 
 import javafx.collections.ListChangeListener;
 
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -756,9 +752,12 @@ public class EditorController implements Initializable {
     }
 
     @FXML private void onFileClose(ActionEvent e) {
-        TabPaneBehavior behavior = ((TabPaneSkin) model.getSelectedTab().tab.getTabPane().getSkin()).getBehavior();
-        if (behavior.canCloseTab(model.getSelectedTab().tab)) {
-            behavior.closeTab(model.getSelectedTab().tab);
+        if (model.getSelectedTab() != null){
+            Path p =  model.getSelectedTab().model.getPath();
+            thfArea.getTabs().remove( thfArea.getSelectionModel().getSelectedIndex() );
+            log.info("Closed tab with path='" + p + "'.");
+        } else {
+            log.error("Could not close tab: No tab is open.");
         }
     }
 
@@ -1219,7 +1218,4 @@ public class EditorController implements Initializable {
         else addAvailableProversToMenus(new ArrayList<>());
     }
 
-    public void onasd(Event event) {
-        System.out.println("ASD");
-    }
 }
