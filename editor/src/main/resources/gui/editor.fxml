@@ -275,36 +275,38 @@
     </top>
 
     <center>
-        <SplitPane fx:id="splitPaneVertical" dividerPositions="0.25" prefHeight="Infinity">
-            <!-- tabs left -->
-            <AnchorPane fx:id="tabPaneLeftParent">
-                <TabPane fx:id="tabPaneLeft" side="LEFT" tabClosingPolicy="UNAVAILABLE" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
-                    <Tab fx:id="tabPaneLeftDummy" />
-                    <Tab fx:id="tabPaneLeftCollapse" styleClass="tab-collapse" />
-                    <Tab fx:id="tabPaneLeftProject" text="Project">
-                        <FileTreeView fx:id="fileBrowser"/>
-                    </Tab>
-                    <!--
-                    <Tab fx:id="tabPaneLeftStructure" text="Structure">
-                        <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                    </Tab>
-                    -->
-                </TabPane>
-            </AnchorPane>
+        <SplitPane dividerPositions="0.8" orientation="VERTICAL">
 
-            <!-- thf editor -->
-            <TabPane fx:id="thfArea" />
+                <SplitPane fx:id="splitPaneHorizontal" orientation="HORIZONTAL" dividerPositions="0.25" prefHeight="Infinity">
+                    <!-- tabs left -->
+                    <AnchorPane fx:id="tabPaneLeftParent">
+                        <TabPane fx:id="tabPaneLeft" side="LEFT" tabClosingPolicy="UNAVAILABLE" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
+                            <Tab fx:id="tabPaneLeftDummy" />
+                            <Tab fx:id="tabPaneLeftCollapse" styleClass="tab-collapse" />
+                            <Tab fx:id="tabPaneLeftProject" text="Project">
+                                <FileTreeView fx:id="fileBrowser"/>
+                            </Tab>
+                            <!--
+                            <Tab fx:id="tabPaneLeftStructure" text="Structure">
+                                <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                </content>
+                            </Tab>
+                            -->
+                        </TabPane>
+                    </AnchorPane>
+
+                    <!-- thf editor -->
+                    <TabPane fx:id="thfArea" />
+
+                </SplitPane>
+
+                <!-- prover output -->
+                <AnchorPane fx:id="outputWebviewParent" styleClass="parentContainer">
+                    <WebView AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" fx:id="outputWebView" prefHeight="250.0" />
+                </AnchorPane>
 
         </SplitPane>
     </center>
-
-    <bottom>
-        <!-- prover output -->
-        <AnchorPane fx:id="outputWebviewParent" styleClass="parentContainer">
-            <WebView AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" fx:id="outputWebView" prefHeight="250.0" />
-        </AnchorPane>
-    </bottom>
 
 </BorderPane>

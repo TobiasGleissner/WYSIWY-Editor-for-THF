@@ -94,7 +94,7 @@ public class EditorController implements Initializable {
     @FXML private Label proverProgNum;
 
     // Tabs left
-    @FXML private SplitPane splitPaneVertical;
+    @FXML private SplitPane splitPaneHorizontal;
     @FXML private AnchorPane tabPaneLeftParent;
     @FXML private TabPane tabPaneLeft;
     @FXML private Tab tabPaneLeftCollapse;
@@ -1024,8 +1024,8 @@ public class EditorController implements Initializable {
             //outputWebviewParent.getChildren().add(outputWebView);
             menuBarParent.getChildren().add(menuBar);
             tabPaneLeftParent.getChildren().add(tabPaneLeft);
-            splitPaneVertical.setDividerPosition(0, oldOutputDividerPosition);
-            splitPaneVertical.lookupAll(".split-pane-divider").forEach(div->div.setMouseTransparent(false));
+            splitPaneHorizontal.setDividerPosition(0, oldOutputDividerPosition);
+            splitPaneHorizontal.lookupAll(".split-pane-divider").forEach(div->div.setMouseTransparent(false));
             outputWebView.setPrefHeight(oldOutputWebviewHeight);
             menubarViewPresentationMode.setText("Enter Presentation Mode");
             toolbarPresentationMode.setTooltip(new Tooltip("Enter Presentation Mode"));
@@ -1038,9 +1038,9 @@ public class EditorController implements Initializable {
             //outputWebviewParent.getChildren().remove(outputWebView);
             menuBarParent.getChildren().remove(menuBar);
             tabPaneLeftParent.getChildren().remove(tabPaneLeft);
-            oldOutputDividerPosition = splitPaneVertical.getDividerPositions()[0];
-            splitPaneVertical.setDividerPosition(0, 0);
-            splitPaneVertical.lookupAll(".split-pane-divider").forEach(div->div.setMouseTransparent(true));
+            oldOutputDividerPosition = splitPaneHorizontal.getDividerPositions()[0];
+            splitPaneHorizontal.setDividerPosition(0, 0);
+            splitPaneHorizontal.lookupAll(".split-pane-divider").forEach(div->div.setMouseTransparent(true));
             oldOutputWebviewHeight = outputWebView.getPrefHeight();
             outputWebView.setPrefHeight(Screen.getPrimary().getVisualBounds().getHeight()/10.0);
             menubarViewPresentationMode.setText("Leave Presentation Mode");
@@ -1167,12 +1167,12 @@ public class EditorController implements Initializable {
                     IconNode icon;
                     tabPaneLeft.getSelectionModel().select(oldTab);
                     if (collapsed){
-                        splitPaneVertical.setDividerPosition(0, oldLeftPaneDividers);
+                        splitPaneHorizontal.setDividerPosition(0, oldLeftPaneDividers);
                         icon = new IconNode(iconCollapse);
                     } else {
-                        oldLeftPaneDividers = splitPaneVertical.getDividerPositions()[0];
+                        oldLeftPaneDividers = splitPaneHorizontal.getDividerPositions()[0];
                         double minimalDivider = getMinDividerPosition();
-                        splitPaneVertical.setDividerPosition(0, minimalDivider);
+                        splitPaneHorizontal.setDividerPosition(0, minimalDivider);
                         icon = new IconNode(iconUncollapse);
                     }
                     icon.getStyleClass().add("tabpane-icon");
@@ -1183,16 +1183,16 @@ public class EditorController implements Initializable {
             }
         });
 
-        splitPaneVertical.getDividers().get(0).positionProperty().addListener(new ChangeListener<Number>() {
+        splitPaneHorizontal.getDividers().get(0).positionProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 IconNode icon;
                 if(getMinDividerPosition()/(double)newValue<0.95) {
                     icon = new IconNode(iconCollapse);
-                    splitPaneVertical.setResizableWithParent(tabPaneLeftParent, Boolean.TRUE);
+                    splitPaneHorizontal.setResizableWithParent(tabPaneLeftParent, Boolean.TRUE);
                 } else {
                     icon = new IconNode(iconUncollapse);
-                    splitPaneVertical.setResizableWithParent(tabPaneLeftParent, Boolean.FALSE);
+                    splitPaneHorizontal.setResizableWithParent(tabPaneLeftParent, Boolean.FALSE);
                 }
                 icon.getStyleClass().add("tabpane-icon");
                 tabPaneLeftCollapse.setGraphic(icon);
@@ -1203,7 +1203,7 @@ public class EditorController implements Initializable {
     }
 
     private double getMinDividerPosition() {
-        return (tabPaneLeft.getTabMaxHeight()/splitPaneVertical.getWidth());
+        return (tabPaneLeft.getTabMaxHeight()/splitPaneHorizontal.getWidth());
     }
 
     private void listenToProverTimeoutUpdates() {
