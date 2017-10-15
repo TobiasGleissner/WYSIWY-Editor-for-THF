@@ -67,7 +67,7 @@ public class LocalProver {
         return provers;
     }
 
-    public static LocalProver getInstance(){
+    public static synchronized LocalProver getInstance(){
         if (instance == null){
             instance = new LocalProver();
             instance.loadProvers();

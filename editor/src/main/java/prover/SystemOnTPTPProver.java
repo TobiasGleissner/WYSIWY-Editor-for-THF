@@ -70,7 +70,7 @@ public class SystemOnTPTPProver {
      * @return only way to get an instance of SystemOnTPTPProver
      * @throws IOException if SystemOnTPTP website could not be reached
      */
-    public static SystemOnTPTPProver getInstance() throws IOException {
+    public static synchronized SystemOnTPTPProver getInstance() throws IOException {
         if (instance == null){
             instance = new SystemOnTPTPProver();
             instance.loadProvers();
