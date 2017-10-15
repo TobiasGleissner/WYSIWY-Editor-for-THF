@@ -275,7 +275,7 @@
     </top>
 
     <center>
-        <SplitPane dividerPositions="0.8" orientation="VERTICAL">
+        <SplitPane dividerPositions="0.75" orientation="VERTICAL">
 
                 <SplitPane fx:id="splitPaneHorizontal" orientation="HORIZONTAL" dividerPositions="0.25" prefHeight="Infinity">
                     <!-- tabs left -->

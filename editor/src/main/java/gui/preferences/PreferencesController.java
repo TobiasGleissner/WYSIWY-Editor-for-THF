@@ -67,6 +67,8 @@ public class PreferencesController implements Initializable {
         this.editor = editor;
         this.stage = stage;
         this.select = select;
+        
+        this.stage.setResizable(false);
     }
 
     @Override
