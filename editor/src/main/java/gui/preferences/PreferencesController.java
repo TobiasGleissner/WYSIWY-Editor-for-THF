@@ -18,11 +18,8 @@ import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.GridPane;
-<<<<<<< HEAD
 import javafx.util.Pair;
-=======
 import org.controlsfx.control.CheckComboBox;
->>>>>>> changes subdialect selection in preferences window
 import util.RandomString;
 
 import java.io.IOException;
