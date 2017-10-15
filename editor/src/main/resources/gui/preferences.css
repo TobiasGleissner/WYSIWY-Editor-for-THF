@@ -1,0 +1,123 @@
+
+/* ==== main color palette from which the rest of the colors are derived === */
+
+.root {
+    -fx-base: #ececec;
+    -fx-light-base: derive(-fx-color,26.4%);
+    -fx-lighter-base: derive(-fx-color,40%);
+    -fx-medium-base: derive(-fx-darker-base,50%);
+    -fx-slightly-darker-base: derive(-fx-color,-5%);
+    -fx-dark-base: derive(-fx-base,-20%);
+    -fx-darker-base: derive(-fx-base,-70%);
+    -fx-hover-base: ladder(
+        -fx-base,
+        derive(-fx-base,20%) 20%,
+        derive(-fx-base,30%) 35%,
+        derive(-fx-base,40%) 50%
+     );
+    -fx-color: -fx-base;
+    -fx-background: -fx-light-base;
+    -fx-body-color: -fx-slightly-darker-base;
+    -fx-default-button: transparent;
+    -fx-selection-bar: derive(-fx-lighter-base,-5%);
+}
+
+.root.popup {
+
+}
+
+
+/* === icons === */
+
+.tabpane-icon {
+    -fx-font-family: 'FontAwesome';
+    -fx-font-size: 100%;
+    -fx-fill: -fx-darker-base;
+    -fx-rotate: 180;
+}
+
+.tabpane-icon:hover {
+    -fx-fill: -fx-medium-base;
+}
+
+.filebrowser-icon {
+    -fx-font-family: 'FontAwesome';
+    -fx-font-size: 90%;
+    -fx-fill: -fx-darker-base;
+    -fx-padding: 0em 0.3em 0.5em 0.5em;
+}
+
+
+/* === buttons === */
+
+.button {
+    -fx-font-family: 'FontAwesome';
+    -fx-font-size: 90%;
+    -fx-text-fill: -fx-darker-base;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0em 0.3em 0.5em 0.5em;
+}
+
+.button:hover {
+    -fx-text-fill: -fx-medium-base;
+}
+
+
+/* === tab panes === */
+
+.tab-pane {
+    -fx-background-color: white;
+    -fx-min-height: 200;
+}
+
+.tab-pane:top > .tab-header-area {
+    -fx-background-insets: 0;
+    -fx-padding: 0 0 0 0;
+}
+
+.tab-collapse:hover {
+    -fx-background-color: transparent;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background: -fx-body-color;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-width: 0px;
+}
+
+.tab-pane:top > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: derive(-fx-light-base,-2%);
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: white;
+}
+
+.tab-pane:top > .tab-header-area > .tab-header-background {
+    -fx-background-color: derive(-fx-light-base,-2%);
+}
+
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button:hover {
+    -fx-shape: "M 0 0";
+}
+
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button {
+    -fx-background-color: -fx-body-color;
+    -fx-padding: 5 4 9 9;
+}
+
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button > .arrow {
+    -fx-background-color: -fx-body-color, ladder(
+        -fx-color,
+        white 30%,
+        derive(-fx-color,-63%) 31%
+    );
+    -fx-pref-height: 2px;
+    -fx-pref-width: 10px;
+    -fx-shape: "M-2,64a3,3 0 1,0 6,0a3,3 0 1,0 -6,0 M8,64a3,3 0 1,0 6,0a3,3 0 1,0 -6,0 M18,64a3,3 0 1,0 6,0a3,3 0 1,0 -6,0";
+}
