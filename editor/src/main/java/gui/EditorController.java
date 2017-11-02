@@ -762,6 +762,7 @@ public class EditorController implements Initializable {
         if (file != null){
             model.getSelectedTab().model.setPath(file.toPath());
             model.saveFile(model.getSelectedTab().model);
+            model.getSelectedTab().tab.setText(file.getName());
         } else {
             log.error("Could not save: No file specified.");
         }

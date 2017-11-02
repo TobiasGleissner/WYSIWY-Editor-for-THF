@@ -24,5 +24,6 @@
 
 # editor
 * watch external file change on disk of opened files
+* editor field does not loose focus
 
 # project name
