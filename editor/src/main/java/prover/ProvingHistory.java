@@ -96,6 +96,7 @@ public class ProvingHistory {
             if(task.getValue().right() != null)
             {
                 log.error(task.getValue().right());
+                log.prover(task.getValue().right());
             }
             else
             {
@@ -115,6 +116,7 @@ public class ProvingHistory {
             if(e != null)
             {
                 log.error(e.getMessage());
+                log.prover(e.getMessage());
             }
         });
 
