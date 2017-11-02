@@ -47,7 +47,7 @@ public abstract class Prover {
     public static String getTrueFormula(TPTPDefinitions.TPTPDialect dialect){
         switch (dialect){
             case FOF: return "fof(1,conjecture,$true).";
-            case CNF: return "cnf(1,axiom,$true)."; // not working
+            case CNF: return "cnf(1,axiom,$true).";
             case TCF: return null;
             case TFF: return "tff(1,conjecture,$true).";
             case TFX: return null;
