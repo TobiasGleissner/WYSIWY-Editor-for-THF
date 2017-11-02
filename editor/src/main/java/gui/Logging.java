@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import prover.Prover;
 import prover.ProvingEntry;
+import prover.TPTPDefinitions;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -65,7 +66,7 @@ public class Logging {
         tr.appendChild(messageContainer);
         Element status = doc.createElement("span");
         status.setAttribute("class","szsstatus");
-        status.setTextContent(p.proveResult.status.name());
+        status.setTextContent(TPTPDefinitions.getStringFromStatus(p.proveResult.status));
         messageContainer.appendChild(status);
         Element message = doc.createElement("span");
         StringBuilder sb = new StringBuilder(200);
